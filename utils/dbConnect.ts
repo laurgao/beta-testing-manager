@@ -3,6 +3,14 @@
 
 import mongoose from "mongoose";
 
+const MONGODB_URL = process.env.MONGODB_URL
+
+if (!MONGODB_URL) {
+    throw new Error(
+      'Please define the MONGODB_URL environment variable inside .env'
+    )
+  }
+
 async function dbConnect() {
     // check if we have a connection to the database or if it's currently
     // connecting or disconnecting (readyState 1, 2 and 3)
@@ -10,7 +18,7 @@ async function dbConnect() {
         return;
     }
 
-    return mongoose.connect(process.env.MONGODB_URL, {
+    return mongoose.connect(MONGODB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false,

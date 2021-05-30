@@ -18,3 +18,17 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.up-button {
+  @apply px-4 h-12 rounded-md transition font-semibold;
+}
+
+.up-button:disabled {
+  @apply opacity-25;
+  cursor: not-allowed;
+}
+
+.up-button.primary, .up-primary {
+  background-color: #0026FF;
+  @apply text-white;
+}

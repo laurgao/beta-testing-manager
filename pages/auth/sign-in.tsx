@@ -3,9 +3,8 @@ import {GetServerSideProps} from "next";
 
 
 const SignIn = () => {
-    const [session, loading] = useSession(); // now we have ability to access the session.
-
-
+    const [session, loading] = useSession();
+    
     return (
         <div>
 
@@ -19,7 +18,7 @@ const SignIn = () => {
                 )}
 
                 {
-                session && (
+                session && ( 
                     <>
                     Signed in as {session.user.email} <br />
                     <div>You can now access our super secret pages</div>
@@ -40,7 +39,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
 
     if (session) {
-        context.res.setHeader("location", session.userId ? "/auth/sign-in" : "/index");
+        console.log(session);
+        context.res.setHeader("location", "/auth/new-account");
         context.res.statusCode = 302;
         context.res.end();
     }

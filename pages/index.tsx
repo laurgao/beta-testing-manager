@@ -1,8 +1,11 @@
 import Image from 'next/image'
-import {getSession} from "next-auth/client"
+import {getSession, useSession} from "next-auth/client"
 import {GetServerSideProps} from "next";
 
 export default function Home() {
+  const [session, loading] = useSession();
+  
+  // console.log(session); // works
   return (
     <div>
       <p className="text-6xl">Hello world</p>
