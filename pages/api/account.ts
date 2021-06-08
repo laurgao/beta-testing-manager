@@ -36,16 +36,14 @@ export default async function account(req: NextApiRequest, res: NextApiResponse)
             name: session.user.name,
             image: session.user.image,
             trialExpDate: "2021-06-28T18:46:41.984Z" // this is a random date change later. today + x days
-        };
+        };        
 
-        
-
-        await AccountModel.create(newAccount); // error here
+        await AccountModel.create(newAccount); 
 
         res.status(200).json({message: "Account successfully created."});
 
         return;
     } catch (e) {
-        return res.status(500).json({message: e}); // so it was erroring out here.
+        return res.status(500).json({message: e}); 
     }
 }

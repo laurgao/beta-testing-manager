@@ -11,7 +11,7 @@ export default function SpinnerButton({onClick, isLoading, isDisabled = false, c
     return (
         <div className="relative inline-block">
             <button
-                className={"up-button primary " + className + (noRightMargin ? "" : " mr-2")}
+                className={"button primary " + className + (noRightMargin ? "" : " mr-2")}
                 onClick={onClick}
                 disabled={isLoading || isDisabled}
             >

@@ -2,11 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@400;600;700&display=swap');
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+  font-family: 'Overpass', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
@@ -19,16 +21,47 @@ a {
   box-sizing: border-box;
 }
 
-.up-button {
-  @apply px-4 h-12 rounded-md transition font-semibold;
+.button {
+  @apply px-4 h-12 transition font-semibold text-xs;
 }
 
-.up-button:disabled {
+.button:disabled {
   @apply opacity-25;
   cursor: not-allowed;
 }
 
-.up-button.primary, .up-primary {
+.button.primary {
   background-color: #0026FF;
   @apply text-white;
+}
+
+.button.secondary {
+  border: 1px solid #71717A; /* shoudl not do that use tailwind grey or define the grey somewhere */
+  color: #71717A;
+}
+
+.button.tertiary {
+  color: #71717A;
+  font-weight: 700;
+}
+
+.up-spinner {
+  position: absolute;
+  top: calc(50% - 0.5rem);
+  left: calc(50% - 0.5rem);
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 0.2rem solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  animation: up-spin 1s linear infinite;
+}
+
+.up-hover-dropdown {
+  display: none;
+  @apply absolute top-0 right-0 z-40 shadow-lg rounded-md bg-white;
+}
+
+.up-hover-button:hover > .up-hover-dropdown, .up-hover-button:focus > .up-hover-dropdown {
+  display: block;
 }

@@ -50,16 +50,3 @@ export interface TextTemplateObj {
     templateId: string, // ID
     body: string
   }
-  
-  export interface Update {
-    _id: string,
-    readBy: string[],
-    date: string, // date string
-    body: string,
-    url: string,
-    title: string,
-    userId: string, // id
-    comments: any[],
-    createdAt: string, // date string
-    updatedAt: string, // date string
-}

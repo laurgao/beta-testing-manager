@@ -4,8 +4,7 @@ import {GetServerSideProps} from "next";
 
 export default function Home() {
   const [session, loading] = useSession();
-  
-  // console.log(session); // works
+
   return (
     <div>
       <p className="text-6xl">Hello world</p>
@@ -16,8 +15,8 @@ export default function Home() {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const session = await getSession(context);
 
-  if (!session) {
-      context.res.setHeader("location", "/auth/sign-in");
+  if (session) {
+      context.res.setHeader("location", "/projects");
       context.res.statusCode = 302;
       context.res.end();
   }

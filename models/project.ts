@@ -2,11 +2,11 @@ import mongoose, {Document, Model} from "mongoose";
 import {ProjectObj} from "../utils/types";
 
 const ProjectSchema = new mongoose.Schema({
-    accountId: mongoose.Schema.Types.ObjectId,
+    accountId: {type: mongoose.Schema.Types.ObjectId, required: true},
     name: {type: String, required: true},
     description: {type: String, required: false},
-    collaborators: [mongoose.Schema.Types.ObjectId],
-    featuredQuestions: [mongoose.Schema.Types.ObjectId],
+    collaborators: { type: [mongoose.Schema.Types.ObjectId], required: true }, 
+	featuredQuestions: { type: [mongoose.Schema.Types.ObjectId], required: true },
 }, {
     timestamps: true,
 });

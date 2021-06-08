@@ -1,34 +1,13 @@
-import {signIn, signOut, useSession, getSession} from "next-auth/client"
+import {signIn, useSession, getSession} from "next-auth/client"
 import {GetServerSideProps} from "next";
-
+import SignInButton from "../../components/signInButton";
 
 const SignIn = () => {
     const [session, loading] = useSession();
     
     return (
         <div>
-
-            <main>
-                
-                {!session && (
-                <>
-                    Not signed in <br />
-                    <button onClick={() => signIn('google')}>Sign in</button>
-                </>
-                )}
-
-                {
-                session && ( 
-                    <>
-                    Signed in as {session.user.email} <br />
-                    <div>You can now access our super secret pages</div>
-                    <button onClick={() => signOut()}>Sign out</button>
-                    </>
-                )
-                }
-
-            </main>
-
+            <SignInButton />
         </div>
     )
 }

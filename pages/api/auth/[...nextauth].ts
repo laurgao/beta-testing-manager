@@ -4,7 +4,7 @@ import {NextApiRequest, NextApiResponse} from "next";
 
 const options = {
     providers: [
-        Providers.Google({ // providers is null error is solved by wrapping _app.tsx in <Provider> tag
+        Providers.Google({ 
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET
         }),

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState} from "react";
 import {GetServerSideProps} from "next";
 import {getSession, signIn, useSession} from "next-auth/client";
 import axios from "axios";
@@ -6,6 +6,7 @@ import {useRouter} from "next/router";
 import Skeleton from "react-loading-skeleton";
 import SpinnerButton from "../../components/spinner-button";
 import UpSEO from "../../components/up-seo";
+import { getCurrUserRequest } from "../../utils/requests"
 
 export default function NewAccount() {
     const router = useRouter();
@@ -77,9 +78,10 @@ export default function NewAccount() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
+    const user = await getCurrUserRequest(session.user.email);
 
-    if (!session) {
-        context.res.setHeader("location", "/auth/sign-in");
+    if (!session || user) {
+        context.res.setHeader("location", !session ? "/auth/sign-in" : "/");
         context.res.statusCode = 302;
         context.res.end();
     }
