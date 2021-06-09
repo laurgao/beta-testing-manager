@@ -2,9 +2,10 @@ import mongoose, {Model, Document} from "mongoose";
 import {UserObj} from "../utils/types";
 
 const UserSchema = new mongoose.Schema({
-    email: {type: String, required: true},
+    email: {type: String, required: false},
     name: {type: String, required: true},
-    featuredProjects: mongoose.Schema.Types.ObjectId,
+    projectId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    tags: {type: [String], required: false }
 }, {
     timestamps: true,
 });

@@ -1,4 +1,5 @@
 export interface AccountObj {
+    _id: string,
     email: string,
     name: string,
     image: string,
@@ -6,22 +7,30 @@ export interface AccountObj {
 }
 
 export interface ProjectObj {
+    _id: string,
     accountId: string, // ID
     name: string,
-    description: string,
+    description?: string,
     collaborators: string[], // array of IDs
     featuredQuestions: string[],
 }
 
 export interface UserObj {
-    email: string,
-    name: string,
-    projectID: string // ID
+    _id: string,
+    createdAt: string, // date string?
+    email?: string, 
+    name: string, 
+    projectId: string, // ID
+    tags: string[],
 }
 
 export interface NoteObj {
+    _id: string,
+    createdAt: string, // date string?
     userId: string, // ID
-    date: string, // date string
+    projectId: string,
+    name: string,
+    date: string, // date string. or date?
     selections: string[], // array of IDs
     texts: string[],
 }

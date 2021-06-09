@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const ProjectCard = ({projectName, projectId}) => {
     return (
-        <div className="border up-border-gray-200 p-4 h-52 shadow-md hover:shadow-xl hover:up-border-gray-700 transition">
+        <div className="border up-border-gray-200 p-4 h-52 w-72 shadow-md hover:shadow-xl hover:up-border-gray-700 transition">
             <div className="h-32">
                 <Link href={`/projects/${projectId}`}>
                     <a>

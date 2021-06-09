@@ -1,15 +1,34 @@
-const Button = ({onClick, text}) => {
+import Link from "next/link"
+
+const Button = ({onClick, children, href, isDisabled, isLoading, className}: 
+    {onClick?: any, 
+        children: string, 
+        href?: string,
+        isDisabled?: boolean,
+        isLoading?: boolean,
+        className?: string,
+    }) => {
     return (
-        <button
-            className="button primary"
-            onClick={onClick}
-        >
-            
-            <div className="flex items-center">
-                <span>{text}</span>
-            </div>
-        </button>
-    )
-}
+        <>
+            <button
+                disabled={isLoading || isDisabled}
+                className={`px-4 h-12 transition font-semibold text-xs disabled:opacity-25 disabled:cursor-not-allowed ${className && className}`}
+                onClick={onClick}
+            >
+            {href ? (
+                <Link href={href}>
+                    {children}
+                </Link>
+            ) : (
+                        <div className="flex items-center">
+                            {children}
+                        </div>
+                )}
+             </button>
+            {isLoading && (
+                <div className="up-spinner"/>
+            )}
+        </>
+)}
 
 export default Button

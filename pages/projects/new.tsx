@@ -10,6 +10,7 @@ import SpinnerButton from "../../components/spinner-button";
 import UpSEO from "../../components/up-seo";
 import useSWR, { SWRResponse } from 'swr';
 import { fetcher } from '../../utils/utils';
+import PrimaryButton from '../../components/PrimaryButton';
 
 export default function NewProject() {
     const router = useRouter();
@@ -69,13 +70,13 @@ export default function NewProject() {
                     onChange={e => setDescription(e.target.value)}
                 />
             </div>
-            <SpinnerButton
+            <PrimaryButton
                 onClick={onSubmit}
                 isLoading={isLoading}
                 isDisabled={!name}
             >
                 Create
-            </SpinnerButton>
+            </PrimaryButton>
         </div>
     );
 }

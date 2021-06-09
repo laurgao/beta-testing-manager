@@ -2,17 +2,18 @@ import React from 'react'
 import { signOut, useSession } from 'next-auth/client'
 import Link from "next/link";
 import MenuButton from "./MenuButton";
+import Breadcrumb from './Breadcrumb';
 
 const Navbar = () => {
     const [session, loading] = useSession();
     return (
-        <nav className="w-full bg-white sticky mb-8 top-0 z-30 flex">
-            <div className="max-w-7xl mx-auto h-16 flex items-center px-4">
-                <Link href="/"><a><p>BTM</p></a></Link>
+        <nav className="w-full bg-white sticky items-center mb-8 top-0 z-30 flex border-b-2 px-8">
+            <div className="max-w-7xl h-16 flex items-center mr-auto my-auto">
+                <Link href={session ? "/projects" : "/"}><a><p className="text-2xl font-bold">BTM</p></a></Link>
             </div>
             {session && ( 
                 <>
-                    <button className="relative up-hover-button">
+                    <button className="relative up-hover-button ml-auto">
                         <div className="flex items-center">
                             <img
                                 src={session.user.image}
@@ -29,7 +30,7 @@ const Navbar = () => {
 
             {!session && (
                 <>
-                    <Link href="/auth/sign-in"><button className="button tertiary">Sign in</button></Link>
+                    <Link href="/auth/sign-in"><Breadcrumb text="Sign in"/></Link>
                 </>
             )}    
         </nav>

@@ -6,33 +6,40 @@ import {fetcher} from "../../utils/utils";
 import { ProjectObj } from "../../utils/types";
 import ProjectCard from "../../components/ProjectCard";
 import Link from "next/link";
+import React from "react";
+import UpSEO from "../../components/up-seo";
+import H1 from "../../components/H1";
+import Skeleton from "react-loading-skeleton";
 
 const projects = () => {
     const [session, loading] = useSession();
     
-    const {data: projects, error: projectsError}: SWRResponse<{projects: ProjectObj[] }, any> = useSWR(`/api/project`, fetcher);
-    console.log(projects && projects.data)
+    const {data: projects, error: projectsError}: SWRResponse<{data: ProjectObj[] }, any> = useSWR(`/api/project`, fetcher);
 
     const handleNewProject = (e) => {
         // axios post input sth
-        // href new project page
+        // showmodal = true
     }
 
     return (
-        <div>
-            <div className="flex">
-                <h1>All projects</h1>
-                <Link href="/projects/new"><a><PrimaryButton text="New project" onClick={handleNewProject}/></a></Link>
+        <div className="max-w-4xl mx-auto px-4">
+            <UpSEO title="Projects"/>
+            <div className="flex items-center mb-12">
+                <H1 text="All Projects" />
+                <PrimaryButton onClick={handleNewProject} href="/projects/new" className="ml-auto">New project</PrimaryButton>
             </div>
-            {/* display prjs*/ projects && projects.data ? (
-                projects.data.map((project : ProjectObj) => (
-                    <div>
-                        <ProjectCard projectName={project.name} projectId={project._id}/>
-                    </div>
-                ))
-            ) : (
-                <p>You have no projects. Create a new project today!</p>
-            )}
+            <div className="md:flex -mx-3 flex-wrap gap-3">
+                {/* display prjs*/ (projects && projects.data) ? projects.data.length ? (
+                    projects.data.map((project : ProjectObj) => (
+                        <div key={project._id}>
+                            <ProjectCard projectName={project.name} projectId={project._id}/>
+                        </div>
+                    ))
+                ) : (
+                    <p>You have no projects. Create a new project today!</p> ) : <Skeleton/>
+                }
+            </div>
+            
         </div>
     )
 }

@@ -12,6 +12,7 @@
     "@types/mongoose": "^5.10.5",
     "@types/next-auth": "^3.15.0",
     "axios": "^0.21.1",
+    "date-fns": "^2.22.1",
     "mongoose": "^5.12.12",
     "next": "10.2.3",
     "next-auth": "^3.24.0",
@@ -20,6 +21,7 @@
     "react-dom": "17.0.2",
     "react-icons": "^4.2.0",
     "react-loading-skeleton": "^2.2.0",
+    "react-modal": "^3.14.2",
     "swr": "^0.5.6"
   },
   "devDependencies": {
