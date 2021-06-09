@@ -21,7 +21,7 @@ import Link from 'next/link'
 
 const index = ( props: { data: {project: ProjectObj }} ) => {
     const [project, setProject] = useState<ProjectObj>(props.project);
-    const [tab, setTab] = useState<"dashboard"|"users"|"updates">("users");
+    const [tab, setTab] = useState<"dashboard"|"users"|"updates">("dashboard");
     const [addUserOpen, setAddUserOpen] = useState<boolean>(false);    
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false); 
     const [name, setName] = useState<string>("");
@@ -40,6 +40,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     )) : []
 
     console.log(updates)
+    console.log(users)
 
     // create a state variable for the value of every selection template
     const [selectionValues, setSelectionValues] = useState([])
@@ -56,7 +57,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     function handleAddUser() {
         setIsLoading(true);
 
-        axios.post("/api/user", {
+        axios.post("/api/noter", {
             name: name,
             email: email,
             projectId: project._id
@@ -78,6 +79,34 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     }
 
     function handleAddUpdate() {
+        setIsLoading(true);
+        console.log(updateName)
+        console.log(updateUserId)
+        console.log(project._id)
+
+        axios.post("/api/update", {
+            name: updateName,
+            userId: updateUserId,
+            projectId: project._id
+        }).then(res => {
+            if (res.data.error) {
+                setIsLoading(false);
+                console.log(`Error: ${res.data.error}`);
+            } else {
+                setAddUserOpen(false);
+                setIsLoading(false);
+                // setIter(iter + 1);
+                // setTab("users");
+                setUpdateName("");
+                console.log(res.data);
+            }
+        }).catch(e => {
+            setIsLoading(false);
+            console.log(e);
+        });
+    }
+
+    /* function handleAddUpdate() {
         console.log(selectionValues);
         setIsLoading(true);
         axios.post("/api/update", {
@@ -116,7 +145,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
             console.log(e);
         });
         
-    }
+    } */
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title="Projects"/>

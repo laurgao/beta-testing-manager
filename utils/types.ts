@@ -24,6 +24,15 @@ export interface UserObj {
     tags: string[],
 }
 
+export interface NoterObj {
+    _id: string,
+    createdAt: string, // date string?
+    name: string, 
+    date?: string, // date string. or date?
+    projectId: string, // ID
+    theIdoftheUser?: string, // ID
+}
+
 export interface UpdateObj {
     _id: string,
     createdAt: string, // date string?
