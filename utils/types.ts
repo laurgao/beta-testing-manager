@@ -24,7 +24,7 @@ export interface UserObj {
     tags: string[],
 }
 
-export interface NoteObj {
+export interface UpdateObj {
     _id: string,
     createdAt: string, // date string?
     userId: string, // ID

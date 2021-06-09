@@ -5,7 +5,7 @@ import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UpSEO from '../../../components/up-seo'
 import { getProjectRequest } from '../../../utils/requests'
-import { NoteObj, ProjectObj, SelectionTemplateObj, UserObj } from '../../../utils/types'
+import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj } from '../../../utils/types'
 import { cleanForJSON, fetcher } from '../../../utils/utils'
 import { useState, useEffect } from "react"
 import {format} from "date-fns";
@@ -33,11 +33,13 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     
     // useSWR fetch users and updates assoc with this project ID 
     const {data: users, error: usersError}: SWRResponse<{data: UserObj[] }, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
-    const {data: updates, error: updatesError}: SWRResponse<{data: NoteObj[] }, any> = useSWR(`/api/note?projectId=${project._id}&iter=${iter}`, fetcher);
+    const {data: updates, error: updatesError}: SWRResponse<{data: UpdateObj[] }, any> = useSWR(`/api/update?projectId=${project._id}&iter=${iter}`, fetcher);
     const {data: selectionTemplates, error: selectionTemplatesError}: SWRResponse<{data: SelectionTemplateObj[] }, any> = useSWR(`/api/selectionTemplate?projectId=${project._id}&iter=${iter}`, fetcher);
     const selectionQuestions: string[] = selectionTemplates && selectionTemplates.data ? selectionTemplates.data.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
     )) : []
+
+    console.log(updates)
 
     // create a state variable for the value of every selection template
     const [selectionValues, setSelectionValues] = useState([])
@@ -78,7 +80,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     function handleAddUpdate() {
         console.log(selectionValues);
         setIsLoading(true);
-        axios.post("/api/note", {
+        axios.post("/api/update", {
             name: updateName,
             userId: updateUserId,
             projectId: project._id,
