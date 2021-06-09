@@ -3,6 +3,8 @@ import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
 import { getCurrUserRequest } from "../../utils/requests";
+import { SelectionTemplateModel } from "../../models/selectionTemplate";
+import { TextTemplateModel } from "../../models/textTemplate";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -67,8 +69,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     });
                     
                     const savedProject = await newProject.save();
+
+                    const defaultSelectionTemplate = new SelectionTemplateModel({
+                        projectId: savedProject._id,
+			            question: `How dissatisfied would you be if you could no longer use ${req.body.name}`,  
+                        options: ["Very dissatisfied", "Somewhat dissatisfied", "Not dissatisfied"],
+                        required: true,             
+                    });
                     
-                    return res.status(200).json({message: "Object created", id: savedProject._id.toString()});
+                    const savedDefaultSelectionTemplate = await defaultSelectionTemplate.save();
+
+                    const defaultTextTemplate = new TextTemplateModel({
+                        projectId: savedProject._id,
+			            question: `What's the main benefit you get from using ${req.body.name}`,
+                        required: true,             
+                    });
+
+                    const defaultTextTemplate2 = new TextTemplateModel({
+                        projectId: savedProject._id,
+			            question: `Notes`,
+                        required: false,             
+                    });
+                    
+                    const savedDefaultTextTemplate = await defaultTextTemplate.save();
+                    const savedDefaultTextTemplate2 = await defaultTextTemplate2.save();
+                    
+                    return res.status(200).json({
+                        message: "Objects created", 
+                        id: [
+                            savedProject._id.toString(), 
+                            savedDefaultSelectionTemplate._id.toString(), 
+                            savedDefaultTextTemplate._id.toString(),
+                            savedDefaultTextTemplate2._id.toString()
+                        ]
+                    });
                 }            
             } catch (e) {
                 return res.status(500).json({message: e});            

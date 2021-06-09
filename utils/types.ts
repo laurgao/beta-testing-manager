@@ -36,6 +36,7 @@ export interface NoteObj {
 }
 
 export interface SelectionTemplateObj {
+    _id: string,
     projectId: string, // ID
     question: string,
     options: string[],

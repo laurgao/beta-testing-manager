@@ -5,9 +5,9 @@ import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UpSEO from '../../../components/up-seo'
 import { getProjectRequest } from '../../../utils/requests'
-import { NoteObj, ProjectObj, UserObj } from '../../../utils/types'
+import { NoteObj, ProjectObj, SelectionTemplateObj, UserObj } from '../../../utils/types'
 import { cleanForJSON, fetcher } from '../../../utils/utils'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {format} from "date-fns";
 import Skeleton from 'react-loading-skeleton'
 import Button from '../../../components/Button'
@@ -17,6 +17,7 @@ import UpModal from '../../../components/UpModal'
 import axios from 'axios'
 import Table from '../../../components/Table'
 import Tabs from '../../../components/Tabs'
+import Link from 'next/link'
 
 const index = ( props: { data: {project: ProjectObj }} ) => {
     const [project, setProject] = useState<ProjectObj>(props.project);
@@ -28,16 +29,28 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     const [updateName, setUpdateName] = useState<string>("");
     const [updateUserId, setUpdateUserId] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [iter, setIter] = useState<number>(0)
-
-    
-    console.log(updateUserId)
-    console.log(updateName)
+    const [iter, setIter] = useState<number>(0);
     
     // useSWR fetch users and updates assoc with this project ID 
     const {data: users, error: usersError}: SWRResponse<{data: UserObj[] }, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
     const {data: updates, error: updatesError}: SWRResponse<{data: NoteObj[] }, any> = useSWR(`/api/note?projectId=${project._id}&iter=${iter}`, fetcher);
-    
+    const {data: selectionTemplates, error: selectionTemplatesError}: SWRResponse<{data: SelectionTemplateObj[] }, any> = useSWR(`/api/selectionTemplate?projectId=${project._id}&iter=${iter}`, fetcher);
+    const selectionQuestions: string[] = selectionTemplates && selectionTemplates.data ? selectionTemplates.data.map(s => (
+        s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
+    )) : []
+
+    // create a state variable for the value of every selection template
+    const [selectionValues, setSelectionValues] = useState([])
+
+    useEffect(() => {
+        selectionTemplates && selectionTemplates.data && setSelectionValues(selectionTemplates.data.map(s => (
+            {
+                templateId: s._id,
+                selected: "",
+            }
+        )))
+    }, [selectionTemplates]); // make a type for this
+
     function handleAddUser() {
         setIsLoading(true);
 
@@ -50,14 +63,10 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 setIsLoading(false);
                 console.log(`Error: ${res.data.error}`);
             } else {
-                // @ts-ignore
-                /* window.analytics.track("Item created", {
-                    type: "project",
-                    projectId: res.data.id,
-                }); */
                 setAddUserOpen(false);
                 setIsLoading(false);
                 setIter(iter + 1);
+                setTab("users");
                 console.log(res.data);
             }
         }).catch(e => {
@@ -67,6 +76,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     }
 
     function handleAddUpdate() {
+        console.log(selectionValues);
         setIsLoading(true);
         axios.post("/api/note", {
             name: updateName,
@@ -77,26 +87,38 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 setIsLoading(false);
                 console.log(`Error: ${res.data.error}`);
             } else {
-                // @ts-ignore
-                /* window.analytics.track("Item created", {
-                    type: "project",
-                    projectId: res.data.id,
-                }); */
-                setAddUpdateOpen(false);
-                setIsLoading(false);
-                setIter(iter + 1);
-                console.log(res.data);
+                selectionValues && selectionValues.map(s => (
+                    axios.post("/api/selection", {
+                        noteId: res.data.id,
+                        templateId: s.templateId,
+                        selected: s.selected,
+                    }).then(r => {
+                        if (r.data.error) {
+                            setIsLoading(false);
+                            console.log(`Error: ${r.data.error}`);
+                        } else {
+                            setAddUpdateOpen(false);
+                            setIsLoading(false);
+                            setIter(iter + 1);
+                            setTab("updates");
+                            console.log(r.data);
+                        }
+                    }).catch(e => {
+                        setIsLoading(false);
+                        console.log(e);
+                    })
+                ))
             }
         }).catch(e => {
             setIsLoading(false);
             console.log(e);
         });
+        
     }
-    
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title="Projects"/>
-            <div className="flex items-center mb-12">
+            <div className="flex items-center mb-9">
                 <H1 text={project.name} />
                 <div className="ml-auto flex flex-row gap-3">
                     <SecondaryButton onClick={() => setAddUserOpen(true)}>New User (u)</SecondaryButton>
@@ -104,7 +126,9 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 </div>                
             </div>
 
-            <Tabs tab={tab} tabs={["Dashboard", "Users", "Updates"]} setTab={setTab}/>
+            <div className="mb-12">
+                <Tabs tab={tab} tabs={["Dashboard", "Users", "Updates"]} setTab={setTab}/>
+            </div>
 
             {addUserOpen && (
                 <UpModal isOpen={addUserOpen} setIsOpen={setAddUserOpen}>
@@ -168,6 +192,28 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                             onChange={e => setUpdateName(e.target.value)}
                         />
                     </div>
+                    {selectionTemplates && selectionTemplates.data && selectionTemplates.data.map(s => (
+                        <div className="my-12" key={s._id}>
+                            <h3>{s.question}</h3>
+                            <select
+                                className="border-b w-full content my-2 py-2"
+                                value={selectionValues.filter((sv) => sv.templateId == s._id)[0].selected}
+                                onChange={e => setSelectionValues([
+                                    ...selectionValues.filter((sv) => sv.templateId != s._id), {
+                                        templateId: s._id,
+                                        selected: e.target.value,
+                                    }
+                                ])}
+                                placeholder="Choose a user"
+                            >
+                                {s.options.map(o => (
+                                    <option
+                                        value={o}
+                                    >{o}</option>
+                                ))}
+                            </select>
+                        </div>
+                    ))}
                     <PrimaryButton
                         onClick={handleAddUpdate}
                         isLoading={isLoading}
@@ -188,24 +234,24 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 // get all users assoc with this project id
                 // map into a table
                 <Table 
-                    gtc="1fr 6rem 6rem 12rem 6rem 6rem" 
-                    headers={["Name", "Last update", "Added", "Tags", "How dissatisfied...", "Total updates"]}
+                    gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
+                    headers={["Name", "Last update", "Added", "Tags", ...selectionQuestions ,"Total updates"]}
                 >
                     {(users && users.data) ? users.data.length ? users.data.map(user => (
                         <>
-                            <div className="my-2">
-                                <Button href={`/projects/${project._id}/${user._id}`}>{user.name}</Button>
-                            </div>
-                            <p className="text-lg opacity-40">3 months ago</p>
-                            <p className="text-lg opacity-40">{format(new Date(user.createdAt), "MMM d, yyyy")}</p> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
+                            <Link 
+                                href={`/projects/${project._id}/${user._id}`} 
+                            ><a className="text-base btm-text-gray-500 font-semibold text-left text-xl py-2">{user.name}</a></Link>
+                            <p className="text-base btm-text-gray-500">3 months ago</p>
+                            <p className="text-base btm-text-gray-500">{format(new Date(user.createdAt), "MMM d, yyyy")}</p> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
                             <div className="flex items-center">
                                 {user.tags && user.tags.map(tag => (
                                     <Badge>{tag}</Badge >
                                 ))}
                             </div>
-                            <p className="text-lg opacity-40">Very dis...</p>
-                            <p className="text-lg opacity-40">5</p>
-                            
+                            <p className="text-base btm-text-gray-500">Very dis...</p>
+                            <p className="text-base btm-text-gray-500">5</p>
+                            <hr className={`col-span-${6} my-2`}/>
                         </>
                     )) : <p>No users</p> : <Skeleton/>}
                 </Table>
@@ -214,8 +260,8 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
             {tab=="updates" && (
                 // get all updates with this project id and map into table.
                 <Table 
-                    gtc="1fr 6rem 6rem 12rem" 
-                    headers={["User", "Name", "How dissatisfied...", "Date"]}
+                gtc={`1fr 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
+                headers={["User", "Name", ...selectionQuestions ,"Date"]}
                 >
                     {(updates && updates.data) ? updates.data.length ? updates.data.map(update => (
                         <>

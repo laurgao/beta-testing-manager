@@ -5,9 +5,6 @@ const NoteSchema = new mongoose.Schema({
     userId: {type: mongoose.Schema.Types.ObjectId, required: true},
     projectId: { type: mongoose.Schema.Types.ObjectId, required: true }, 
     name: {type: String, required: true},
-    date: {type: Date, required: true},
-    selections: {type: [mongoose.Schema.Types.ObjectId], required: true},
-    texts: {type: [mongoose.Schema.Types.ObjectId], required: true},
 }, {
     timestamps: true,
 });

@@ -30,7 +30,7 @@ const Navbar = () => {
 
             {!session && (
                 <>
-                    <Link href="/auth/sign-in"><Breadcrumb text="Sign in"/></Link>
+                    <Breadcrumb href="/auth/sign-in">Sign in</Breadcrumb>
                 </>
             )}    
         </nav>

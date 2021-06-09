@@ -1,14 +1,16 @@
-import {NoteModel} from "../../models/note";
+import {UserModel} from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
+import { UserObj } from "../../utils/types";
+import { NoteModel } from "../../models/note";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.userId || req.query.projectId || req.query.date || req.query.selections || req.query.texts)) {
+            if (!(req.query.email || req.query.name || req.query.projectId)) {
                 return res.status(406);                        
             }
             
@@ -16,26 +18,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 let conditions = {};
 
                 if (req.query.id) conditions["_id"] = req.query.id;
-                if (req.query.userId) conditions["userId"] = req.query.userId;
+                if (req.query.email) conditions["email"] = req.query.email;
+                if (req.query.name) conditions["name"] = req.query.name;
                 if (req.query.projectId) {
                     const mongoose = require('mongoose');
                     const id = mongoose.Types.ObjectId(`${req.query.projectId}`);
                     conditions["projectId"] = id;
-                };
-                if (req.query.date) conditions["date"] = req.query.date;
-                if (req.query.selections) conditions["selections"] = req.query.selections;
-                if (req.query.texts) conditions["texts"] = req.query.texts;
-                
+                }
                          
                 await dbConnect();   
             
-                const thisObject = await NoteModel.aggregate([
+                const thisObject = await UserModel.aggregate([
                     {$match: conditions},
                     
                 ]);
                 
-                if (!thisObject || !thisObject.length) return res.status(404).json({data: []}); 
-                // so if there are no updates, updates.data.length is 0 and "No updates" will be displayed. 
+                // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
+                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {
@@ -50,34 +49,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();
                 
                 if (req.body.id) {
-                    if (!(req.body.userId || req.body.date || req.body.selections || req.body.texts)) {
+                    if (!(req.body.email || req.body.name || req.body.projectId)) {
                         return res.status(406);            
                     }
-                    const thisObject = await NoteModel.findById(req.body.id);
+                    const thisObject = await UserModel.findById(req.body.id);
                     if (!thisObject) return res.status(404);
                     
-                    /* thisObject.userId = req.body.userId;
-                    thisObject.date = req.body.date;
-                    thisObject.selections = req.body.selections;
-                    thisObject.texts = req.body.texts; */
+                    /* thisObject.email = req.body.email;
+                    thisObject.name = req.body.name;
+                    thisObject.projectId = req.body.projectId;*/
                     
                     await thisObject.save();
                     
                     return res.status(200).json({message: "Object updated"});                            
                 } else {
-                    if (!(req.body.userId && req.body.projectId && req.body.name)) {
+                    if (!(req.body.name && req.body.projectId)) {
                         return res.status(406);            
                     }
                     
-                    const newNote = new NoteModel({
-                        userId: req.body.userId,
-                        projectId: req.body.projectId,
+                    const newUser = new UserModel({
                         name: req.body.name,
+			            projectId: req.body.projectId,                
                     });
-                    await newNote.save();
-                    // const savedNote = await newNote.save();
-                    // return res.status(200).json({message: "Object created", id: savedNote._id.toString()});
-                    return res.status(200).json({message: "Object created"});
+
+                    if (req.body.email) newUser.email = req.body.email;
+                    
+                    const savedUser = await newUser.save();
+
+                    const newNote = new NoteModel({
+                        name: req.body.note,
+                        projectId: req.body.projectId,
+                        userId: savedUser._id.toString(),
+                    })
+
+                    const savedNote = await newNote.save();
+                    
+                    return res.status(200).json({message: "Objects created", id: [
+                        savedUser._id.toString(),
+                        savedNote._id.toString()
+                    ]});
                 }            
             } catch (e) {
                 return res.status(500).json({message: e});            
@@ -93,12 +103,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
                 await dbConnect();
                                
-                const thisObject = await NoteModel.findById(req.body.id);
+                const thisObject = await UserModel.findById(req.body.id);
                 
                 if (!thisObject) return res.status(404);
                 // if (thisObject.userId.toString() !== session.userId) return res.status(403);
                 
-                await NoteModel.deleteOne({_id: req.body.id});
+                await UserModel.deleteOne({_id: req.body.id});
                 
                 return res.status(200).json({message: "Object deleted"});
             } catch (e) {
