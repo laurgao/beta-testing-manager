@@ -12,4 +12,4 @@ const UpdateSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-export const UpdateModel: Model<Document<UpdateObj>> = mongoose.models.update || mongoose.model("note", UpdateSchema);
+export const UpdateModel: Model<Document<UpdateObj>> = mongoose.models.update || mongoose.model("update", UpdateSchema);

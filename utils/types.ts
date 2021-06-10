@@ -27,10 +27,12 @@ export interface UserObj {
 export interface NoterObj {
     _id: string,
     createdAt: string, // date string?
-    name: string, 
-    date?: string, // date string. or date?
-    projectId: string, // ID
-    theIdoftheUser?: string, // ID
+    userId: string, // ID
+    projectId: string,
+    name: string,
+    date: string, // date string. or date?
+    selections: string[], // array of IDs
+    texts: string[],
 }
 
 export interface UpdateObj {
@@ -59,7 +61,9 @@ export interface TextTemplateObj {
   }
   
   export interface SelectionObj {
+    _id: string,
     noteId: string, // ID
+    projectId: string,
     templateId: string, // ID
     selected: string
   }

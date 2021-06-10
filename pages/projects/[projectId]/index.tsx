@@ -5,7 +5,7 @@ import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UpSEO from '../../../components/up-seo'
 import { getProjectRequest } from '../../../utils/requests'
-import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj } from '../../../utils/types'
+import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj } from '../../../utils/types'
 import { cleanForJSON, fetcher } from '../../../utils/utils'
 import { useState, useEffect } from "react"
 import {format} from "date-fns";
@@ -35,12 +35,11 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     const {data: users, error: usersError}: SWRResponse<{data: UserObj[] }, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
     const {data: updates, error: updatesError}: SWRResponse<{data: UpdateObj[] }, any> = useSWR(`/api/update?projectId=${project._id}&iter=${iter}`, fetcher);
     const {data: selectionTemplates, error: selectionTemplatesError}: SWRResponse<{data: SelectionTemplateObj[] }, any> = useSWR(`/api/selectionTemplate?projectId=${project._id}&iter=${iter}`, fetcher);
+    const {data: selections, error: selectionsError}: SWRResponse<{data: SelectionObj[] }, any> = useSWR(`/api/selection?projectId=${project._id}&iter=${iter}`, fetcher);
     const selectionQuestions: string[] = selectionTemplates && selectionTemplates.data ? selectionTemplates.data.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
     )) : []
-
-    console.log(updates)
-    console.log(users)
+    console.log(selectionsError)
 
     // create a state variable for the value of every selection template
     const [selectionValues, setSelectionValues] = useState([])
@@ -54,10 +53,33 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
         )))
     }, [selectionTemplates]); // make a type for this
 
+    // create a variable for the selected value of each selection of each note
+    // const [updateSelections, setUpdateSelections] = useState<SelectionObj[][]>([])
+
+    /* useEffect(() => {
+        updates && updates.data && setUpdateSelections(updates.data.map(update => (
+            [...updateSelections, useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher).data]
+        )))
+    }, [updates]); 
+
+    useEffect(() => {
+        updates && updates.data && setUpdateSelections(updates.data.map(update => (
+            [...updateSelections, useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher)]
+        )))
+    }, [updates]); 
+
+    useEffect(() => {
+        updates && updates.data && (updates.data.map(update => (
+            const {data: ooops, error: usersError}: SWRResponse<{data: SelectionObj[] }, any> = useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher).data
+            sestUpdateSelections([...updateSelections, ooops.data])
+        )))
+    }, [updates]);  */
+    console.log(selections)
+
     function handleAddUser() {
         setIsLoading(true);
 
-        axios.post("/api/noter", {
+        axios.post("/api/user", {
             name: name,
             email: email,
             projectId: project._id
@@ -93,33 +115,10 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 setIsLoading(false);
                 console.log(`Error: ${res.data.error}`);
             } else {
-                setAddUserOpen(false);
-                setIsLoading(false);
-                // setIter(iter + 1);
-                // setTab("users");
-                setUpdateName("");
                 console.log(res.data);
-            }
-        }).catch(e => {
-            setIsLoading(false);
-            console.log(e);
-        });
-    }
-
-    /* function handleAddUpdate() {
-        console.log(selectionValues);
-        setIsLoading(true);
-        axios.post("/api/update", {
-            name: updateName,
-            userId: updateUserId,
-            projectId: project._id,
-        }).then(res => {
-            if (res.data.error) {
-                setIsLoading(false);
-                console.log(`Error: ${res.data.error}`);
-            } else {
                 selectionValues && selectionValues.map(s => (
                     axios.post("/api/selection", {
+                        projectId: project._id,
                         noteId: res.data.id,
                         templateId: s.templateId,
                         selected: s.selected,
@@ -130,8 +129,9 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                         } else {
                             setAddUpdateOpen(false);
                             setIsLoading(false);
-                            setIter(iter + 1);
+                            // setIter(iter + 1); errors out rip - runtime error: cannot read "data" of undefined
                             setTab("updates");
+                            setUpdateName("");
                             console.log(r.data);
                         }
                     }).catch(e => {
@@ -144,8 +144,8 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
             setIsLoading(false);
             console.log(e);
         });
-        
-    } */
+    }
+
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title="Projects"/>
@@ -280,7 +280,9 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                                     <Badge>{tag}</Badge >
                                 ))}
                             </div>
-                            <p className="text-base btm-text-gray-500">Very dis...</p>
+                            <div>
+                                <p className="text-base btm-text-gray-500">Very dis...</p>
+                            </div>
                             <p className="text-base btm-text-gray-500">5</p>
                             <hr className={`col-span-${6} my-2`}/>
                         </>
@@ -296,11 +298,13 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 >
                     {(updates && updates.data) ? updates.data.length ? updates.data.map(update => (
                         <>
+                            <p className="text-lg opacity-40">User Name</p>
                             <div className="my-2">
                                 <Button href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</Button>
                             </div>
-                            
-                            <p className="text-lg opacity-40">Very dis...</p>
+                            {selections && selections.data && selections.data.filter(s => (s.noteId == update._id)).map(s => (
+                                <p className="text-lg opacity-40" key={s._id}>{s.selected}</p>
+                            ))}
                             <p className="text-lg opacity-40">{format(new Date(update.createdAt), "MMM d, yyyy")}</p> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
                             
                         </>

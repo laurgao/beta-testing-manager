@@ -8,24 +8,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.userId || req.query.projectId || req.query.date || req.query.selections || req.query.texts)) {
+            if (!(req.query.email || req.query.name || req.query.projectId)) {
                 return res.status(406);                        
             }
             
             try {                
                 let conditions = {};
-                
 
                 if (req.query.id) conditions["_id"] = req.query.id;
-                if (req.query.userId) conditions["userId"] = req.query.userId;
+                if (req.query.name) conditions["name"] = req.query.name;
+                if (req.query.name) conditions["userId"] = req.query.userId;
                 if (req.query.projectId) {
                     const mongoose = require('mongoose');
                     const id = mongoose.Types.ObjectId(`${req.query.projectId}`);
                     conditions["projectId"] = id;
-                };
-                if (req.query.date) conditions["date"] = req.query.date;
-                if (req.query.selections) conditions["selections"] = req.query.selections;
-                if (req.query.texts) conditions["texts"] = req.query.texts;
+                }
                          
                 await dbConnect();   
             
@@ -34,8 +31,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     
                 ]);
                 
-                if (!thisObject || !thisObject.length) return res.status(404).json({data: []}); 
-                // so if there are no updates, updates.data.length is 0 and "No updates" will be displayed. 
+                // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
+                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {
@@ -74,10 +71,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         projectId: req.body.projectId,
                         name: req.body.name,
                     });
-                    await newNote.save();
+                    const savedNote = await newNote.save();
                     // const savedNote = await newNote.save();
                     // return res.status(200).json({message: "Object created", id: savedNote._id.toString()});
-                    return res.status(200).json({message: "Object created"});
+                    return res.status(200).json({message: "Object created", id: savedNote._id.toString()});
                 }            
             } catch (e) {
                 return res.status(500).json({message: e});            
