@@ -8,7 +8,7 @@ const SecondaryButton = ({onClick, children, href, isLoading, isDisabled} : {
     isDisabled?: boolean,
 }) => {
     return (
-        <div className = "btm-gray-500-border btm-text-gray-500 hover:btm-bg-gray-500 hover:text-white">
+        <div className = "btm-gray-500-border btm-text-gray-500 btm-hover-bg-gray-500 hover:text-white">
             <Button 
                 onClick={onClick}
                 href={href} 

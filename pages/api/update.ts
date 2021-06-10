@@ -8,20 +8,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.email || req.query.name || req.query.projectId)) {
+            if (!(req.query.id || req.query.userId || req.query.projectId)) {
                 return res.status(406);                        
             }
             
             try {                
                 let conditions = {};
+                const mongoose = require('mongoose');
 
-                if (req.query.id) conditions["_id"] = req.query.id;
-                if (req.query.name) conditions["name"] = req.query.name;
-                if (req.query.name) conditions["userId"] = req.query.userId;
+                if (req.query.id) {
+                    const id = mongoose.Types.ObjectId(`${req.query.id}`);
+                    conditions["_id"] = id;
+                }
+                if (req.query.userId) {
+                    const uId = mongoose.Types.ObjectId(`${req.query.userId}`);
+                    conditions["userId"] = uId;
+                }
                 if (req.query.projectId) {
-                    const mongoose = require('mongoose');
-                    const id = mongoose.Types.ObjectId(`${req.query.projectId}`);
-                    conditions["projectId"] = id;
+                    const pId = mongoose.Types.ObjectId(`${req.query.projectId}`);
+                    conditions["projectId"] = pId;
                 }
                          
                 await dbConnect();   

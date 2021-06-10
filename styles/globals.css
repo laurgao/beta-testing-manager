@@ -41,8 +41,12 @@ a {
   border-color: #3F3F46;
 }
 
-.btm-bg-gray-500 {
+.btm-hover-bg-gray-500:hover {
   background-color: #71717A;
+}
+
+select option:first-child{
+  color: rgba(0, 0, 0, 0.3);
 }
 
 .up-spinner {

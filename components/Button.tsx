@@ -12,7 +12,7 @@ const Button = ({onClick, children, href, isDisabled, isLoading, className}:
         <>
             <button
                 disabled={isLoading || isDisabled}
-                className={`px-4 h-12 transition font-semibold text-xs disabled:opacity-25 disabled:cursor-not-allowed ${className && className}`}
+                className={`px-4 h-11 transition font-semibold text-sm disabled:opacity-25 disabled:cursor-not-allowed ${className && className}`}
                 onClick={onClick}
             >
             {href ? (

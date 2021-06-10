@@ -14,7 +14,7 @@ const PrimaryButton = ({onClick, children, href, isLoading, isDisabled, classNam
             href={href} 
             isLoading={isLoading} 
             isDisabled={isDisabled}
-            className={`bg-primary text-white ${className && className}`}
+            className={`bg-primary text-white hover:bg-black ${className && className}`}
         >{children}</Button>
     )
 }

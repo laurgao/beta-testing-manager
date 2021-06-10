@@ -70,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     
                     return res.status(200).json({message: "Object updated"});                            
                 } else {
-                    if (!(req.body.noteId && req.body.templateId && req.body.selected && req.body.projectId)) {
+                    if (!(req.body.noteId && req.body.templateId && req.body.selected && req.body.projectId && req.body.userId)) {
                         return res.status(406);            
                     }
                     
@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         templateId: req.body.templateId,
                         selected: req.body.selected,
                         projectId: req.body.projectId,
-                        userId: req.body.userId                            
+                        userId: req.body.userId                          
                     });
                     
                     const savedSelection = await newSelection.save();

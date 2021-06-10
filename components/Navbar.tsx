@@ -2,7 +2,7 @@ import React from 'react'
 import { signOut, useSession } from 'next-auth/client'
 import Link from "next/link";
 import MenuButton from "./MenuButton";
-import Breadcrumb from './Breadcrumb';
+import InlineButton from './InlineButton';
 
 const Navbar = () => {
     const [session, loading] = useSession();
@@ -30,7 +30,7 @@ const Navbar = () => {
 
             {!session && (
                 <>
-                    <Breadcrumb href="/auth/sign-in">Sign in</Breadcrumb>
+                    <InlineButton href="/auth/sign-in">Sign in</InlineButton>
                 </>
             )}    
         </nav>

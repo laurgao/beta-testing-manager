@@ -1,5 +1,4 @@
 import { GetServerSideProps } from 'next'
-import React from 'react'
 import H1 from '../../../components/H1'
 import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
@@ -7,18 +6,19 @@ import UpSEO from '../../../components/up-seo'
 import { getProjectRequest } from '../../../utils/requests'
 import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj } from '../../../utils/types'
 import { cleanForJSON, fetcher } from '../../../utils/utils'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {format} from "date-fns";
 import Skeleton from 'react-loading-skeleton'
-import Button from '../../../components/Button'
+import InlineButton from '../../../components/InlineButton'
 import Badge from '../../../components/Badge'
 import useSWR, { SWRResponse } from 'swr'
 import UpModal from '../../../components/UpModal'
 import axios from 'axios'
 import Table from '../../../components/Table'
 import Tabs from '../../../components/Tabs'
-import Link from 'next/link'
 import AddUpdateModal from '../../../components/AddUpdateModal'
+import TableItem from '../../../components/TableItem'
+import TableItemMain from '../../../components/TableItemMain'
 
 const index = ( props: { data: {project: ProjectObj }} ) => {
     const [project, setProject] = useState<ProjectObj>(props.project);
@@ -39,19 +39,6 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     const selectionQuestions: string[] = selectionTemplates && selectionTemplates.data ? selectionTemplates.data.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
     )) : []
-    console.log(selectionsError)
-
-    // create a state variable for the value of every selection template
-    const [selectionValues, setSelectionValues] = useState([])
-
-    useEffect(() => {
-        selectionTemplates && selectionTemplates.data && setSelectionValues(selectionTemplates.data.map(s => (
-            {
-                templateId: s._id,
-                selected: "",
-            }
-        )))
-    }, [selectionTemplates]); // make a type for this
 
     function handleAddUser() {
         setIsLoading(true);
@@ -77,14 +64,66 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
         });
     }
 
+    function useKey(key, cb) {
+        const callbackRef = useRef(cb);
+    
+        useEffect(() => {
+            callbackRef.current = cb;
+        })
+    
+        useEffect(() => {
+          const handleKeyPress = (e) => {
+            if(e.code === key) {
+                callbackRef.current(e)
+            }
+          }
+    
+          document.addEventListener("keypress", handleKeyPress)
+          return () => document.removeEventListener("keypress", handleKeyPress)
+        }, [key])
+    }
+
+    const waitForEl = (selector) => {
+        const input = document.getElementById(selector);
+        if (input) {
+            input.focus();
+        } else {
+            setTimeout(function() {
+                waitForEl(selector);
+            }, 100);
+        }
+      };
+      
+    function toggleAddUser(e) {
+        if (!addUserOpen && !addUpdateOpen) {
+            setAddUserOpen(true);
+            e.preventDefault(); // prevents U from being typed in the case of a keyboard shortcut
+            waitForEl("user-name-field");
+        }
+    }
+    function toggleAddUpdate(e) {
+        if (!addUserOpen && !addUpdateOpen) {
+            setAddUpdateOpen(true);
+            e.preventDefault();
+            waitForEl("update-name-field");
+        }
+    }
+    
+    useKey("KeyN", toggleAddUpdate);
+    useKey("KeyU", toggleAddUser);
+
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title="Projects"/>
+            <div className="mb-4">
+                <InlineButton href="/projects/">Projects</InlineButton>
+                <span className="mx-1 btm-text-gray-500 font-bold">/</span>
+            </div>
             <div className="flex items-center mb-9">
                 <H1 text={project.name} />
                 <div className="ml-auto flex flex-row gap-3">
-                    <SecondaryButton onClick={() => setAddUserOpen(true)}>New User (u)</SecondaryButton>
-                    <PrimaryButton onClick={() => setAddUpdateOpen(true)}>New Update (n)</PrimaryButton>
+                    <SecondaryButton onClick={toggleAddUser}>New User (u)</SecondaryButton>
+                    <PrimaryButton onClick={toggleAddUpdate}>New Update (n)</PrimaryButton>
                 </div>                
             </div>
 
@@ -93,7 +132,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
             </div>
 
             {addUserOpen && (
-                <UpModal isOpen={addUserOpen} setIsOpen={setAddUserOpen}>
+                <UpModal isOpen={addUserOpen} setIsOpen={setAddUserOpen} wide={true}>
                     <H1 text="New user"/>
                     <div className="my-12">
                         <h3 className="up-ui-title">Name</h3>
@@ -102,6 +141,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                             className="border-b w-full content my-2 py-2"
                             placeholder="Laura Gao"
                             value={name}
+                            id="user-name-field"
                             onChange={e => setName(e.target.value)}
                         />
                     </div>
@@ -133,8 +173,6 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                     setUpdateUserId={setUpdateUserId}
                     selectionTemplates={selectionTemplates}
                     users={users}
-                    selectionValues={selectionValues}
-                    setSelectionValues={setSelectionValues}
                     projectId={project._id}
                 />
             )}      
@@ -154,11 +192,9 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 >
                     {(users && users.data) ? users.data.length ? users.data.map(user => (
                         <>
-                            <Link 
-                                href={`/projects/${project._id}/${user._id}`} 
-                            ><a className="text-base btm-text-gray-500 font-semibold text-left text-xl py-2">{user.name}</a></Link>
-                            <p className="text-base btm-text-gray-500">3 months ago</p>
-                            <p className="text-base btm-text-gray-500">{format(new Date(user.createdAt), "MMM d, yyyy")}</p> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
+                            <TableItemMain href={`/projects/${project._id}/${user._id}`} className="text-xl">{user.name}</TableItemMain>
+                            <TableItem>3 months ago</TableItem>
+                            <TableItem>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableItem>
                             <div className="flex items-center">
                                 {user.tags && user.tags.map(tag => (
                                     <Badge>{tag}</Badge >
@@ -167,19 +203,19 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                             {updates.data.filter(u => (u.userId == user._id))[0] ? selections && selections.data && selections.data.filter(s => (
                                 s.noteId == updates.data.filter(u => (u.userId == user._id))[0]._id // assume updates are sorted by date
                             )).map(s => ( 
-                                <p className="text-base btm-text-gray-500" key={s._id}>{s.selected}</p> 
+                                <TableItem key={s._id}>{s.selected}</TableItem> 
                             )): <p>None</p> /* repeat selectionTemplates.data.length times */ }
-                            <p className="text-base btm-text-gray-500">5</p>
-                            <hr className={`col-span-${6} my-2`}/>
+                            <TableItem>5</TableItem>
+                            <hr className={`col-span-${5 + selectionQuestions.length} my-2`}/>
                         </>
-                    )) : <p>No users</p> : <Skeleton/>}
+                    )) : <TableItemMain>No users</TableItemMain> : <Skeleton/>}
                 </Table>
             )}
 
             {tab=="updates" && (
                 // get all updates with this project id and map into table.
                 <Table 
-                gtc={`1fr 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
+                gtc={`1fr 1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                 headers={["User", "Name", ...selectionQuestions ,"Date"]}
                 >
                     {(updates && updates.data) ? updates.data.length ? updates.data.map(update => (
@@ -187,16 +223,14 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                             {users && users.data && users.data.filter(user => (
                                 user._id == update.userId
                             )).map(user => (
-                                <p className="text-lg opacity-40">{user.name}</p>
+                                <TableItemMain href={`/projects/${project._id}/${update.userId}`} className="text-base">{user.name}</TableItemMain>
                             ))}
-                            <div className="my-2">
-                                <Button href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</Button>
-                            </div>
+                            <TableItem href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</TableItem>
                             {selections && selections.data && selections.data.filter(s => (s.noteId == update._id)).map(s => (
-                                <p className="text-lg opacity-40" key={s._id}>{s.selected}</p>
+                                <TableItem key={s._id}>{s.selected}</TableItem>
                             ))}
-                            <p className="text-lg opacity-40">{format(new Date(update.createdAt), "MMM d, yyyy")}</p> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
-                            
+                            <TableItem>{format(new Date(update.createdAt), "MMM d, yyyy")}</TableItem> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
+                            <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
                         </>
                     )) : <p>No updates</p> : <Skeleton/>}
                 </Table>
