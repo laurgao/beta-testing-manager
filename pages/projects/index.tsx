@@ -26,7 +26,7 @@ const projects = () => {
             <UpSEO title="Projects"/>
             <div className="flex items-center mb-12">
                 <H1 text="All Projects" />
-                <PrimaryButton onClick={handleNewProject} href="/projects/new" className="ml-auto">New project</PrimaryButton>
+                <PrimaryButton href="/projects/new" className="ml-auto">New project</PrimaryButton>
             </div>
             <div className="md:flex -mx-3 flex-wrap gap-3">
                 {/* display prjs*/ (projects && projects.data) ? projects.data.length ? (
