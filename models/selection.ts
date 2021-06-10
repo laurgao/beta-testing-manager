@@ -4,6 +4,7 @@ import {SelectionObj} from "../utils/types";
 const SelectionSchema = new mongoose.Schema({
     noteId: mongoose.Schema.Types.ObjectId,
     projectId: mongoose.Schema.Types.ObjectId,
+    userId: mongoose.Schema.Types.ObjectId,
     templateId: mongoose.Schema.Types.ObjectId,
     selected: {type: String, required: true},
 }, {

@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.noteId || req.query.projectId || req.query.templateId || req.query.selected)) {
+            if (!(req.query.noteId || req.query.projectId || req.query.userId || req.query.templateId || req.query.selected)) {
                 return res.status(406);                        
             }
             
@@ -24,6 +24,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 if (req.query.projectId) {
                     const pId = mongoose.Types.ObjectId(`${req.query.projectId}`);
                     conditions["projectId"] = pId;
+                }
+                if (req.query.userId) {
+                    const uId = mongoose.Types.ObjectId(`${req.query.userId}`);
+                    conditions["userId"] = uId;
                 }
                 
                 if (req.query.templateId) conditions["templateId"] = req.query.templateId;
@@ -74,7 +78,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         noteId: req.body.noteId,
                         templateId: req.body.templateId,
                         selected: req.body.selected,
-                        projectId: req.body.projectId                             
+                        projectId: req.body.projectId,
+                        userId: req.body.userId                            
                     });
                     
                     const savedSelection = await newSelection.save();

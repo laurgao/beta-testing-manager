@@ -53,29 +53,6 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
         )))
     }, [selectionTemplates]); // make a type for this
 
-    // create a variable for the selected value of each selection of each note
-    // const [updateSelections, setUpdateSelections] = useState<SelectionObj[][]>([])
-
-    /* useEffect(() => {
-        updates && updates.data && setUpdateSelections(updates.data.map(update => (
-            [...updateSelections, useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher).data]
-        )))
-    }, [updates]); 
-
-    useEffect(() => {
-        updates && updates.data && setUpdateSelections(updates.data.map(update => (
-            [...updateSelections, useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher)]
-        )))
-    }, [updates]); 
-
-    useEffect(() => {
-        updates && updates.data && (updates.data.map(update => (
-            const {data: ooops, error: usersError}: SWRResponse<{data: SelectionObj[] }, any> = useSWR(`/api/selection?noteID=${update._id}&iter=${iter}`, fetcher).data
-            sestUpdateSelections([...updateSelections, ooops.data])
-        )))
-    }, [updates]);  */
-    console.log(selections)
-
     function handleAddUser() {
         setIsLoading(true);
 
@@ -122,6 +99,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                         noteId: res.data.id,
                         templateId: s.templateId,
                         selected: s.selected,
+                        userId: updateUserId,
                     }).then(r => {
                         if (r.data.error) {
                             setIsLoading(false);
@@ -280,9 +258,11 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                                     <Badge>{tag}</Badge >
                                 ))}
                             </div>
-                            <div>
-                                <p className="text-base btm-text-gray-500">Very dis...</p>
-                            </div>
+                            {updates.data.filter(u => (u.userId == user._id))[0] ? selections && selections.data && selections.data.filter(s => (
+                                s.noteId == updates.data.filter(u => (u.userId == user._id))[0]._id // assume updates are sorted by date
+                            )).map(s => ( 
+                                <p className="text-base btm-text-gray-500" key={s._id}>{s.selected}</p> 
+                            )): <p>None</p> /* repeat selectionTemplates.data.length times */ }
                             <p className="text-base btm-text-gray-500">5</p>
                             <hr className={`col-span-${6} my-2`}/>
                         </>
