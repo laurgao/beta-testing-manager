@@ -13,6 +13,9 @@ export interface ProjectObj {
     description?: string,
     collaborators: string[], // array of IDs
     featuredQuestions: string[],
+    userArr?: UserObj[],
+    selectionTemplateArr?: SelectionTemplateObj[],
+    textTemplateArr?: TextTemplateObj[],
 }
 
 export interface UserObj {
@@ -22,6 +25,8 @@ export interface UserObj {
     name: string, 
     projectId: string, // ID
     tags: string[],
+    updateArr?: UpdateObj[],
+    projectArr?: ProjectObj[],
 }
 
 export interface NoterObj {
@@ -39,11 +44,13 @@ export interface UpdateObj {
     _id: string,
     createdAt: string, // date string?
     userId: string, // ID
-    projectId: string,
+    projectId?: string,
     name: string,
     date: string, // date string. or date?
     selections: string[], // array of IDs
     texts: string[],
+    selectionArr?: SelectionObj[],
+    textArr?: TextObj[]
 }
 
 export interface SelectionTemplateObj {
@@ -55,6 +62,7 @@ export interface SelectionTemplateObj {
 }
 
 export interface TextTemplateObj {
+    _id: string,
     projectId: string, // ID
     question: string,
     required: boolean
@@ -63,7 +71,6 @@ export interface TextTemplateObj {
   export interface SelectionObj {
     _id: string,
     noteId: string, // ID
-    projectId: string,
     templateId: string, // ID
     selected: string
   }

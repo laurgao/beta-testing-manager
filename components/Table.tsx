@@ -8,7 +8,7 @@ const Table = ({children, gtc, headers} : { children: ReactNode, gtc: string, he
     }
     return (
         <div className="grid mb-4 items-center whitespace-nowrap overflow-x-hidden" style={tableStyle}>
-            {headers.map(header => (<p className="btm-text-gray-400 text-sm">{header}</p>))}
+            {headers.map((header, index) => (<p className="btm-text-gray-400 text-sm" key={index}>{header}</p>))}
             <hr className={`col-span-${gtc.split(" ").length} my-2`}/>
             {children}
         </div>

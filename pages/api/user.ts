@@ -9,27 +9,75 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.email || req.query.name || req.query.projectId)) {
+            if (!(req.query.id)) {
                 return res.status(406);                        
             }
             
             try {                
                 let conditions = {};
+                
+                const mongoose = require('mongoose');
+                const id = mongoose.Types.ObjectId(`${req.query.id}`);
+                conditions["_id"] = id;
 
-                if (req.query.id) conditions["_id"] = req.query.id;
-                if (req.query.email) conditions["email"] = req.query.email;
-                if (req.query.name) conditions["name"] = req.query.name;
-                if (req.query.projectId) {
-                    const mongoose = require('mongoose');
-                    const id = mongoose.Types.ObjectId(`${req.query.projectId}`);
-                    conditions["projectId"] = id;
-                }
-                         
                 await dbConnect();   
             
                 const thisObject = await UserModel.aggregate([
                     {$match: conditions},
-                    
+                    {
+                        $lookup: {
+                            from: "updates",
+                            let: {"userId": "$_id"}, // Local field (user field)
+                            pipeline: [
+                                {$match: {$expr: {$and: [{$eq: ["$userId", "$$userId"]}, ]}}},
+                                {
+                                    $lookup: {
+                                        from: "selections",
+                                        localField: "_id", // Update field
+                                        foreignField: "noteId", //  Selection field
+                                        as: "selectionArr",
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: "texts",
+                                        localField: "_id", // Update field
+                                        foreignField: "noteId", //  Selection field
+                                        as: "textArr",
+                                    }
+                                },
+                            ],
+                            as: "updateArr", // you want the selection of the latest update
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "projects",
+                            // localField: "projectId",
+                            // foreignField: "_id",
+                            let: {"id": "$projectId"},
+                            pipeline: [
+                                {$match: {$expr: {$and: [{$eq: ["$_id", "$$id"]}, ]}}},
+                                {
+                                    $lookup: {
+                                        from: "selectiontemplates",
+                                        localField: "_id",
+                                        foreignField: "projectId",
+                                        as: "selectionTemplateArr",
+                                    }
+                                },
+                                {
+                                    $lookup: {
+                                        from: "texttemplates",
+                                        localField: "_id",
+                                        foreignField: "projectId",
+                                        as: "textTemplateArr",
+                                    }
+                                },
+                            ],
+                            as: "projectArr",
+                        }
+                    }
                 ]);
                 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 

@@ -32,7 +32,7 @@ const projects = () => {
                 {/* display prjs*/ (projects && projects.data) ? projects.data.length ? (
                     projects.data.map((project : ProjectObj) => (
                         <div key={project._id}>
-                            <ProjectCard projectName={project.name} projectId={project._id}/>
+                            <ProjectCard projectName={project.name} projectId={project._id} userCount={project.userArr && project.userArr.length}/>
                         </div>
                     ))
                 ) : (

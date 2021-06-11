@@ -13,17 +13,70 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const userData = await getCurrUserRequest(session.user.email); 
             if (!session) return res.status(403);       
             
-            try {                
+            try {
                 let conditions = {};
-
                 const mongoose = require('mongoose');
-                const id = mongoose.Types.ObjectId(`${userData._id}`);
-                conditions["accountId"] = id; // Get all projects with this userid
+
+                if(req.query.id) {
+                    const id = mongoose.Types.ObjectId(req.query.id);
+                    conditions["_id"] = id; // Get all projects with this id
+                } else {
+                    const id = mongoose.Types.ObjectId(`${userData._id}`);
+                    conditions["accountId"] = id; // Get all projects with this userid
+                }
+
                          
                 await dbConnect();   
             
                 const thisObject = await ProjectModel.aggregate([ // aggregate returns an array of objecs.
-                    {$match: conditions},                    
+                    {$match: conditions},
+                    {   
+                        
+                        $lookup: {
+                            from: "users",
+                            // localField: "_id",
+                            // foreignField: "projectId",
+                            let: {"projectId": "$_id"},
+                            pipeline: [
+                                {$match: {$expr: {$and: [{$eq: ["$projectId", "$$projectId"]}, ]}}},
+                                {
+                                    $lookup: {
+                                        from: "updates",
+                                        let: {"userId": "$_id"}, // Local field (user field)
+                                        pipeline: [
+                                            {$match: {$expr: {$and: [{$eq: ["$userId", "$$userId"]}, ]}}},
+                                            {
+                                                $lookup: {
+                                                    from: "selections",
+                                                    localField: "_id", // Update field
+                                                    foreignField: "noteId", //  Selection field
+                                                    as: "selectionArr",
+                                                }
+                                            },
+                                        ],
+                                        as: "updateArr", // you want the selection of the latest update
+                                    },
+                                },
+                            ],
+                            as: "userArr", // if no users, returns userArr is an empty array.
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "selectiontemplates",
+                            localField: "_id",
+                            foreignField: "projectId",
+                            as: "selectionTemplateArr",
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "texttemplates",
+                            localField: "_id",
+                            foreignField: "projectId",
+                            as: "textTemplateArr",
+                        }
+                    },   
                 ]);
                 
                 if (!thisObject || !thisObject.length) return res.status(404);

@@ -4,7 +4,7 @@ import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UpSEO from '../../../components/up-seo'
 import { getProjectRequest } from '../../../utils/requests'
-import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj } from '../../../utils/types'
+import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj, TextTemplateObj } from '../../../utils/types'
 import { cleanForJSON, fetcher } from '../../../utils/utils'
 import { useState, useEffect, useRef } from "react"
 import {format} from "date-fns";
@@ -20,8 +20,8 @@ import AddUpdateModal from '../../../components/AddUpdateModal'
 import TableItem from '../../../components/TableItem'
 import TableItemMain from '../../../components/TableItemMain'
 
-const index = ( props: { data: {project: ProjectObj }} ) => {
-    const [project, setProject] = useState<ProjectObj>(props.project);
+const index = ( props: { data: {projectId: string }} ) => {
+    const [projectId, setProjectId] = useState<string>(props.projectId);
     const [tab, setTab] = useState<"dashboard"|"users"|"updates">("dashboard");
     const [addUserOpen, setAddUserOpen] = useState<boolean>(false);    
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false); 
@@ -31,22 +31,26 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
     
-    // useSWR fetch users and updates assoc with this project ID 
-    const {data: users, error: usersError}: SWRResponse<{data: UserObj[] }, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
-    const {data: updates, error: updatesError}: SWRResponse<{data: UpdateObj[] }, any> = useSWR(`/api/update?projectId=${project._id}&iter=${iter}`, fetcher);
-    const {data: selectionTemplates, error: selectionTemplatesError}: SWRResponse<{data: SelectionTemplateObj[] }, any> = useSWR(`/api/selectionTemplate?projectId=${project._id}&iter=${iter}`, fetcher);
-    const {data: selections, error: selectionsError}: SWRResponse<{data: SelectionObj[] }, any> = useSWR(`/api/selection?projectId=${project._id}&iter=${iter}`, fetcher);
-    const selectionQuestions: string[] = selectionTemplates && selectionTemplates.data ? selectionTemplates.data.map(s => (
+    const {data: projects, error: projectError}: SWRResponse<{data: ProjectObj[] }, any> = useSWR(`/api/project?id=${projectId}&iter=${iter}`, fetcher);
+    const [project, setProject] = useState<ProjectObj>();
+    useEffect(() => {
+        if(projects) {
+            setProject(projects.data[0]); // only 1 project should be returned from the useSWR call, so projects.data should only contain 1 project.
+        }
+    }, [projects]) 
+
+    const selectionQuestions: string[] = project && project.selectionTemplateArr ? project.selectionTemplateArr.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
     )) : []
-
+    console.log(project && project.selectionTemplateArr)
+    console.log(project && project)
     function handleAddUser() {
         setIsLoading(true);
 
         axios.post("/api/user", {
             name: name,
             email: email,
-            projectId: project._id
+            projectId: projectId
         }).then(res => {
             if (res.data.error) {
                 setIsLoading(false);
@@ -92,7 +96,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 waitForEl(selector);
             }, 100);
         }
-      };
+    };
       
     function toggleAddUser(e) {
         if (!addUserOpen && !addUpdateOpen) {
@@ -120,7 +124,7 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
             </div>
             <div className="flex items-center mb-9">
-                <H1 text={project.name} />
+                <H1 text={project && project.name} />
                 <div className="ml-auto flex flex-row gap-3">
                     <SecondaryButton onClick={toggleAddUser}>New User (u)</SecondaryButton>
                     <PrimaryButton onClick={toggleAddUpdate}>New Update (n)</PrimaryButton>
@@ -171,15 +175,15 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                     setAddUpdateOpen={setAddUpdateOpen}
                     updateUserId={updateUserId}
                     setUpdateUserId={setUpdateUserId}
-                    selectionTemplates={selectionTemplates}
-                    users={users}
-                    projectId={project._id}
+                    selectionTemplates={project.selectionTemplateArr}
+                    users={project.userArr}
+                    setIter={setIter}
                 />
             )}      
 
             {tab == "dashboard" && (
                 <div>
-                    <p>{project.description && project.description}</p>
+                    <p>{project && project.description && project.description}</p>
                 </div>
             )}
 
@@ -190,22 +194,26 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                     gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                     headers={["Name", "Last update", "Added", "Tags", ...selectionQuestions ,"Total updates"]}
                 >
-                    {(users && users.data) ? users.data.length ? users.data.map(user => (
+                    {project.userArr ? project.userArr.length ? project.userArr.map(user => (
                         <>
                             <TableItemMain href={`/projects/${project._id}/${user._id}`} className="text-xl">{user.name}</TableItemMain>
-                            <TableItem>3 months ago</TableItem>
-                            <TableItem>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableItem>
+                            <TableItem truncate={true}>3 months ago</TableItem>
+                            <TableItem truncate={true}>{format(new Date(user.createdAt), "MMM d, yyyy")}</TableItem>
                             <div className="flex items-center">
                                 {user.tags && user.tags.map(tag => (
                                     <Badge>{tag}</Badge >
                                 ))}
                             </div>
-                            {updates.data.filter(u => (u.userId == user._id))[0] ? selections && selections.data && selections.data.filter(s => (
-                                s.noteId == updates.data.filter(u => (u.userId == user._id))[0]._id // assume updates are sorted by date
-                            )).map(s => ( 
-                                <TableItem key={s._id}>{s.selected}</TableItem> 
-                            )): <p>None</p> /* repeat selectionTemplates.data.length times */ }
-                            <TableItem>5</TableItem>
+                            {user.updateArr ? user.updateArr[user.updateArr.length-1] && user.updateArr[user.updateArr.length-1].selectionArr.length && user.updateArr[user.updateArr.length-1].selectionArr.map(s => ( // updates are auto sorted by createdAt earliest -> latest. 
+                                <TableItem key={s._id} truncate={true}>{s.selected ? s.selected : "None"}</TableItem>
+                                // selectionArr will exist as an empty array if there are no selections.
+                            )): (
+                                // If use has no updates, have a "none" for every selection template.
+                                selectionQuestions.map((q, index) => (
+                                    <TableItem key={index}>None</TableItem>
+                                )) 
+                            )}
+                            <TableItem>{user.updateArr.length.toString()}</TableItem>
                             <hr className={`col-span-${5 + selectionQuestions.length} my-2`}/>
                         </>
                     )) : <TableItemMain>No users</TableItemMain> : <Skeleton/>}
@@ -218,21 +226,19 @@ const index = ( props: { data: {project: ProjectObj }} ) => {
                 gtc={`1fr 1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                 headers={["User", "Name", ...selectionQuestions ,"Date"]}
                 >
-                    {(updates && updates.data) ? updates.data.length ? updates.data.map(update => (
-                        <>
-                            {users && users.data && users.data.filter(user => (
-                                user._id == update.userId
-                            )).map(user => (
+                    {project.userArr && project.userArr.length ? project.userArr.map(user => ( // does empty array users pass `users &&` ?
+                        (user.updateArr) && user.updateArr.length && user.updateArr.map(update => (
+                            <>
                                 <TableItemMain href={`/projects/${project._id}/${update.userId}`} className="text-base">{user.name}</TableItemMain>
-                            ))}
-                            <TableItem href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</TableItem>
-                            {selections && selections.data && selections.data.filter(s => (s.noteId == update._id)).map(s => (
-                                <TableItem key={s._id}>{s.selected}</TableItem>
-                            ))}
-                            <TableItem>{format(new Date(update.createdAt), "MMM d, yyyy")}</TableItem> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
-                            <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
-                        </>
-                    )) : <p>No updates</p> : <Skeleton/>}
+                                <TableItem truncate={true} href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</TableItem>
+                                {update.selectionArr && update.selectionArr.map(s => (
+                                    <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
+                                ))}
+                                <TableItem truncate={true}>{format(new Date(update.createdAt), "MMM d, yyyy")}</TableItem>
+                                <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
+                            </>
+                        ))
+                    )) : <Skeleton/>}
                 </Table>
             )}
 
@@ -245,7 +251,7 @@ export default index
 export const getServerSideProps: GetServerSideProps = async (context) => {
 
     const projectId: any = context.params.projectId;
-    const project = await getProjectRequest(projectId)
+    // const project = await getProjectRequest(projectId)
     
-    return { props: { project: cleanForJSON(project) }};
+    return { props: { projectId: projectId }};
 };

@@ -9,7 +9,7 @@ const TableItemMain = ({children, href, className}: {
     return (
         <p className={`text-base btm-text-gray-500 font-semibold text-left py-2 ${className && className}`}>
             {href ? (
-                <a><Link href={href}>{children}</Link></a>
+                <Link href={href}><a>{children}</a></Link>
             ) : (
                 <span>{children}</span>
             )}

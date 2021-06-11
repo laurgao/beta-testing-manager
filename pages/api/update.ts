@@ -2,6 +2,7 @@ import {UpdateModel} from "../../models/update";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
+import { SelectionModel } from "../../models/selection";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -33,7 +34,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             
                 const thisObject = await UpdateModel.aggregate([
                     {$match: conditions},
-                    
+                    {
+                        $lookup: {
+                            from: "selections",
+                            localField: "_id",
+                            foreignField: "noteId",
+                            as: "selectionArr",
+                        }
+                    }                    
                 ]);
                 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
@@ -67,19 +75,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     
                     return res.status(200).json({message: "Object updated"});                            
                 } else {
-                    if (!(req.body.userId && req.body.projectId && req.body.name)) {
+                    if (!(req.body.userId && req.body.name && req.body.selections)) {
                         return res.status(406);            
                     }
                     
                     const newNote = new UpdateModel({
                         userId: req.body.userId,
-                        projectId: req.body.projectId,
                         name: req.body.name,
                     });
                     const savedNote = await newNote.save();
-                    // const savedNote = await newNote.save();
-                    // return res.status(200).json({message: "Object created", id: savedNote._id.toString()});
-                    return res.status(200).json({message: "Object created", id: savedNote._id.toString()});
+
+                    return res.status(200).json({message: "Objects created"})
+                    const newSelections = req.body.selections && req.body.selections.map(s => (
+                        new SelectionModel({
+                            noteId: savedNote._id,
+                            templateId: s.templateId,
+                            selected: s.selected,                   
+                        })
+                    ))
+
+                    const savedSelections = await newSelections.map(newSelection => (
+                        newSelection.save()
+                    ))
+
+                    return res.status(200).json({message: "Objects created", id: [
+                        savedNote._id.toString(),
+                        savedSelections.map(savedSelection => (
+                            savedSelection._id.toString()
+                        ))
+                    ]});
                 }            
             } catch (e) {
                 return res.status(500).json({message: e});            
