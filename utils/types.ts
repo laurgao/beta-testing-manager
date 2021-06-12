@@ -1,5 +1,5 @@
 export interface AccountObj {
-    _id: string,
+    _id?: string,
     email: string,
     name: string,
     image: string,
@@ -7,7 +7,7 @@ export interface AccountObj {
 }
 
 export interface ProjectObj {
-    _id: string,
+    _id?: string,
     accountId: string, // ID
     name: string,
     description?: string,
@@ -19,7 +19,7 @@ export interface ProjectObj {
 }
 
 export interface UserObj {
-    _id: string,
+    _id?: string,
     createdAt: string, // date string?
     email?: string, 
     name: string, 
@@ -29,19 +29,8 @@ export interface UserObj {
     projectArr?: ProjectObj[],
 }
 
-export interface NoterObj {
-    _id: string,
-    createdAt: string, // date string?
-    userId: string, // ID
-    projectId: string,
-    name: string,
-    date: string, // date string. or date?
-    selections: string[], // array of IDs
-    texts: string[],
-}
-
 export interface UpdateObj {
-    _id: string,
+    _id?: string,
     createdAt: string, // date string?
     userId: string, // ID
     projectId?: string,
@@ -55,7 +44,7 @@ export interface UpdateObj {
 }
 
 export interface SelectionTemplateObj {
-    _id: string,
+    _id?: string,
     projectId: string, // ID
     question: string,
     options: string[],
@@ -63,21 +52,21 @@ export interface SelectionTemplateObj {
 }
 
 export interface TextTemplateObj {
-    _id: string,
+    _id?: string,
     projectId: string, // ID
     question: string,
     required: boolean
   }
   
   export interface SelectionObj {
-    _id: string,
+    _id?: string,
     noteId: string, // ID
     templateId: string, // ID
     selected: string
   }
   
   export interface TextObj {
-    _id: string,
+    _id?: string,
     noteId: string, // ID
     templateId: string, // ID
     body: string
