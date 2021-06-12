@@ -93,10 +93,14 @@ const index = ( props: {userId: string } ) => {
                         <p className="text-sm btm-text-gray-400 mb-2">Joined</p>
                         <p className="text-xl btm-text-gray-500">{user && format(new Date(user.createdAt), "MMM d, yyyy")}</p> 
                     </div>
-                    {selectionQuestions && selectionQuestions.map(q => (
+                    {user && user.projectArr.length && user.projectArr[0].selectionTemplateArr && user.projectArr[0].selectionTemplateArr.map(st => (
                         <div>
-                            <p className="text-sm btm-text-gray-400 mb-2">{q}</p>
-                            <p className="text-xl btm-text-gray-500">Very dissatisfied</p> 
+                            <p className="text-sm btm-text-gray-400 mb-2">{st.question}</p>
+                            <p className="text-xl btm-text-gray-500">{
+                                user && user.updateArr && user.updateArr[user.updateArr.length-1].selectionArr.filter(s => (
+                                    s.templateId == st._id
+                                ))[0].selected
+                            }</p> 
                         </div>
                     ))}
                     

@@ -36,7 +36,7 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
     }, [selectionTemplates]); 
 
     useEffect(() => {
-        setTexts(textTemplates.map(tt => (
+        textTemplates && setTexts(textTemplates.map(tt => (
             {
                 templateId: tt._id,
                 body: "",
@@ -81,11 +81,10 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             console.log(e);
         });
     }
-    console.log(users)
-    users && users.length && console.log("true")
 
-    return users && users.length ? (
+    return (users && users.length) ? (
         <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
+            {console.log("1")}
             <p className="text-sm btm-text-gray-400">{users.length == 1 ? `New update for ${users[0].name}` : "New update"}</p>
             <div className="my-12">
                 {users.length > 1 && (
@@ -174,7 +173,7 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
         </UpModal>
     ) : (
         <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
-            <p>No users</p>
+            <p>Create a user to write updates!</p>
         </UpModal>
     )
 }

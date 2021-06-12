@@ -1,6 +1,6 @@
 import {signIn, useSession, getSession} from "next-auth/client"
 import {GetServerSideProps} from "next";
-import SignInButton from "../../components/signInButton";
+import SignInButton from "../../components/SignInButton";
 
 const SignIn = () => {
     const [session, loading] = useSession();

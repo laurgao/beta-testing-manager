@@ -4,9 +4,9 @@ import {getSession, signIn, useSession} from "next-auth/client";
 import axios from "axios";
 import {useRouter} from "next/router";
 import Skeleton from "react-loading-skeleton";
-import SpinnerButton from "../../components/spinner-button";
 import UpSEO from "../../components/up-seo";
 import { getCurrUserRequest } from "../../utils/requests"
+import PrimaryButton from "../../components/PrimaryButton";
 
 export default function NewAccount() {
     const router = useRouter();
@@ -65,13 +65,13 @@ export default function NewAccount() {
                 <p className="text-red-500">{error}</p>
             )}
             <hr className="my-8"/>
-            <SpinnerButton
+            <PrimaryButton
                 onClick={onSubmit}
                 isLoading={isLoading}
                 isDisabled={loading}
             >
                 Let's get started!
-            </SpinnerButton>
+            </PrimaryButton>
         </div>
     );
 }

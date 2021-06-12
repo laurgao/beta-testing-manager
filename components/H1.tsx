@@ -1,8 +1,12 @@
 import React from 'react'
 
-const H1 = ({text}) => {
+const H1 = ({text, children, className} : {
+    text?: string,
+    children?: string,
+    className?: string,
+}) => {
     return (
-        <h1 className="text-4xl font-bold">{text}</h1>
+        <h1 className={`text-4xl font-bold ${className && className}`}>{text || children}</h1>
     )
 }
 

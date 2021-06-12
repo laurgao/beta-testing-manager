@@ -151,7 +151,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                     setUpdateUserId={setUpdateUserId}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
-                    users={users.data}
+                    users={users && users.data}
                     iter={iter}
                     setIter={setIter}
                 />

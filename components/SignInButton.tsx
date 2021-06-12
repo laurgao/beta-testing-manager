@@ -1,16 +1,16 @@
 import {signIn} from "next-auth/client";
 import {FaGoogle} from "react-icons/fa";
 import React from "react";
+import PrimaryButton from "./PrimaryButton";
 
 export default function SignInButton() {
     return (
-        <button
-            className="button primary"
+        <PrimaryButton
             onClick={() => signIn("google")}
         >
             <div className="flex items-center">
                 <FaGoogle/><span className="ml-2">Sign in</span>
             </div>
-        </button>
+        </PrimaryButton>
     );
 }
