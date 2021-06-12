@@ -2,7 +2,7 @@ import Button from './Button'
 
 const PrimaryButton = ({onClick, children, href, isLoading, isDisabled, className} : {
     onClick?: any,
-    children: string,
+    children: any,
     href?: string,
     isLoading?: boolean,
     isDisabled?: boolean,

@@ -1,15 +1,11 @@
 import React, {useState} from 'react';
-import Link from "next/link";
 import {FiArrowLeft} from "react-icons/fi";
 import {useSession} from "next-auth/client";
 import Skeleton from "react-loading-skeleton";
 import axios from "axios";
 import {useRouter} from "next/router";
 import BackToProjects from "../../components/BackToProjects";
-import SpinnerButton from "../../components/spinner-button";
 import UpSEO from "../../components/up-seo";
-import useSWR, { SWRResponse } from 'swr';
-import { fetcher } from '../../utils/utils';
 import PrimaryButton from '../../components/PrimaryButton';
 
 export default function NewProject() {
@@ -30,12 +26,7 @@ export default function NewProject() {
                 setIsLoading(false);
                 console.log(`Error: ${res.data.error}`);
             } else {
-                // @ts-ignore
-                /* window.analytics.track("Item created", {
-                    type: "project",
-                    projectId: res.data.id,
-                }); */
-                router.push("/projects"); // project page
+                router.push(`/projects/${res.data.id[0]}`); // project page
                 console.log(res.data);
             }
         }).catch(e => {

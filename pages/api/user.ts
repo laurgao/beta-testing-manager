@@ -2,14 +2,13 @@ import {UserModel} from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
-import { UserObj } from "../../utils/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
         case "GET": {
             const session = await getSession({ req });
             if (!session) return res.status(403);
-            if (!(req.query.id)) {
+            if (!(req.query.id || req.query.projectId)) {
                 return res.status(406);                        
             }
             
@@ -17,8 +16,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 let conditions = {};
                 
                 const mongoose = require('mongoose');
-                const id = mongoose.Types.ObjectId(`${req.query.id}`);
-                conditions["_id"] = id;
+
+                if (req.query.id) {
+                    const id = mongoose.Types.ObjectId(`${req.query.id}`);
+                    conditions["_id"] = id;
+                }
+                if (req.query.projectId) {
+                    const pId = mongoose.Types.ObjectId(`${req.query.projectId}`);
+                    conditions["projectId"] = pId;
+                }
 
                 await dbConnect();   
             

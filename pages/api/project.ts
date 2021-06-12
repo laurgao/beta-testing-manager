@@ -79,7 +79,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },   
                 ]);
                 
-                if (!thisObject || !thisObject.length) return res.status(404);
+                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {
@@ -101,11 +101,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const thisObject = await ProjectModel.findById(req.body.id);
                     if (!thisObject) return res.status(404);
                     
-                    /* thisObject.accountId = req.body.accountId;
+                    thisObject.accountId = req.body.accountId;
                     thisObject.name = req.body.name;
                     thisObject.description = req.body.description;
                     thisObject.collaborators = req.body.collaborators;
-                    thisObject.featuredQuestions = req.body.featuredQuestions; */
+                    thisObject.featuredQuestions = req.body.featuredQuestions;
                     
                     await thisObject.save();
                     
@@ -121,13 +121,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         description: req.body.description || ""                            
                     });
                     
-                    const savedProject = await newProject.save();
+                    const savedProject = await newProject.save(); // these are already typed, you don't need to type them.
 
                     const defaultSelectionTemplate = new SelectionTemplateModel({
                         projectId: savedProject._id,
-			            question: `How dissatisfied would you be if you could no longer use ${req.body.name}`,  
+			            question: `How dissatisfied would you be if you could no longer use ${req.body.name}?`,  
                         options: ["Very dissatisfied", "Somewhat dissatisfied", "Not dissatisfied"],
-                        required: true,             
+                        required: true,
                     });
                     
                     const savedDefaultSelectionTemplate = await defaultSelectionTemplate.save();

@@ -1,6 +1,8 @@
 import mongoose, {Document, Model} from "mongoose";
 import {ProjectObj} from "../utils/types";
 
+interface ProjectDoc extends ProjectObj, Document {}
+
 const ProjectSchema = new mongoose.Schema({
     accountId: {type: mongoose.Schema.Types.ObjectId, required: true},
     name: {type: String, required: true},
@@ -11,4 +13,4 @@ const ProjectSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-export const ProjectModel: Model<Document<ProjectObj>> = mongoose.models.project || mongoose.model("project", ProjectSchema);
+export const ProjectModel: Model<ProjectDoc> = mongoose.models.project || mongoose.model<ProjectDoc>("project", ProjectSchema);

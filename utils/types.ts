@@ -1,5 +1,4 @@
 export interface AccountObj {
-    _id?: string,
     email: string,
     name: string,
     image: string,
@@ -7,44 +6,45 @@ export interface AccountObj {
 }
 
 export interface ProjectObj {
-    _id?: string,
     accountId: string, // ID
     name: string,
     description?: string,
     collaborators: string[], // array of IDs
     featuredQuestions: string[],
-    userArr?: UserObj[],
-    selectionTemplateArr?: SelectionTemplateObj[],
-    textTemplateArr?: TextTemplateObj[],
+    userArr?: DatedObj<UserObj>[],
+    selectionTemplateArr?: DatedObj<SelectionTemplateObj>[],
+    textTemplateArr?: DatedObj<TextTemplateObj>[],
 }
 
-export interface UserObj {
-    _id?: string,
-    createdAt: string, // date string?
+export interface UserObj1 {
     email?: string, 
     name: string, 
     projectId: string, // ID
     tags: string[],
-    updateArr?: UpdateObj[],
-    projectArr?: ProjectObj[],
+}
+
+export interface UserObj {
+    email?: string, 
+    name: string, 
+    projectId: string, // ID
+    tags: string[],
+    updateArr?: DatedObj<UpdateObj>[],
+    projectArr?: DatedObj<ProjectObj>[],
 }
 
 export interface UpdateObj {
-    _id?: string,
-    createdAt: string, // date string?
     userId: string, // ID
     projectId?: string,
     name: string,
     date: string, // date string. or date?
     selections: string[], // array of IDs
     texts: string[],
-    selectionArr?: SelectionObj[],
-    textArr?: TextObj[],
-    userArr?: UserObj[],
+    selectionArr?: DatedObj<SelectionObj>[],
+    textArr?: DatedObj<TextObj>[],
+    userArr?: DatedObj<UserObj>[],
 }
 
 export interface SelectionTemplateObj {
-    _id?: string,
     projectId: string, // ID
     question: string,
     options: string[],
@@ -52,22 +52,30 @@ export interface SelectionTemplateObj {
 }
 
 export interface TextTemplateObj {
-    _id?: string,
     projectId: string, // ID
     question: string,
     required: boolean
-  }
-  
-  export interface SelectionObj {
-    _id?: string,
+}
+
+export interface SelectionObj {
     noteId: string, // ID
     templateId: string, // ID
     selected: string
-  }
-  
-  export interface TextObj {
-    _id?: string,
+}
+
+export interface TextObj {
     noteId: string, // ID
     templateId: string, // ID
     body: string
-  }
+}
+
+// generic / type alias from https://stackoverflow.com/questions/26652179/extending-interface-with-generic-in-typescript
+export type DatedObj<T extends {}> = T & {
+    _id: string,
+    createdAt: string, // ISO date
+    updatedAt: string, // ISO date
+}
+
+export type IdObj<T extends {}> = T & {
+    _id: string,
+}

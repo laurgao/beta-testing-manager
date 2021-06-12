@@ -3,16 +3,16 @@ import React, { useEffect, useState } from 'react'
 import H1 from './H1'
 import UpModal from './UpModal'
 import PrimaryButton from "./PrimaryButton"
-import { SelectionTemplateObj, TextTemplateObj, UserObj } from '../utils/types';
+import { DatedObj, SelectionTemplateObj, TextTemplateObj, UserObj } from '../utils/types';
 
 const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdateUserId, selectionTemplates, textTemplates, users, setIter, iter}: {
         addUpdateOpen: boolean,
         setAddUpdateOpen: any,
         updateUserId: string,
         setUpdateUserId?: any,
-        selectionTemplates: SelectionTemplateObj[],
-        textTemplates: TextTemplateObj[],
-        users?: UserObj[],
+        selectionTemplates: DatedObj<SelectionTemplateObj>[],
+        textTemplates: DatedObj<TextTemplateObj>[],
+        users?: DatedObj<UserObj>[],
         setIter?: any,
         iter: number
     }) => {

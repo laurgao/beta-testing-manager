@@ -6,17 +6,17 @@ import Button from '../../../../components/Button'
 import H1 from '../../../../components/H1'
 import InlineButton from '../../../../components/InlineButton'
 import UpSEO from '../../../../components/up-seo'
-import { ProjectObj, UpdateObj, UserObj } from '../../../../utils/types'
+import { DatedObj, ProjectObj, UpdateObj, UserObj } from '../../../../utils/types'
 import { fetcher } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 
-const updateId = ( props: { data: {updateId: string }} ) => {
+const updateId = ( props: {updateId: string } ) => {
     const [updateId, setUpdateId] = useState<string>(props.updateId);
-    const {data: updates, error: updatesError}: SWRResponse<{data: UpdateObj[] }, any> = useSWR(`/api/update?id=${updateId}`, fetcher);
-    const [update, setUpdate] = useState<UpdateObj>();
-    const [user, setUser] = useState<UserObj>();
-    const [project, setProject] = useState<ProjectObj>();
+    const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${updateId}`, fetcher);
+    const [update, setUpdate] = useState<DatedObj<UpdateObj>>();
+    const [user, setUser] = useState<DatedObj<UserObj>>();
+    const [project, setProject] = useState<DatedObj<ProjectObj>>();
     useEffect(() => {
         if(updates) setUpdate(updates.data[0]);
     }, [updates])

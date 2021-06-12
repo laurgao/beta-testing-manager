@@ -2,7 +2,7 @@ import Link from "next/link"
 
 const Button = ({onClick, children, href, isDisabled, isLoading, className}: 
     {onClick?: any, 
-        children: string, 
+        children: any, 
         href?: string,
         isDisabled?: boolean,
         isLoading?: boolean,
