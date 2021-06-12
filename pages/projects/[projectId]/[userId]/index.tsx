@@ -61,6 +61,8 @@ const index = ( props: { data: {userId: string }} ) => {
                     setAddUpdateOpen={setAddUpdateOpen}
                     updateUserId={userId}
                     selectionTemplates={user.projectArr[0].selectionTemplateArr}
+                    textTemplates={user.projectArr[0].textTemplateArr}
+                    iter={iter}
                     setIter={setIter}
                 />
             )}

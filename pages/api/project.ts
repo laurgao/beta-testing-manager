@@ -134,7 +134,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                     const defaultTextTemplate = new TextTemplateModel({
                         projectId: savedProject._id,
-			            question: `What's the main benefit you get from using ${req.body.name}`,
+			            question: `What's the main benefit you get from using ${req.body.name}?`,
                         required: true,             
                     });
 

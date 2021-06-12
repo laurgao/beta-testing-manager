@@ -5,7 +5,6 @@ import useSWR, {SWRResponse} from "swr";
 import {fetcher} from "../../utils/utils";
 import { ProjectObj } from "../../utils/types";
 import ProjectCard from "../../components/ProjectCard";
-import Link from "next/link";
 import React from "react";
 import UpSEO from "../../components/up-seo";
 import H1 from "../../components/H1";
@@ -29,7 +28,7 @@ const projects = () => {
                 <PrimaryButton href="/projects/new" className="ml-auto">New project</PrimaryButton>
             </div>
             <div className="md:flex -mx-3 flex-wrap gap-3">
-                {/* display prjs*/ (projects && projects.data) ? projects.data.length ? (
+                {(projects && projects.data) ? projects.data.length ? (
                     projects.data.map((project : ProjectObj) => (
                         <div key={project._id}>
                             <ProjectCard projectName={project.name} projectId={project._id} userCount={project.userArr && project.userArr.length}/>

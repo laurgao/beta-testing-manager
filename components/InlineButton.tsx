@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const Breadcrumb = ({onClick, children, href, isLoading, isDisabled, className} : {
+const InlineButton = ({onClick, children, href, isLoading, isDisabled, className} : {
     onClick?: any,
     children: string,
     href?: string,
@@ -27,4 +27,4 @@ const Breadcrumb = ({onClick, children, href, isLoading, isDisabled, className} 
     )
 }
 
-export default Breadcrumb
+export default InlineButton

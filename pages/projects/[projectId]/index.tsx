@@ -42,8 +42,6 @@ const index = ( props: { data: {projectId: string }} ) => {
     const selectionQuestions: string[] = project && project.selectionTemplateArr ? project.selectionTemplateArr.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
     )) : []
-    console.log(project && project.selectionTemplateArr)
-    console.log(project && project)
     function handleAddUser() {
         setIsLoading(true);
 
@@ -175,8 +173,10 @@ const index = ( props: { data: {projectId: string }} ) => {
                     setAddUpdateOpen={setAddUpdateOpen}
                     updateUserId={updateUserId}
                     setUpdateUserId={setUpdateUserId}
-                    selectionTemplates={project.selectionTemplateArr}
+                    selectionTemplates={project && project.selectionTemplateArr}
+                    textTemplates={project && project.textTemplateArr}
                     users={project.userArr}
+                    iter={iter}
                     setIter={setIter}
                 />
             )}      

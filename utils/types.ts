@@ -50,7 +50,8 @@ export interface UpdateObj {
     selections: string[], // array of IDs
     texts: string[],
     selectionArr?: SelectionObj[],
-    textArr?: TextObj[]
+    textArr?: TextObj[],
+    userArr?: UserObj[],
 }
 
 export interface SelectionTemplateObj {
@@ -76,6 +77,7 @@ export interface TextTemplateObj {
   }
   
   export interface TextObj {
+    _id: string,
     noteId: string, // ID
     templateId: string, // ID
     body: string

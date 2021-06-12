@@ -3,6 +3,7 @@ import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
 import { SelectionModel } from "../../models/selection";
+import { TextModel } from "../../models/text";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -41,7 +42,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             foreignField: "noteId",
                             as: "selectionArr",
                         }
-                    }                    
+                    },
+                    {
+                        $lookup: {
+                            from: "texts",
+                            localField: "_id",
+                            foreignField: "noteId",
+                            as: "textArr",
+                        }
+                    },
+                    {
+                        $lookup: {
+                            from: "users",
+                            let: {"id": "$userId"},
+                            pipeline: [
+                                {$match: {$expr: {$and: [{$eq: ["$_id", "$$id"]}, ]}}},
+                                {
+                                    $lookup: {
+                                        from: "projects",
+                                        let: {"id": "$projectId"},
+                                        pipeline: [
+                                            {$match: {$expr: {$and: [{$eq: ["$_id", "$$id"]}, ]}}},
+                                            {
+                                                $lookup: {
+                                                    from: "selectiontemplates",
+                                                    localField: "_id",
+                                                    foreignField: "projectId",
+                                                    as: "selectionTemplateArr",
+                                                }
+                                            },
+                                            {
+                                                $lookup: {
+                                                    from: "texttemplates",
+                                                    localField: "_id",
+                                                    foreignField: "projectId",
+                                                    as: "textTemplateArr",
+                                                }
+                                            },
+                                        ],
+                                        as: "projectArr",
+                                    }
+                                }
+                            ],
+                            as: "userArr",
+                        }
+                    }
                 ]);
                 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
@@ -83,27 +128,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         userId: req.body.userId,
                         name: req.body.name,
                     });
+
                     const savedNote = await newNote.save();
 
-                    return res.status(200).json({message: "Objects created"})
                     const newSelections = req.body.selections && req.body.selections.map(s => (
                         new SelectionModel({
                             noteId: savedNote._id,
                             templateId: s.templateId,
                             selected: s.selected,                   
                         })
-                    ))
+                    ));
 
-                    const savedSelections = await newSelections.map(newSelection => (
-                        newSelection.save()
-                    ))
+                    const newTexts = req.body.texts && req.body.texts.map(s => (
+                        new TextModel({
+                            noteId: savedNote._id,
+                            templateId: s.templateId,
+                            body: s.body,                   
+                        })
+                    ));
 
-                    return res.status(200).json({message: "Objects created", id: [
-                        savedNote._id.toString(),
-                        savedSelections.map(savedSelection => (
-                            savedSelection._id.toString()
-                        ))
-                    ]});
+                    
+                    const savedSelections = await newSelections.map(newSelection => (newSelection.save()))
+                    const savedTexts = await newTexts.map(newText => (newText.save()))
+
+                    // if (newSelections) newNote.selections = newSelections.map(s => (s._id));
+                    // if (newTexts) newNote.texts = newSelections.map(t => (t._id));
+
+                    return res.status(200).json({message: "Objects created", id: savedNote._id, selections: newSelections});
                 }            
             } catch (e) {
                 return res.status(500).json({message: e});            
