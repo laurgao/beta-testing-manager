@@ -34,6 +34,9 @@ a {
   color: #3F3F46;
 }
 
+.btm-gray-200-border {
+  border: 1px solid #E4E4E7;
+}
 .btm-gray-500-border {
   border: 1px solid #71717A;
 }
@@ -43,6 +46,10 @@ a {
 
 .btm-hover-bg-gray-500:hover {
   background-color: #71717A;
+}
+
+.btm-max-w-s {
+  max-width: 14rem;
 }
 
 select option:first-child{
@@ -68,16 +75,4 @@ select option:first-child{
 
 .up-hover-button:hover > .up-hover-dropdown, .up-hover-button:focus > .up-hover-dropdown {
   display: block;
-}
-
-.up-spinner {
-  position: absolute;
-  top: calc(50% - 0.5rem);
-  left: calc(50% - 0.5rem);
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-  border: 0.2rem solid rgba(255,255,255,0.3);
-  border-top-color: white;
-  animation: up-spin 1s linear infinite;
 }

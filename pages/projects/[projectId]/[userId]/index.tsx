@@ -70,7 +70,7 @@ const index = ( props: { data: {userId: string }} ) => {
                 <H1 text={user && user.name} />
                 <PrimaryButton onClick={() => setAddUpdateOpen(true)} className="ml-auto">New update (n)</PrimaryButton>
             </div>
-            <div className="md:flex flex-wrap gap-32">
+            <div className="md:flex flex-row gap-24">
                 <div className="flex flex-col gap-9">
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Email</p>
@@ -93,14 +93,21 @@ const index = ( props: { data: {userId: string }} ) => {
                     
                 </div>
 
-                <div className="">
+                <div className="flex-grow">
                     <Table 
                         gtc={`1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                         headers={[ "Name", ...selectionQuestions ,"Date"]}
                     >
                         {(user && user.updateArr) ? user.updateArr.length ? user.updateArr.map(update => (
                             <>
-                                <TableItemMain href={`/projects/${user.projectId}/${user._id}/${update._id}`} className="text-base">{update.name}</TableItemMain>
+                                <TableItem 
+                                    main={true}
+                                    href={`/projects/${user.projectId}/${user._id}/${update._id}`} 
+                                    className="text-base"
+                                    truncate={true}
+                                    wide={true}
+                                >{update.name}</TableItem>
+
                                 {update.selectionArr && update.selectionArr.map(s => (
                                     <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
                                 ))}

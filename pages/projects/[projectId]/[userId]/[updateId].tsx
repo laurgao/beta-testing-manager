@@ -9,6 +9,7 @@ import UpSEO from '../../../../components/up-seo'
 import { ProjectObj, UpdateObj, UserObj } from '../../../../utils/types'
 import { fetcher } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
+import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 
 const updateId = ( props: { data: {updateId: string }} ) => {
     const [updateId, setUpdateId] = useState<string>(props.updateId);
@@ -25,6 +26,15 @@ const updateId = ( props: { data: {updateId: string }} ) => {
     useEffect(() => {
         if(user) setProject(user.projectArr[0]);
     }, [user])
+
+    const [textIsOpen, setTextIsOpen] = useState<number>(-1);
+    const handleTextOnClick = (event: any, index: number, currentIsOpen: boolean) => {
+        if (currentIsOpen) {
+            setTextIsOpen(-1);
+        } else {
+            setTextIsOpen(index);
+        }
+    }
     
     return (
         <div className="max-w-4xl mx-auto px-4">
@@ -41,24 +51,34 @@ const updateId = ( props: { data: {updateId: string }} ) => {
                 <H1 text={update && update.name} />
                 {/* more menu*/ }        
             </div>
-            <div className="md:flex flex-wrap gap-32">
-                <div className="flex-col">
+            <div className="md:flex flex-row gap-24">
+                <div className="flex-col btm-max-w-s">
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Date</p>
                         <p className="text-xl btm-text-gray-500">{update && format(new Date(update.createdAt), "MMM d, yyyy")}</p> 
                     </div>
                     {update && update.selectionArr && update.selectionArr.map(selection => (
                         <div className="mt-9" key={selection._id}>
-                            <p className="text-sm btm-text-gray-400 mb-2">{selection._id}</p>
+                            <p className="text-sm btm-text-gray-400 mb-2">{
+                                project && project.selectionTemplateArr && project.selectionTemplateArr.filter(st => st._id = selection.templateId)[0].question
+                            }</p>
                             <p className="text-xl btm-text-gray-500">{selection.selected}</p> 
                         </div>
                     ))}
                 </div>
-                <div>
-                    {update && update.textArr && update.textArr.map(text => (
-                        <div key={text._id}>
-                            <p className="text-sm btm-text-gray-400 mb-2">{text._id}</p>
-                            <p className="text-xl btm-text-gray-500">{text.body}</p> 
+                <div className="flex-grow">
+                    {update && update.textArr && update.textArr.map((text, index) => (
+                        <div key={text._id} className="transition">
+                            <hr className="my-4 btm-gray-200-border"/>
+                            <button className="flex focus:outline-none" onClick={(event) => handleTextOnClick(event, index, textIsOpen == index)}>
+                                <p className="text-base btm-text-gray-400 mb-2">{
+                                    project && project.textTemplateArr && project.textTemplateArr.filter(tt => tt._id == text.templateId)[0].question
+                                }</p>
+                                {textIsOpen == index ? <FaAngleUp className="ml-auto btm-text-gray-400"/> : <FaAngleDown className="ml-auto btm-text-gray-400"/>}
+                            </button>
+                            {textIsOpen == index && (
+                                <p className="text-base btm-text-gray-600 mb-6 mt-8">{text.body}</p> 
+                            )}
                         </div>
                     ))}
                 </div>
@@ -71,6 +91,6 @@ export default updateId
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const updateId: any = context.params.updateId;
-    
+
     return { props: { updateId: updateId }};
 };
