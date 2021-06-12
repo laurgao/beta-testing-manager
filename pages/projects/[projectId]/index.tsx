@@ -20,6 +20,8 @@ import TableItem from '../../../components/TableItem'
 import { getSession } from 'next-auth/client'
 import { ProjectModel } from '../../../models/project'
 import dbConnect from '../../../utils/dbConnect'
+import { FaPlus } from 'react-icons/fa'
+import SmallTitle from '../../../components/SmallTitle'
 
 const index = ( props: { project: DatedObj<ProjectObj> } ) => {
     const [project, setProject] = useState<DatedObj<ProjectObj>>(props.project);
@@ -98,8 +100,8 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
             <div className="flex items-center mb-9">
                 <H1 text={project.name} />
                 <div className="ml-auto flex flex-row gap-3">
-                    <SecondaryButton onClick={toggleAddUser}>New User (u)</SecondaryButton>
-                    <PrimaryButton onClick={toggleAddUpdate}>New Update (n)</PrimaryButton>
+                    <SecondaryButton onClick={toggleAddUser}><FaPlus className="-mt-0.5"/><span className="ml-2">New User (u)</span></SecondaryButton>
+                    <PrimaryButton onClick={toggleAddUpdate}><FaPlus className="-mt-0.5"/><span className="ml-2">New Update (n)</span></PrimaryButton>
                 </div>                
             </div>
 
@@ -109,7 +111,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
 
             {addUserOpen && (
                 <UpModal isOpen={addUserOpen} setIsOpen={setAddUserOpen} wide={true}>
-                    <H1 text="New user"/>
+                    <SmallTitle>New User</SmallTitle>
                     <div className="my-12">
                         <h3 className="up-ui-title">Name</h3>
                         <input

@@ -2,7 +2,7 @@ import Button from './Button'
 
 const SecondaryButton = ({onClick, children, href, isLoading, isDisabled} : {
     onClick?: any,
-    children: string,
+    children: any, // string or JSX tags
     href?: string,
     isLoading?: boolean,
     isDisabled?: boolean,

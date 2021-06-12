@@ -1,7 +1,7 @@
 import mongoose, {Model, Document} from "mongoose";
-import {UserObj, UserObj1} from "../utils/types";
+import {UserObj} from "../utils/types";
 
-interface UserDoc extends UserObj1, Document {}
+interface UserDoc extends UserObj, Document {}
 
 const UserSchema = new mongoose.Schema({
     email: {type: String, required: false},

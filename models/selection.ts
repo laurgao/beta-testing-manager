@@ -1,6 +1,8 @@
 import mongoose, {Document, Model} from "mongoose";
 import {SelectionObj} from "../utils/types";
 
+interface SelectionDoc extends SelectionObj, Document {}
+
 const SelectionSchema = new mongoose.Schema({
     noteId: mongoose.Schema.Types.ObjectId,
     templateId: mongoose.Schema.Types.ObjectId,
@@ -9,4 +11,4 @@ const SelectionSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-export const SelectionModel: Model<Document<SelectionObj>> = mongoose.models.selection || mongoose.model("selection", SelectionSchema);
+export const SelectionModel: Model<SelectionDoc> = mongoose.models.selection || mongoose.model<SelectionDoc>("selection", SelectionSchema);

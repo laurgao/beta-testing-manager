@@ -95,7 +95,7 @@ const projects = () => {
                 <PrimaryButton 
                     onClick={toggleAddProject} 
                     className="ml-auto"
-                ><FaPlus/><span className="ml-2">New project (n)</span></PrimaryButton>
+                ><FaPlus className="-mt-0.5"/><span className="ml-2">New project (n)</span></PrimaryButton>
             </div>
             <div className="md:flex -mx-3 flex-wrap gap-3">
                 {(projects && projects.data) ? projects.data.length ? (

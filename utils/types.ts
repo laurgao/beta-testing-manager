@@ -16,13 +16,6 @@ export interface ProjectObj {
     textTemplateArr?: DatedObj<TextTemplateObj>[],
 }
 
-export interface UserObj1 {
-    email?: string, 
-    name: string, 
-    projectId: string, // ID
-    tags: string[],
-}
-
 export interface UserObj {
     email?: string, 
     name: string, 

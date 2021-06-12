@@ -4,6 +4,7 @@ import H1 from './H1'
 import UpModal from './UpModal'
 import PrimaryButton from "./PrimaryButton"
 import { DatedObj, SelectionTemplateObj, TextTemplateObj, UserObj } from '../utils/types';
+import SmallTitle from './SmallTitle';
 
 const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdateUserId, selectionTemplates, textTemplates, users, setIter, iter}: {
         addUpdateOpen: boolean,
@@ -12,7 +13,7 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
         setUpdateUserId?: any,
         selectionTemplates: DatedObj<SelectionTemplateObj>[],
         textTemplates: DatedObj<TextTemplateObj>[],
-        users?: DatedObj<UserObj>[],
+        users: DatedObj<UserObj>[],
         setIter?: any,
         iter: number
     }) => {
@@ -80,15 +81,16 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             console.log(e);
         });
     }
+    console.log(users)
+    users && users.length && console.log("true")
 
-
-    return (
+    return users && users.length ? (
         <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
-            <H1 text="New update"/>
+            <p className="text-sm btm-text-gray-400">{users.length == 1 ? `New update for ${users[0].name}` : "New update"}</p>
             <div className="my-12">
-                {users ? (
+                {users.length > 1 && (
                     <>
-                        <h3>User</h3>
+                        <SmallTitle>User</SmallTitle>
                         <select
                             className={`border-b w-full content my-2 py-2 ${!updateUserId && "opacity-30"}`}
                             value={updateUserId}
@@ -106,13 +108,11 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
                             )}
                         </select>
                     </>
-                ) : (
-                    <h3>Add an update for {updateUserId}</h3>
                 )}
             </div>
 
             <div className="my-12">
-                <h3 className="up-ui-title">Name</h3>
+                <SmallTitle>Name</SmallTitle>
                 <input
                     type="text"
                     className="border-b w-full content my-2 py-2"
@@ -124,10 +124,10 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             </div>
             {textTemplates && texts.length && textTemplates.map(textTemplate => (
                 <div className="my-12" key={textTemplate._id}>
-                    <h3 className="up-ui-title">{textTemplate.question}</h3>
+                    <SmallTitle>{textTemplate.question}</SmallTitle>
                     <textarea
                         className="border-b w-full content my-2 py-2"
-                        placeholder="Write something awesome"
+                        placeholder="Write something awesome..."
                         value={texts.filter(text => text.templateId == textTemplate._id)[0].body}
                         onChange={e => setTexts([
                             ...texts.filter((text) => text.templateId != textTemplate._id), 
@@ -142,9 +142,9 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             ))}
             {selectionTemplates && selections.length && selectionTemplates.map(selectionTemplate => (
                 <div className="my-12" key={selectionTemplate._id}>
-                    <h3>{selectionTemplate.question}</h3>
+                    <SmallTitle>{selectionTemplate.question}</SmallTitle>
                     <select
-                        className={`border-b w-full content my-2 py-2 ${selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected == "" && "opacity-30"}`}
+                        className={`border-b w-full content my-2 py-2 focus:outline-none ${selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected == "" && "opacity-30"}`}
                         value={selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected}
                         onChange={e => setSelections([
                             ...selections.filter((s) => s.templateId != selectionTemplate._id), 
@@ -171,6 +171,10 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             >
                 Create
             </PrimaryButton>
+        </UpModal>
+    ) : (
+        <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
+            <p>No users</p>
         </UpModal>
     )
 }

@@ -8,11 +8,12 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import TableItem from '../../../../components/TableItem'
 import Table from '../../../../components/Table'
 import UpSEO from '../../../../components/up-seo'
-import { DatedObj, ProjectObj, SelectionObj, SelectionTemplateObj, UpdateObj, UserObj } from '../../../../utils/types'
-import { cleanForJSON, fetcher } from '../../../../utils/utils'
+import { DatedObj, UserObj } from '../../../../utils/types'
+import { cleanForJSON, fetcher, useKey, waitForEl } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import InlineButton from '../../../../components/InlineButton';
 import { getSession } from 'next-auth/client';
+import { FaPlus } from 'react-icons/fa';
 
 const index = ( props: {userId: string } ) => {
     const [userId, setUserId] = useState<string>(props.userId);
@@ -44,7 +45,15 @@ const index = ( props: {userId: string } ) => {
             setProjectName(user.projectArr[0].name);
         }
     }, [user])
-    
+
+    function toggleAddUpdate(e) {
+        if (!addUpdateOpen) {
+            setAddUpdateOpen(true);
+            e.preventDefault();
+            waitForEl("update-name-field");
+        }
+    }    
+    useKey("KeyN", toggleAddUpdate);
     
     return (
         <div className="max-w-4xl mx-auto px-4">
@@ -59,6 +68,7 @@ const index = ( props: {userId: string } ) => {
                     addUpdateOpen={addUpdateOpen}
                     setAddUpdateOpen={setAddUpdateOpen}
                     updateUserId={userId}
+                    users={[user]}
                     selectionTemplates={user.projectArr[0].selectionTemplateArr}
                     textTemplates={user.projectArr[0].textTemplateArr}
                     iter={iter}
@@ -67,7 +77,7 @@ const index = ( props: {userId: string } ) => {
             )}
             <div className="flex items-center mb-12">
                 <H1 text={user && user.name} />
-                <PrimaryButton onClick={() => setAddUpdateOpen(true)} className="ml-auto">New update (n)</PrimaryButton>
+                <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus className="-mt-0.5"/><span className="ml-2">New update (n)</span></PrimaryButton>
             </div>
             <div className="md:flex flex-row gap-24">
                 <div className="flex flex-col gap-9">
@@ -113,7 +123,7 @@ const index = ( props: {userId: string } ) => {
                                 <TableItem>{format(new Date(update.createdAt), "MMM d, yyyy")}</TableItem> {/* {format(new Date(user.createdAt), "MMM d, yyyy")}*/}
                                 <hr className={`col-span-${2 + selectionQuestions.length} my-2`}/>
                             </>
-                        )) : <p>No updates</p> : <Skeleton/>}
+                        )) : <p>No updates</p> : <Skeleton className="col-span-2"/>}
                     </Table>
                 </div>
             </div>
