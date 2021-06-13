@@ -58,7 +58,7 @@ const projects = () => {
 
             {addProjectOpen && (
                 <UpModal isOpen={addProjectOpen} setIsOpen={setAddProjectOpen} wide={true}>
-                    <H1 text="New user"/>
+                    <H1 text="New project"/>
                     <div className="my-12">
                         <h3 className="up-ui-title">Name</h3>
                         <input

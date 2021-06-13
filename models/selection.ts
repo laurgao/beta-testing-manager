@@ -6,7 +6,7 @@ interface SelectionDoc extends SelectionObj, Document {}
 const SelectionSchema = new mongoose.Schema({
     noteId: mongoose.Schema.Types.ObjectId,
     templateId: mongoose.Schema.Types.ObjectId,
-    selected: {type: String, required: true},
+    selected: {type: String, required: false}, // If template says it's not required
 }, {
     timestamps: true,
 });

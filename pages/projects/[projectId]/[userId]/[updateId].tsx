@@ -10,10 +10,16 @@ import { DatedObj, ProjectObj, UpdateObj, UserObj } from '../../../../utils/type
 import { fetcher } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
+import MoreMenu from '../../../../components/MoreMenu';
+import MoreMenuItem from '../../../../components/MoreMenuItem';
+import { FiEdit2, FiTrash } from 'react-icons/fi';
+import DeleteModal from '../../../../components/DeleteModal';
+import UpdateModal from '../../../../components/UpdateModal';
 
 const updateId = ( props: {updateId: string } ) => {
+    const [iter, setIter] = useState<number>(0);
     const [updateId, setUpdateId] = useState<string>(props.updateId);
-    const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${updateId}`, fetcher);
+    const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${updateId}&iter=${iter}`, fetcher);
     const [update, setUpdate] = useState<DatedObj<UpdateObj>>();
     const [user, setUser] = useState<DatedObj<UserObj>>();
     const [project, setProject] = useState<DatedObj<ProjectObj>>();
@@ -27,6 +33,9 @@ const updateId = ( props: {updateId: string } ) => {
         if(user) setProject(user.projectArr[0]);
     }, [user])
 
+    const [editUpdateOpen, setEditUpdateOpen] = useState<boolean>(false);
+    const [deleteUpdateOpen, setDeleteUpdateOpen] = useState<boolean>(false);
+
     const [textIsOpen, setTextIsOpen] = useState<number>(-1);
     const handleTextOnClick = (event: any, index: number, currentIsOpen: boolean) => {
         if (currentIsOpen) {
@@ -38,7 +47,34 @@ const updateId = ( props: {updateId: string } ) => {
     
     return (
         <div className="max-w-4xl mx-auto px-4">
-            <UpSEO title="Projects"/>
+            <UpSEO title={update && update.name} projectName={project && project.name}/>
+
+            {update && deleteUpdateOpen && (
+                <DeleteModal 
+                    item={user}
+                    itemType="user"
+                    isOpen={deleteUpdateOpen}
+                    setIsOpen={setDeleteUpdateOpen}
+                    iter={iter}
+                    setIter={setIter}
+                />
+            )}
+
+            {update && editUpdateOpen && (
+                <UpdateModal 
+                    isOpen={editUpdateOpen}
+                    setIsOpen={setEditUpdateOpen}
+                    update={update}
+                    iter={iter}
+                    setIter={setIter}
+                    userId={user._id}
+                    users={[user]}
+                    selectionTemplates={user && user.projectArr[0].selectionTemplateArr}
+                    textTemplates={user && user.projectArr[0].textTemplateArr}
+
+                />
+            )}
+
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
@@ -49,7 +85,12 @@ const updateId = ( props: {updateId: string } ) => {
             </div>
             <div className="flex items-center mb-9">
                 <H1 text={update && update.name} />
-                {/* more menu*/ }        
+                <div className="ml-auto flex flex-row gap-3">
+                    <MoreMenu>
+                        <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUpdateOpen(true)}/>
+                        <MoreMenuItem text="Delete" icon={<FiTrash/>} onClick={() => setDeleteUpdateOpen(true)}/>
+                    </MoreMenu>
+                </div>  
             </div>
             <div className="md:flex flex-row gap-24">
                 <div className="flex-col btm-max-w-s">

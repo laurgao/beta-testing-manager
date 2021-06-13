@@ -6,6 +6,7 @@ interface UserDoc extends UserObj, Document {}
 const UserSchema = new mongoose.Schema({
     email: {type: String, required: false},
     name: {type: String, required: true},
+    date: {type: Date, required: true}, 
     projectId: { type: mongoose.Schema.Types.ObjectId, required: true },
     tags: {type: [String], required: false }
 }, {

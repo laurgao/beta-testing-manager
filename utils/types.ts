@@ -18,7 +18,8 @@ export interface ProjectObj {
 
 export interface UserObj {
     email?: string, 
-    name: string, 
+    name: string,
+    date: string, // Date string
     projectId: string, // ID
     tags: string[],
     updateArr?: DatedObj<UpdateObj>[],
@@ -27,9 +28,9 @@ export interface UserObj {
 
 export interface UpdateObj {
     userId: string, // ID
-    projectId?: string,
+    projectId: string,
     name: string,
-    date: string, // date string. or date?
+    date: string, // Date string
     selections: string[], // array of IDs
     texts: string[],
     selectionArr?: DatedObj<SelectionObj>[],

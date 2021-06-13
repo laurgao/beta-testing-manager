@@ -2,6 +2,9 @@ import {UserModel} from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
 import {getSession} from "next-auth/client";
+import { UpdateModel } from "../../models/update";
+import { getCurrUserRequest } from "../../utils/requests";
+import { ProjectModel } from "../../models/project";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -102,26 +105,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();
                 
                 if (req.body.id) {
-                    if (!(req.body.email || req.body.name || req.body.projectId)) {
+                    if (!(req.body.email || req.body.name || req.body.date || req.body.projectId)) {
                         return res.status(406);            
                     }
                     const thisObject = await UserModel.findById(req.body.id);
                     if (!thisObject) return res.status(404);
                     
-                    /* thisObject.email = req.body.email;
+                    thisObject.email = req.body.email;
                     thisObject.name = req.body.name;
-                    thisObject.projectId = req.body.projectId;*/
+                    thisObject.projectId = req.body.projectId;
+                    thisObject.date = req.body.date;
                     
                     await thisObject.save();
                     
                     return res.status(200).json({message: "Object updated"});                            
                 } else {
-                    if (!(req.body.name && req.body.projectId)) {
+                    if (!(req.body.name && req.body.projectId && req.body.date)) {
                         return res.status(406);            
                     }
                     
                     const newUser = new UserModel({
                         name: req.body.name,
+                        date: req.body.date,
 			            projectId: req.body.projectId,                
                     });
 
@@ -132,7 +137,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(200).json({message: "Object created", id: savedUser._id.toString()});
                 }            
             } catch (e) {
-                return res.status(500).json({message: e});            
+                return res.status(500).json({message: e});  
             }
         }
         
@@ -146,13 +151,35 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();
                                
                 const thisObject = await UserModel.findById(req.body.id);
+
+                const mongoose = require('mongoose');
+                let conditions = {};
+                const id = mongoose.Types.ObjectId(`${req.body.id}`);
+                conditions["_id"] = id;
+
+                const thisUser = await UserModel.aggregate([
+                    {$match: conditions},
+                    {
+                        $lookup: {
+                            from: "projects",
+                            localField: "projectId",
+                            foreignField: "_id",
+                            as: "projectArr",
+                        }
+                    }
+                ])
                 
-                if (!thisObject) return res.status(404);
-                // if (thisObject.userId.toString() !== session.userId) return res.status(403);
+                if (!thisUser[0]) return res.status(404);
+
+                // const thisProject = await ProjectModel.findById(thisObject.projectId) // can I do lookups instead
+                const accountId = thisUser[0].projectArr[0].accountId;
+                const thisAccount = await getCurrUserRequest(session.user.email)
+                if (accountId.toString() !== thisAccount._id.toString()) return res.status(403).json({message: "You do not have permission to delete this project."});
                 
                 await UserModel.deleteOne({_id: req.body.id});
+                await UpdateModel.deleteMany({userId: req.body.id});
                 
-                return res.status(200).json({message: "Object deleted"});
+                return res.status(200).json({message: "User successfully deleted"});
             } catch (e) {
                 return res.status(500).json({message: e});
             }

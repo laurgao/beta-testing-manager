@@ -105,28 +105,70 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();
                 
                 if (req.body.id) {
-                    if (!(req.body.userId || req.body.date || req.body.selections || req.body.texts)) {
+                    if (!(req.body.userId || req.body.date || req.body.selections || req.body.texts || req.body.name )) {
                         return res.status(406);            
                     }
                     const thisObject = await UpdateModel.findById(req.body.id);
                     if (!thisObject) return res.status(404);
                     
-                    /* thisObject.userId = req.body.userId;
+                    thisObject.userId = req.body.userId;
+                    thisObject.name = req.body.name;
                     thisObject.date = req.body.date;
-                    thisObject.selections = req.body.selections;
-                    thisObject.texts = req.body.texts; */
                     
                     await thisObject.save();
+                    let conditions = {noteId: req.body.id};
+                    const texts = TextModel.find({noteId: req.body.id});
                     
-                    return res.status(200).json({message: "Object updated"});                            
+                    // texts.map(t => (
+                    //     t.body = req.body.texts.filter(text => text.templateId == t.templateId)[0].body // can you use map to modify properties like this
+                    // ))
+                    // TextModel.insertMany(texts)
+                    // await texts.map(newText => (TextModel.insertMany([newText])))
+                    
+                    // const savedTexts = await texts.map(newText => (newText.save()))
+
+                    const newTexts = req.body.texts && req.body.texts.map(s => (
+                        new TextModel({
+                            noteId: req.body.id,
+                            templateId: s.templateId,
+                            body: s.body,                   
+                        })
+                        
+                    ));
+                    await TextModel.deleteMany({noteId: req.body.id});
+                    await newTexts.map(newText => (newText.save()));
+
+                    const newSelections = req.body.selections && req.body.selections.map(s => (
+                        new SelectionModel({
+                            noteId: req.body.id,
+                            templateId: s.templateId,
+                            selected: s.selected,                   
+                        })
+                    ));
+                    await SelectionModel.deleteMany({noteId: req.body.id});
+
+                    const savedSelections = await newSelections.map(newSelection => (newSelection.save()))
+                    
+                    return res.status(200).json({message: "Update successfully updated"});  
+                    
+
+                    const selections = SelectionModel.find({noteId: req.body.id});
+                    selections.map(s => (
+                        s.selected = req.body.selections.filter(selection => selection.templateId == s.templateId)[0].selected // can you use map to modify properties like this
+                    ))
+                    await selections.map(s => (
+                        s.save()
+                    ))
+                                              
                 } else {
-                    if (!(req.body.userId && req.body.name && req.body.selections)) {
+                    if (!(req.body.userId && req.body.name && req.body.date && req.body.selections)) {
                         return res.status(406);            
                     }
                     
                     const newNote = new UpdateModel({
                         userId: req.body.userId,
                         name: req.body.name,
+                        date: req.body.date,
                     });
 
                     const savedNote = await newNote.save();
@@ -176,7 +218,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 // if (thisObject.userId.toString() !== session.userId) return res.status(403);
                 
                 await UpdateModel.deleteOne({_id: req.body.id});
-                
+                await TextModel.deleteMany({noteId: req.body.id});
+                await SelectionModel.deleteMany({noteId: req.body.id});
+
+
                 return res.status(200).json({message: "Object deleted"});
             } catch (e) {
                 return res.status(500).json({message: e});

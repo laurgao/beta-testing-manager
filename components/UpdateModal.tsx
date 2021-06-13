@@ -3,34 +3,38 @@ import React, { useEffect, useState } from 'react'
 import H1 from './H1'
 import UpModal from './UpModal'
 import PrimaryButton from "./PrimaryButton"
-import { DatedObj, SelectionTemplateObj, TextTemplateObj, UserObj } from '../utils/types';
+import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from '../utils/types';
+import {format, formatDistance} from "date-fns";
 import SmallTitle from './SmallTitle';
 
-const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdateUserId, selectionTemplates, textTemplates, users, setIter, iter}: {
-        addUpdateOpen: boolean,
-        setAddUpdateOpen: any,
-        updateUserId: string,
-        setUpdateUserId?: any,
+const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, textTemplates, users, setIter, iter, update}: {
+        isOpen: boolean,
+        setIsOpen: any,
+        userId: string,
+        setUserId?: any,
         selectionTemplates: DatedObj<SelectionTemplateObj>[],
         textTemplates: DatedObj<TextTemplateObj>[],
         users: DatedObj<UserObj>[],
         setIter?: any,
-        iter: number
+        iter: number,
+        update?: DatedObj<UpdateObj>,
     }) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [updateName, setUpdateName] = useState<string>("");
+    const [name, setName] = useState<string>(update ? update.name : "");
+    const [date, setDate] = useState<string>(format((update ? new Date(update.date) : new Date()), "yyyy-MM-dd"));
+    
     
     // create a state variable for the value of every selection template
     const [selections, setSelections] = useState<{templateId: string, selected: string, required: boolean}[]>([])
     const [texts, setTexts] = useState<{templateId: string, body: string, required: boolean}[]>([])
 
     useEffect(() => {
-        selectionTemplates && setSelections(selectionTemplates.map(s => (
+        selectionTemplates && setSelections(selectionTemplates.map(st => (
             {
-                templateId: s._id,
-                selected: "",
-                required: s.required,
+                templateId: st._id,
+                selected: (update && update.selectionArr.filter(s => (s.templateId == st._id))[0]) ? update.selectionArr.filter(s => (s.templateId == st._id))[0].selected : "",
+                required: st.required,
             }
         )))
     }, [selectionTemplates]); 
@@ -39,41 +43,38 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
         textTemplates && setTexts(textTemplates.map(tt => (
             {
                 templateId: tt._id,
-                body: "",
+                body: (update && update.textArr.filter(t => (t.templateId == tt._id))[0]) ? update.textArr.filter(t => (t.templateId == tt._id))[0].body : "",
                 required: tt.required
             }
         )))
     }, [textTemplates]);
 
-    // see if all required texts and selections have a value.
-    const [areTextsFilledIn, setAreTextsFilledIn] = useState<boolean>(false);
+    // See if all required texts and selections have a value.
+    const [filledIn, setFilledIn] = useState<boolean>(false);
     useEffect(() => {
-        setAreTextsFilledIn(true);
-        texts.filter(text => (text.required)).map(text => (!text.body && setAreTextsFilledIn(false)));
-    }, [texts])
-
-    const [areSelectionsFilledIn, setAreSelectionsFilledIn] = useState<boolean>(false);
-    useEffect(() => {
-        setAreSelectionsFilledIn(true);
-        selections.filter(s => (s.required)).map(s => (s.selected == "" ? setAreSelectionsFilledIn(false) : console.log(s.selected)));
-    }, [selections])
+        setFilledIn(true);
+        texts.filter(t => (t.required)).map(t => (!t.body && setFilledIn(false)));
+        selections.filter(s => (s.required)).map(s => (s.selected == "" && setFilledIn(false)));
+    }, [texts, selections])
 
     function handleAddUpdate() {
         setIsLoading(true);
         axios.post("/api/update", {
-            name: updateName,
-            userId: updateUserId,
+            name: name,
+            userId: userId,
+            date: date,
             selections: selections,
-            texts: texts
+            texts: texts,
+            id: update && update._id
         }).then(res => {
             if (res.data.error) {
                 setIsLoading(false);
                 console.log(`Error: ${res.data.error}`);
             } else {
-                setAddUpdateOpen(false);
+                setIsOpen(false);
                 setIsLoading(false);
                 setIter(iter + 1); 
-                setUpdateName("");
+                setName("");
                 console.log(res.data);
             }
         }).catch(e => {
@@ -83,17 +84,28 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
     }
 
     return (users && users.length) ? (
-        <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
+        <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
             {console.log("1")}
-            <p className="text-sm btm-text-gray-400">{users.length == 1 ? `New update for ${users[0].name}` : "New update"}</p>
+            <p className="text-sm btm-text-gray-400">{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</p>
+            
+            <div className="my-8">
+                <div className="up-ui-title my-4"><span>Date</span></div>
+                <input
+                    type="date"
+                    className="w-full text-xl h-12"
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                />
+            </div>
+            
             <div className="my-12">
                 {users.length > 1 && (
                     <>
                         <SmallTitle>User</SmallTitle>
                         <select
-                            className={`border-b w-full content my-2 py-2 ${!updateUserId && "opacity-30"}`}
-                            value={updateUserId}
-                            onChange={e => setUpdateUserId(e.target.value)}
+                            className={`border-b w-full content my-2 py-2 ${!userId && "opacity-30"}`}
+                            value={userId}
+                            onChange={e => setUserId(e.target.value)}
                             placeholder="Choose a user"
                         >
                             <option value="">Choose a user</option>
@@ -116,9 +128,9 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
                     type="text"
                     className="border-b w-full content my-2 py-2"
                     placeholder="Check in 2"
-                    value={updateName}
+                    value={name}
                     id="update-name-field" 
-                    onChange={e => setUpdateName(e.target.value)}
+                    onChange={e => setName(e.target.value)}
                 />
             </div>
             {textTemplates && texts.length && textTemplates.map(textTemplate => (
@@ -166,16 +178,16 @@ const AddUpdateModal = ({addUpdateOpen, setAddUpdateOpen, updateUserId, setUpdat
             <PrimaryButton
                 onClick={handleAddUpdate}
                 isLoading={isLoading}
-                isDisabled={!(updateUserId && updateName && areTextsFilledIn && areSelectionsFilledIn)}
+                isDisabled={!(userId && name && filledIn)}
             >
-                Create
+                {update ? "Save" : "Create"}
             </PrimaryButton>
         </UpModal>
     ) : (
-        <UpModal isOpen={addUpdateOpen} setIsOpen={setAddUpdateOpen} wide={true}>
+        <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
             <p>Create a user to write updates!</p>
         </UpModal>
     )
 }
 
-export default AddUpdateModal
+export default UpdateModal

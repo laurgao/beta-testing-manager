@@ -5,6 +5,8 @@ import {getSession} from "next-auth/client";
 import { getCurrUserRequest } from "../../utils/requests";
 import { SelectionTemplateModel } from "../../models/selectionTemplate";
 import { TextTemplateModel } from "../../models/textTemplate";
+import { UserModel } from "../../models/user";
+import { UpdateModel } from "../../models/update";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -95,17 +97,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 await dbConnect();
                 
                 if (req.body.id) {
-                    if (!(req.body.accountId || req.body.name || req.body.description || req.body.collaborators || req.body.featuredQuestions)) {
+                    if (!(req.body.name || req.body.description || req.body.collaborators || req.body.featuredQuestions)) {
                         return res.status(406);            
                     }
                     const thisObject = await ProjectModel.findById(req.body.id);
                     if (!thisObject) return res.status(404);
                     
-                    thisObject.accountId = req.body.accountId;
                     thisObject.name = req.body.name;
-                    thisObject.description = req.body.description;
-                    thisObject.collaborators = req.body.collaborators;
-                    thisObject.featuredQuestions = req.body.featuredQuestions;
+                    thisObject.description = req.body.description || "";
+                    if (req.body.collaborators) thisObject.collaborators = req.body.collaborators;
+                    if (req.body.featuredQuestions) thisObject.featuredQuestions = req.body.featuredQuestions;
                     
                     await thisObject.save();
                     
@@ -173,12 +174,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                
                 const thisObject = await ProjectModel.findById(req.body.id);
                 
-                if (!thisObject) return res.status(404);
-                // if (thisObject.userId.toString() !== session.userId) return res.status(403);
+                if (!thisObject) return res.status(404).json({message: "No project found with given ID."});
+                const thisAccount = await getCurrUserRequest(session.user.email)
+                if (thisObject.accountId.toString() !== thisAccount._id.toString()) return res.status(403).json({message: "You do not have permission to delete this project."});
                 
                 await ProjectModel.deleteOne({_id: req.body.id});
+
+                const users = await UserModel.find({projectId: req.body.id})
+
+                if (users) {
+                    await UserModel.deleteMany({projectId: req.body.id});
+                    await users.map(user => (
+                        UpdateModel.deleteMany({userId: user._id})
+                    ))
+                }
                 
-                return res.status(200).json({message: "Object deleted"});
+                return res.status(200).json({message: "Project successfully deleted"});
             } catch (e) {
                 return res.status(500).json({message: e});
             }
