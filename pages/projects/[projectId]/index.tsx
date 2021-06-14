@@ -49,7 +49,6 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
     const projectData: DatedObj<ProjectObj> = data ? data.projectData : {name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: ""};
     const [projectName, setProjectName] = useState<string>();
     const [description, setDescription] = useState<string>();
-
     
     useEffect(() => {
         if(projectData) {
@@ -57,17 +56,11 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
             setProjectName(projectData.name)
         }
     }, [projectData])
-    
-    const selectionQuestions: string[] = selectionTemplates ? selectionTemplates.map(s => (
-        s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
-    )) : []
 
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     useEffect(() => {
         setIsModalOpen(addUpdateOpen || addUserOpen ||  deleteProjectOpen || editProjectOpen);
     }, [addUpdateOpen, addUserOpen, deleteProjectOpen, editProjectOpen])
-
-
 
     function toggleAddUser(e) {
         if (!isModalOpen) {
@@ -186,7 +179,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
             </div>
 
             <div className="mb-12">
-                <Tabs tab={tab} tabs={["Dashboard", "Users", "Updates"]} setTab={setTab}/>
+                <Tabs state={tab} setState={setTab} displayedTabs={["Dashboard", "Users", "Updates"]}/>
             </div>
 
             {addUserOpen && (
@@ -224,8 +217,8 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                 // get all users assoc with this project id
                 // map into a table
                 <Table 
-                    gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
-                    headers={["Name", "Last update", "Added", "Tags", ...selectionQuestions ,"Total updates"]}
+                    gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionTemplates.length || 0)}6rem`}
+                    headers={(selectionTemplates && selectionTemplates[0]) ? ["Name", "Last update", "Added", "Tags", ...selectionTemplates.map(s => (s.question)) ,"Total updates"] : ["Name", "Last update", "Added", "Tags", "Total updates"]}
                 >
                     {users ? users[0] ? users.map(user => (
                         <>
@@ -236,8 +229,8 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                 truncate={true}
                                 wide={true}
                             >{user.name}</TableItem>
-                            {(user.updateArr && user.updateArr[user.updateArr.length-1]) ? user.updateArr[user.updateArr.length-1] && <TableItem truncate={true}>{formatDistance(
-                                new Date(user.updateArr[user.updateArr.length-1].date),
+                            {(user.updateArr && user.updateArr[0]) ? <TableItem truncate={true}>{formatDistance(
+                                new Date(user.updateArr[0].date),
                                 new Date(),
                                 {
                                     addSuffix: true,
@@ -262,12 +255,12 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                 // selectionArr will exist as an empty array if there are no selections.
                             )): (
                                 // If use has no updates, have a "none" for every selection template.
-                                selectionQuestions.map((q, index) => (
-                                    <p key={index}></p>
+                                selectionTemplates && selectionTemplates[0] && selectionTemplates.map((st, index) => (
+                                    <p key={st._id}></p>
                                 )) 
                             )}
                             <TableItem>{user.updateArr.length.toString()}</TableItem>
-                            <hr className={`col-span-${5 + selectionQuestions.length} my-2`}/>
+                            <hr className={`col-span-${5 + (selectionTemplates.length || 0)} my-2`}/>
                         </>
                     )) : <TableItem main={true}>No users</TableItem> : <Skeleton className={`col-span-${5}`}/>}
                 </Table>
@@ -276,8 +269,8 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
             {tab=="updates" && (
                 // get all updates with this project id and map into table.
                 <Table 
-                gtc={`1fr 1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
-                headers={["User", "Name", ...selectionQuestions ,"Date"]}
+                gtc={`1fr 1fr ${"6rem ".repeat((selectionTemplates.length || 0))}6rem`}
+                headers={selectionTemplates && selectionTemplates[0] ? ["User", "Name", ...selectionTemplates.map(s => (s.question)) ,"Date"] : ["User", "Name", "Date"]}
                 >
                     {(updates) ? updates[0] ? updates.map(update => (
                         <>
@@ -299,7 +292,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                     addSuffix: true,
                                 },
                                 )}</TableItem> 
-                            <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
+                            <hr className={`col-span-${3 + (selectionTemplates.length || 0)} my-2`}/>
                         </>
                     )) : <TableItem>No updates.</TableItem> : <Skeleton/>}
                 </Table>

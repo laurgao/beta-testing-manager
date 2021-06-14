@@ -1,12 +1,12 @@
 import React from 'react'
 
-const Tabs = ({tab, setTab, tabs, className}: {tab: string, setTab: any, tabs: string[], className?: string}) => {
+const Tabs = ({state, setState, displayedTabs, className}: {state: string, setState: any, displayedTabs: string[], className?: string}) => {
     return (
         <>
-            {tabs.map(t => (
+            {displayedTabs.map(t => (
                 <button 
-                    className={`focus:outline-none ${t.toLowerCase()==tab ? "btm-text-gray-700 font-bold border-b-2 btm-gray-700-border" : "btm-text-gray-400 font-normal"} ${className && className} mr-6`}
-                    onClick={() => setTab(t.toLowerCase())}
+                    className={`focus:outline-none ${t.toLowerCase()==state ? "btm-text-gray-700 font-bold border-b-2 btm-gray-700-border" : "btm-text-gray-400 font-normal"} ${className && className} mr-6`}
+                    onClick={() => setState(t.toLowerCase())}
                     key={t}
                 >{t}</button>
             ))}

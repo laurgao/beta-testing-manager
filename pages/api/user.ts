@@ -94,16 +94,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             as: "projectArr",
                         }
                     },
-                    {
-                        $sort: {
-                            'updateArr[0].date': -1,
-                        },
-                    },
                 ]);
-                
-                // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
-                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
 
+                thisObject.sort((a, b) => {return new Date(b.updateArr[0].date).getTime() - new Date(a.updateArr[0].date).getTime()});
+
+                const thisProject = thisObject[0].projectArr[0]
+                const selectionTemplates = thisProject.selectionTemplateArr
+                const textTemplates = thisProject.textTemplateArr
+                
                 // Get all the updates of all the users
                 let updates = [];
                 thisObject.map((user) => (
@@ -111,12 +109,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         updates.push(update);
                     })
                 ))
+                
+                // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
+                if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
 
                 // Sort all updates by date
                 updates.sort((a: UpdateObj, b: UpdateObj) => {return new Date(b.date).getTime() - new Date(a.date).getTime()});
-                const thisProject = thisObject[0].projectArr[0]
-                const selectionTemplates = thisProject.selectionTemplateArr
-                const textTemplates = thisProject.textTemplateArr
+                
+                
                 
                 return res.status(200).json({
                     userData: cleanForJSON(thisObject), 
