@@ -235,19 +235,19 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                 wide={true}
                             >{user.name}</TableItem>
                             {(user.updateArr && user.updateArr[user.updateArr.length-1]) ? user.updateArr[user.updateArr.length-1] && <TableItem truncate={true}>{`${formatDistance(
-                                new Date(user.updateArr[user.updateArr.length-1].date || user.updateArr[user.updateArr.length-1].createdAt),
+                                new Date(user.updateArr[user.updateArr.length-1].date),
                                 new Date(),
                                 {
-                                    includeSeconds: true,
+                                    includeSeconds: false,
                                 },
                             )} ago`}</TableItem> : (
                                 <p></p>
                             )}
                             <TableItem truncate={true}>{`${formatDistance(
-                                new Date(user.date || user.createdAt),
+                                new Date(user.date),
                                 new Date(),
                                 {
-                                    includeSeconds: true,
+                                    includeSeconds: false,
                                 },
                             )} ago`}</TableItem>
                             <div className="flex items-center">
@@ -292,10 +292,10 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                     <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
                                 ))}
                                 <TableItem>{`${formatDistance(
-                                    new Date(update.date || update.createdAt),
+                                    new Date(update.date),
                                     new Date(),
                                     {
-                                        includeSeconds: true,
+                                        includeSeconds: false,
                                     },
                                     )} ago`}</TableItem> 
                                 <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>

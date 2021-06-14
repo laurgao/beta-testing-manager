@@ -128,7 +128,7 @@ const index = ( props: {userId: string } ) => {
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Joined</p>
-                        {user ? <p className="text-xl btm-text-gray-500">{format(new Date(user.date || user.createdAt), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
+                        {user ? <p className="text-xl btm-text-gray-500">{format(new Date(user.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
                     </div>
                     {user && user.projectArr && user.projectArr.length && user.projectArr[0].selectionTemplateArr && user.projectArr[0].selectionTemplateArr.map(st => (
                         <div>
@@ -162,7 +162,7 @@ const index = ( props: {userId: string } ) => {
                                     <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
                                 ))}
                                 <TableItem>{`${formatDistance(
-                                    new Date(update.date || update.createdAt),
+                                    new Date(update.date),
                                     new Date(),
                                     {
                                         includeSeconds: true,

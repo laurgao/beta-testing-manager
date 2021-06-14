@@ -21,6 +21,10 @@ a {
   box-sizing: border-box;
 }
 
+.w-108 {
+  width: 27rem;
+}
+
 .bg-primary {
   background-color: #0026FF;
 }

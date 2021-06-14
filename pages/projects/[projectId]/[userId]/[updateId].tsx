@@ -96,7 +96,7 @@ const updateId = ( props: {updateId: string } ) => {
                 <div className="flex-col btm-max-w-s">
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Date</p>
-                        <p className="text-xl btm-text-gray-500">{update && format(new Date(update.createdAt), "MMM d, yyyy")}</p> 
+                        <p className="text-xl btm-text-gray-500">{update && format(new Date(update.date), "MMM d, yyyy")}</p> 
                     </div>
                     {update && update.selectionArr && update.selectionArr.map(selection => (
                         <div className="mt-9" key={selection._id}>

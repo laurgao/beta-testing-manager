@@ -12,6 +12,8 @@ export interface ProjectObj {
     collaborators: string[], // array of IDs
     featuredQuestions: string[],
     userArr?: DatedObj<UserObj>[],
+    updates?: DatedObj<UpdateObj>[],
+    latestUpdate?: DatedObj<UpdateObj>,
     selectionTemplateArr?: DatedObj<SelectionTemplateObj>[],
     textTemplateArr?: DatedObj<TextTemplateObj>[],
 }

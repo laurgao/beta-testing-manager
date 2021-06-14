@@ -22,6 +22,8 @@ const projects = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project`, fetcher);
     const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
+    
+    console.log(projects)
 
     const toggleAddProject = (e) => {
         if (!addProjectOpen) {
@@ -97,11 +99,16 @@ const projects = () => {
                     className="ml-auto"
                 ><FaPlus className="-mt-0.5"/><span className="ml-2">New project (n)</span></PrimaryButton>
             </div>
-            <div className="md:flex -mx-3 flex-wrap gap-3">
-                {(projects && projects.data) ? projects.data.length ? (
+            <div className="md:flex -mx-3 flex-wrap gap-4">
+                {(projects && projects.data) ? projects.data[0] ? (
                     projects.data.map((project : DatedObj<ProjectObj>) => (
                         <div key={project._id}>
-                            <ProjectCard projectName={project.name} projectId={project._id} userCount={project.userArr && project.userArr.length}/>
+                            <ProjectCard 
+                                projectName={project.name} 
+                                projectId={project._id} 
+                                userCount={project.userArr && project.userArr.length}
+                                latestUpdate={project.latestUpdate}
+                            />
                         </div>
                     ))
                 ) : (

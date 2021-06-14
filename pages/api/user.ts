@@ -5,6 +5,7 @@ import {getSession} from "next-auth/client";
 import { UpdateModel } from "../../models/update";
 import { getCurrUserRequest } from "../../utils/requests";
 import { ProjectModel } from "../../models/project";
+import { UpdateObj } from "../../utils/types";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -55,9 +56,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                         as: "textArr",
                                     }
                                 },
+                                {
+                                    $sort: {
+                                        'date': -1
+                                    },
+                                }   
                             ],
                             as: "updateArr", // you want the selection of the latest update
-                        }
+                        },
                     },
                     {
                         $lookup: {
@@ -86,11 +92,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             ],
                             as: "projectArr",
                         }
-                    }
+                    },
+                    {
+                        $sort: {
+                            'date': -1
+                        },
+                    },
                 ]);
                 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
                 if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
+
+                let updates = [];
+                thisObject.map((user) => (
+                    user.updateArr.map((update) => {
+                        updates.push(update);
+                    })
+                ))
+
+                // Sort all updates by date
+                updates.sort((a: UpdateObj, b: UpdateObj) => {return new Date(b.date) - new Date(a.date)});
+                
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {

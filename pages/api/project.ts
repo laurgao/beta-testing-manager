@@ -82,6 +82,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 ]);
                 
                 if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
+
+                thisObject.map(project => {
+                    project["updates"] = [];
+                    project.userArr.map(user => {
+                        user.updateArr.map(update => {
+                            project["updates"].push(update);
+                        })
+                        project["updates"].sort((a, b) => {return new Date(a.date) - new Date(b.date)});
+                        project["latestUpdate"] = project.updates[0]
+                    })
+                })
+                
                 
                 return res.status(200).json({data: thisObject});
             } catch (e) {
