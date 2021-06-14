@@ -20,7 +20,7 @@ const UserModal = ({isOpen, setIsOpen, user, iter, setIter, setTab, projectId} :
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>(user ? user.name : "");
     const [email, setEmail] = useState<string>(user ? user.email : "");
-    const [date, setDate] = useState<string>(format((user ? new Date(user.date) : new Date()), "yyyy-MM-dd"));
+    const [date, setDate] = useState<string>(format(user ? new Date(user.date) : new Date(), "yyyy-MM-dd"));
 
     function handleAddUser() {
         setIsLoading(true);

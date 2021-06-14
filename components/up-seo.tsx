@@ -11,12 +11,12 @@ export default function UpSEO({
     noindex = false,
 }: { title?: string, description?: string, projectName?: string, imgUrl?: string, authorUsername?: string, publishedDate?: string, noindex?: boolean }) {
     const router = useRouter();
-    const fullTitle = title + (projectName ? ` | ${projectName} on Postulate` : " | Postulate");
+    const fullTitle = title + (projectName ? ` | ${projectName} on Beta Testing Manager` : " | Beta Testing Manager");
 
     let openGraph = {
         title: fullTitle,
         description: description,
-        url: "https://postulate.us" + router.asPath,
+        url: "https://btm.vercel.app" + router.asPath,
         images: imgUrl ? [
             { url: imgUrl }
         ] : [
@@ -43,8 +43,6 @@ export default function UpSEO({
         <NextSeo
             title={fullTitle}
             description={description}
-            openGraph={openGraph}
-            twitter={twitter}
             noindex={noindex}
         />
     );

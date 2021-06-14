@@ -9,7 +9,7 @@ import TableItem from '../../../../components/TableItem'
 import Table from '../../../../components/Table'
 import UpSEO from '../../../../components/up-seo'
 import { DatedObj, ProjectObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserGraphObj, UserObj } from '../../../../utils/types'
-import { fetcher, useKey, waitForEl } from '../../../../utils/utils'
+import { cleanForJSON, fetcher, useKey, waitForEl } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import InlineButton from '../../../../components/InlineButton';
 import { getSession } from 'next-auth/client';
@@ -20,15 +20,19 @@ import MoreMenu from '../../../../components/MoreMenu';
 import { FiEdit2, FiTrash } from 'react-icons/fi';
 import UserModal from '../../../../components/UserModal';
 import Truncate from '../../../../components/Truncate';
+import { UserModel } from '../../../../models/user';
+import { ProjectModel } from '../../../../models/project';
+import dbConnect from '../../../../utils/dbConnect';
 
-const User = ( props: {userId: string } ) => {
-    const [userId, setUserId] = useState<string>(props.userId);
+const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } ) => {
+    const [user, setUser] = useState<DatedObj<UserObj>>(props.user);
+    const [project, setProject] = useState<DatedObj<ProjectObj>>(props.project);
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false);
     const [deleteUserOpen, setDeleteUserOpen] = useState<boolean>(false);
     const [editUserOpen, setEditUserOpen] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
-    const {data: data, error: error}: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?id=${userId}&iter=${iter}`, fetcher);
-    const user: DatedObj<UserObj> = data ? data.userData[0] : {name: "",  _id: "", createdAt: "", updatedAt: "", projectId: "", date: "", tags: []};
+    const {data: data, error: error}: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?id=${user._id}&iter=${iter}`, fetcher);
+    const userData: DatedObj<UserObj> = data ? data.userData[0] : {name: "",  _id: "", createdAt: "", updatedAt: "", projectId: "", date: "", tags: []};
     const updates: DatedObj<UpdateObj>[] = data ? data.updateData : [];
     const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData : [];
     const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData : [];
@@ -50,15 +54,15 @@ const User = ( props: {userId: string } ) => {
     
     return (
         <div className="max-w-4xl mx-auto px-4">
-            <UpSEO title="Projects"/>
+            <UpSEO title={(userData && userData.name) ? userData.name : user.name} projectName={(projectData && projectData.name) ? projectData.name : project.name}/>
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
                 {projectData.name ? <InlineButton href={`/projects/${user.projectId}`}>{projectData.name}</InlineButton> : <Skeleton width={100}/>}
             </div>
-            {user && deleteUserOpen && (
+            {data && userData && (
                 <DeleteModal 
-                    item={user}
+                    item={userData}
                     itemType="user"
                     isOpen={deleteUserOpen}
                     setIsOpen={setDeleteUserOpen}
@@ -67,11 +71,11 @@ const User = ( props: {userId: string } ) => {
                 />
             )}
 
-            {user && editUserOpen && (
+            {data && userData && (
                 <UserModal 
                     isOpen={editUserOpen}
                     setIsOpen={setEditUserOpen}
-                    user={user}
+                    user={userData}
                     iter={iter}
                     setIter={setIter}
                     projectId={user.projectId}
@@ -82,7 +86,7 @@ const User = ( props: {userId: string } ) => {
                 <UpdateModal 
                     isOpen={addUpdateOpen}
                     setIsOpen={setAddUpdateOpen}
-                    userId={userId}
+                    userId={user._id}
                     users={[user]}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
@@ -91,7 +95,7 @@ const User = ( props: {userId: string } ) => {
                 />
             )}
             <div className="flex items-center mb-12">
-                {user ? <H1 text={user.name} /> : <Skeleton width={200} height={40}/>}
+                {userData ? <H1 text={userData.name} /> : <Skeleton width={200} height={40}/>}
                 <div className="ml-auto flex flex-row gap-3">
                     <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus className="-mt-0.5"/><span className="ml-2">New update (n)</span></PrimaryButton>
                     <MoreMenu>
@@ -104,15 +108,15 @@ const User = ( props: {userId: string } ) => {
                 <div className="flex flex-col gap-9">
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Email</p>
-                        {user ? <p className="text-xl btm-text-gray-500">{user.email ? user.email : "N/A"}</p> : <Skeleton width={100}/>}
+                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.email ? userData.email : "N/A"}</p> : <Skeleton width={100}/>}
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Tags</p>
-                        {user ? <p className="text-xl btm-text-gray-500">{user.tags.length ? user.tags : "No tags" /* badge map */ }</p> : <Skeleton width={100}/>}
+                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.tags.length ? userData.tags : "No tags" /* badge map */ }</p> : <Skeleton width={100}/>}
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Joined</p>
-                        {user && user.date ? <p className="text-xl btm-text-gray-500">{format(new Date(user.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
+                        {userData && userData.date ? <p className="text-xl btm-text-gray-500">{format(new Date(userData.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
                     </div>
                     {selectionTemplates && selectionTemplates[0] && selectionTemplates.map(st => (
                         <div>
@@ -173,10 +177,18 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
     if (!session) return {redirect: {permanent: false, destination: "/auth/sign-in"}};
     const userId: any = context.params.userId;
-    // const user = await UserModel.findOne({ _id: userId });
+    const projectId: any = context.params.projectId;
 
-    // const project = await 
-    // Future: don't need useSWR and fetch all data server side? That's literally smarter doe right
-    
-    return { props: { userId: userId }};
+    try {
+        await dbConnect();
+
+        const thisUser = await UserModel.findOne({ _id: userId });
+        const thisProject = await ProjectModel.findOne({ _id: projectId });
+
+        if (!thisProject || !thisUser) return {notFound: true};
+
+        return {props: {project: cleanForJSON(thisProject), user: cleanForJSON(thisUser)}};
+    } catch (e) {
+        return {notFound: true};
+    }
 };

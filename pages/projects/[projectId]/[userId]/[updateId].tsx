@@ -7,7 +7,7 @@ import H1 from '../../../../components/H1'
 import InlineButton from '../../../../components/InlineButton'
 import UpSEO from '../../../../components/up-seo'
 import { DatedObj, ProjectObj, UpdateObj, UserObj } from '../../../../utils/types'
-import { fetcher } from '../../../../utils/utils'
+import { cleanForJSON, fetcher } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
 import MoreMenu from '../../../../components/MoreMenu';
@@ -15,19 +15,23 @@ import MoreMenuItem from '../../../../components/MoreMenuItem';
 import { FiEdit2, FiTrash } from 'react-icons/fi';
 import DeleteModal from '../../../../components/DeleteModal';
 import UpdateModal from '../../../../components/UpdateModal';
+import { UpdateModel } from '../../../../models/update';
+import dbConnect from '../../../../utils/dbConnect';
+import { ProjectModel } from '../../../../models/project';
+import { getSession } from 'next-auth/client';
+import { UserModel } from '../../../../models/user';
 
-const Update = ( props: {updateId: string } ) => {
+const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
+    const [update, setUpdate] = useState<DatedObj<UpdateObj>>(props.update);
     const [iter, setIter] = useState<number>(0);
-    const [updateId, setUpdateId] = useState<string>(props.updateId);
-    const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${updateId}&iter=${iter}`, fetcher);
-    const [update, setUpdate] = useState<DatedObj<UpdateObj>>();
+    const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${update._id}&iter=${iter}`, fetcher);
     const [user, setUser] = useState<DatedObj<UserObj>>();
     const [project, setProject] = useState<DatedObj<ProjectObj>>();
     useEffect(() => {
         if(updates) setUpdate(updates.data[0]);
     }, [updates])
     useEffect(() => {
-        if(update) setUser(update.userArr[0]);
+        if(updates && update) setUser(update.userArr[0]);
     }, [update])
     useEffect(() => {
         if(user) setProject(user.projectArr[0]);
@@ -49,7 +53,7 @@ const Update = ( props: {updateId: string } ) => {
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title={update && update.name} projectName={project && project.name}/>
 
-            {update && deleteUpdateOpen && (
+            {updates && update && (
                 <DeleteModal 
                     item={update}
                     itemType="update"
@@ -60,7 +64,7 @@ const Update = ( props: {updateId: string } ) => {
                 />
             )}
 
-            {update && editUpdateOpen && (
+            {updates && update && (
                 <UpdateModal 
                     isOpen={editUpdateOpen}
                     setIsOpen={setEditUpdateOpen}
@@ -84,7 +88,7 @@ const Update = ( props: {updateId: string } ) => {
 
             </div>
             <div className="flex items-center mb-9">
-                <H1 text={update && update.name} />
+                <H1 text={update.name} />
                 <div className="ml-auto flex flex-row gap-3">
                     <MoreMenu>
                         <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUpdateOpen(true)}/>
@@ -131,7 +135,24 @@ const Update = ( props: {updateId: string } ) => {
 export default Update
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const updateId: any = context.params.updateId;
+    const session = await getSession(context);
+    if (!session) return {redirect: {permanent: false, destination: "/auth/sign-in"}};
 
-    return { props: { updateId: updateId }};
+    const updateId: any = context.params.updateId;
+    const userId: any = context.params.userId;
+    const projectId: any = context.params.projectId;
+
+    try {
+        await dbConnect();
+
+        const thisUpdate = await UpdateModel.findOne({ _id: updateId });
+        const thisUser = await UserModel.findOne({ _id: userId });
+        const thisProject = await ProjectModel.findOne({ _id: projectId });
+
+        if (!thisProject || !thisUser || !thisUpdate) return {notFound: true};
+
+        return {props: {update: cleanForJSON(thisUpdate), project: cleanForJSON(thisProject), user: cleanForJSON(thisUser)}};
+    } catch (e) {
+        return {notFound: true};
+    }
 };
