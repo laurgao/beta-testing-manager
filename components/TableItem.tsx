@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React from 'react'
+import Truncate from './Truncate';
 
 const TableItem = ({children, href, truncate, wide, main, className}: {
     children: string,
@@ -13,12 +13,14 @@ const TableItem = ({children, href, truncate, wide, main, className}: {
     const classes = main ? `text-base btm-text-gray-500 font-semibold text-left py-2 ${className && className}` : `text-base btm-text-gray-500 ${className && className}`
     return href ? (
         <Link href={href}>
-            <a className={classes}>{truncate && children.length > tl ? `${children.substring(0, tl)}...` : children}</a>
+            <a className={classes}>
+                {truncate ? <Truncate length={tl}>{children}</Truncate> : `${children}`}
+            </a>
         </Link>
     ) : (
-        <div>
-            <p className={classes}>{truncate && children.length > tl ? `${children.substring(0, tl)}...` : children}</p>
-        </div>
+        <p className={classes}>
+            {truncate ? <Truncate length={tl}>{children}</Truncate> : `${children}`}
+        </p>
     )
 }
 

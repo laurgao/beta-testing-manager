@@ -3,7 +3,7 @@ import H1 from '../../../components/H1'
 import PrimaryButton from '../../../components/PrimaryButton'
 import SecondaryButton from '../../../components/SecondaryButton'
 import UpSEO from '../../../components/up-seo'
-import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj, TextTemplateObj, DatedObj } from '../../../utils/types'
+import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj, TextTemplateObj, DatedObj, UserGraphObj } from '../../../utils/types'
 import { cleanForJSON, fetcher, waitForEl, useKey } from '../../../utils/utils'
 import { useState, useEffect } from "react"
 import {format, formatDistance} from "date-fns";
@@ -40,20 +40,23 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
     const [editProjectOpen, setEditProjectOpen] = useState<boolean>(false);
     const [deleteProjectOpen, setDeleteProjectOpen] = useState<boolean>(false);
     
-    const {data: users, error: userError}: SWRResponse<{data: DatedObj<UserObj>[] }, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
+    const {data: data, error: error}: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
+
+    const users: DatedObj<UserObj>[] = data ? data.userData : [];
+    const updates: DatedObj<UpdateObj>[] = data ? data.updateData : [];
+    const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData : [];
+    const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData : [];
+    const projectData: DatedObj<ProjectObj> = data ? data.projectData : {name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: ""};
     const [projectName, setProjectName] = useState<string>();
     const [description, setDescription] = useState<string>();
-    const [selectionTemplates, setSelectionTemplates] = useState<DatedObj<SelectionTemplateObj>[]>()
-    const [textTemplates, setTextTemplates] = useState<DatedObj<TextTemplateObj>[]>()
 
+    
     useEffect(() => {
-        if(users && users.data) {
-            setTextTemplates(users && users.data && users.data[0] && users.data[0].projectArr[0] && users.data[0].projectArr[0].textTemplateArr);
-            setSelectionTemplates(users && users.data && users.data[0] && users.data[0].projectArr[0] && users.data[0].projectArr[0].selectionTemplateArr);
-            setDescription((users && users.data && users.data[0] && users.data[0].projectArr[0].description) || "")
-            setProjectName(users && users.data && users.data[0] && users.data[0].projectArr[0].name)
+        if(projectData) {
+            setDescription((projectData.description) || "")
+            setProjectName(projectData.name)
         }
-    }, [users])
+    }, [projectData])
     
     const selectionQuestions: string[] = selectionTemplates ? selectionTemplates.map(s => (
         s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
@@ -115,7 +118,6 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
             console.log(e);
         });
     }
-
 
 
     return (
@@ -206,7 +208,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                     setUserId={setUpdateUserId}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
-                    users={users && users.data}
+                    users={users}
                     iter={iter}
                     setIter={setIter}
                 />
@@ -225,7 +227,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                     gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                     headers={["Name", "Last update", "Added", "Tags", ...selectionQuestions ,"Total updates"]}
                 >
-                    {users ? users.data ? users.data.map(user => (
+                    {users ? users[0] ? users.map(user => (
                         <>
                             <TableItem 
                                 main={true}
@@ -234,22 +236,22 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                 truncate={true}
                                 wide={true}
                             >{user.name}</TableItem>
-                            {(user.updateArr && user.updateArr[user.updateArr.length-1]) ? user.updateArr[user.updateArr.length-1] && <TableItem truncate={true}>{`${formatDistance(
+                            {(user.updateArr && user.updateArr[user.updateArr.length-1]) ? user.updateArr[user.updateArr.length-1] && <TableItem truncate={true}>{formatDistance(
                                 new Date(user.updateArr[user.updateArr.length-1].date),
                                 new Date(),
                                 {
-                                    includeSeconds: false,
+                                    addSuffix: true,
                                 },
-                            )} ago`}</TableItem> : (
+                            )}</TableItem> : (
                                 <p></p>
                             )}
-                            <TableItem truncate={true}>{`${formatDistance(
+                            <TableItem truncate={true}>{formatDistance(
                                 new Date(user.date),
                                 new Date(),
                                 {
-                                    includeSeconds: false,
+                                    addSuffix: true,
                                 },
-                            )} ago`}</TableItem>
+                            )}</TableItem>
                             <div className="flex items-center">
                                 {user.tags && user.tags.map((tag, index) => (
                                     <Badge key={index}>{tag}</Badge >
@@ -277,31 +279,29 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                 gtc={`1fr 1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
                 headers={["User", "Name", ...selectionQuestions ,"Date"]}
                 >
-                    {users && users.data ? users.data.map(user => ( // does empty array users pass `users &&` ?
-                        (user.updateArr && user.updateArr[0]) && user.updateArr.map(update => (
-                            <>
-                                <TableItem 
-                                    main={true}
-                                    href={`/projects/${project._id}/${update.userId}`} 
-                                    className="text-base"
-                                    truncate={true}
-                                    wide={true}
-                                >{user.name}</TableItem>
-                                <TableItem truncate={true} href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</TableItem>
-                                {update.selectionArr && update.selectionArr.map(s => (
-                                    <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
-                                ))}
-                                <TableItem>{`${formatDistance(
-                                    new Date(update.date),
-                                    new Date(),
-                                    {
-                                        includeSeconds: false,
-                                    },
-                                    )} ago`}</TableItem> 
-                                <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
-                            </>
-                        ))
-                    )) : <Skeleton/>}
+                    {(updates) ? updates[0] ? updates.map(update => (
+                        <>
+                            <TableItem 
+                                main={true}
+                                href={`/projects/${project._id}/${update.userId}`} 
+                                className="text-base"
+                                truncate={true}
+                                wide={true}
+                            >{users.filter(user => user._id == update.userId)[0].name}</TableItem>
+                            <TableItem truncate={true} wide={true} href={`/projects/${project._id}/${update.userId}/${update._id}`}>{update.name}</TableItem>
+                            {update.selectionArr && update.selectionArr.map(s => (
+                                <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
+                            ))}
+                            <TableItem>{formatDistance(
+                                new Date(update.date),
+                                new Date(),
+                                {
+                                    addSuffix: true,
+                                },
+                                )}</TableItem> 
+                            <hr className={`col-span-${3 + selectionQuestions.length} my-2`}/>
+                        </>
+                    )) : <TableItem>No updates.</TableItem> : <Skeleton/>}
                 </Table>
             )}
 

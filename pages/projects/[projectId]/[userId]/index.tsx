@@ -8,7 +8,7 @@ import PrimaryButton from '../../../../components/PrimaryButton'
 import TableItem from '../../../../components/TableItem'
 import Table from '../../../../components/Table'
 import UpSEO from '../../../../components/up-seo'
-import { DatedObj, UserObj } from '../../../../utils/types'
+import { DatedObj, ProjectObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserGraphObj, UserObj } from '../../../../utils/types'
 import { fetcher, useKey, waitForEl } from '../../../../utils/utils'
 import Skeleton from 'react-loading-skeleton';
 import InlineButton from '../../../../components/InlineButton';
@@ -19,6 +19,7 @@ import MoreMenuItem from '../../../../components/MoreMenuItem';
 import MoreMenu from '../../../../components/MoreMenu';
 import { FiEdit2, FiTrash } from 'react-icons/fi';
 import UserModal from '../../../../components/UserModal';
+import Truncate from '../../../../components/Truncate';
 
 const index = ( props: {userId: string } ) => {
     const [userId, setUserId] = useState<string>(props.userId);
@@ -26,30 +27,13 @@ const index = ( props: {userId: string } ) => {
     const [deleteUserOpen, setDeleteUserOpen] = useState<boolean>(false);
     const [editUserOpen, setEditUserOpen] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
-    const {data: users, error: usersError}: SWRResponse<{data: DatedObj<UserObj>[] }, any> = useSWR(`/api/user?id=${userId}&iter=${iter}`, fetcher);
-    const [user, setUser] = useState<DatedObj<UserObj>>();
-    useEffect(() => {
-        if(users) {
-            setUser(users.data[0]); 
-        }
-    }, [users])
-
-    // Fetched data:
-    // user.updateArr
-    // user.updateArr.map(update => update.selectionArr)
-    // user.updateArr.map(update => update.textArr)
-    // user.projectArr[0]
-    // user.projectArr[0].selectionTemplateArr
-    // user.projectArr[0].textTemplateArr
+    const {data: data, error: error}: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?id=${userId}&iter=${iter}`, fetcher);
+    const user: DatedObj<UserObj> = data ? data.userData[0] : {name: "",  _id: "", createdAt: "", updatedAt: "", projectId: "", date: "", tags: []};
+    const updates: DatedObj<UpdateObj>[] = data ? data.updateData : [];
+    const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData : [];
+    const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData : [];
+    const projectData: DatedObj<ProjectObj> = data ? data.projectData : {name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: ""};
     
-    const selectionQuestions: string[] = user && user.projectArr && user.projectArr[0].selectionTemplateArr ? user.projectArr[0].selectionTemplateArr.map(s => (
-        s.question.length > 10 ? `${s.question.substring(0, 10)}...` : s.question
-    )) : [] // There's a better way to do this
-
-    const [projectName, setProjectName] = useState<string>("");
-    useEffect(() => {
-        if(user) setProjectName(user.projectArr && user.projectArr[0].name);
-    }, [user])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     useEffect(() => {
         setIsModalOpen(addUpdateOpen || deleteUserOpen || editUserOpen);
@@ -70,7 +54,7 @@ const index = ( props: {userId: string } ) => {
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
-                {user ? <InlineButton href={`/projects/${user.projectId}`}>{projectName}</InlineButton> : <Skeleton width={100}/>}
+                {projectData.name ? <InlineButton href={`/projects/${user.projectId}`}>{projectData.name}</InlineButton> : <Skeleton width={100}/>}
             </div>
             {user && deleteUserOpen && (
                 <DeleteModal 
@@ -100,8 +84,8 @@ const index = ( props: {userId: string } ) => {
                     setIsOpen={setAddUpdateOpen}
                     userId={userId}
                     users={[user]}
-                    selectionTemplates={user && user.projectArr[0].selectionTemplateArr}
-                    textTemplates={user && user.projectArr[0].textTemplateArr}
+                    selectionTemplates={selectionTemplates}
+                    textTemplates={textTemplates}
                     iter={iter}
                     setIter={setIter}
                 />
@@ -128,13 +112,13 @@ const index = ( props: {userId: string } ) => {
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Joined</p>
-                        {user ? <p className="text-xl btm-text-gray-500">{format(new Date(user.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
+                        {user && user.date ? <p className="text-xl btm-text-gray-500">{format(new Date(user.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
                     </div>
-                    {user && user.projectArr && user.projectArr.length && user.projectArr[0].selectionTemplateArr && user.projectArr[0].selectionTemplateArr.map(st => (
+                    {selectionTemplates && selectionTemplates[0] && selectionTemplates.map(st => (
                         <div>
-                            <p className="text-sm btm-text-gray-400 mb-2">{st.question}</p>
+                            <Truncate className="text-sm btm-text-gray-400 mb-2">{st.question}</Truncate>
                             <p className="text-xl btm-text-gray-500">{
-                                (user && user.updateArr && user.updateArr[user.updateArr.length-1]) ? user.updateArr[user.updateArr.length-1].selectionArr.filter(s => (
+                                (updates && updates[updates.length-1]) ? updates[updates.length-1].selectionArr.filter(s => (
                                     s.templateId == st._id
                                 ))[0].selected : "No updates yet"
                             }</p> 
@@ -145,10 +129,10 @@ const index = ( props: {userId: string } ) => {
 
                 <div className="flex-grow">
                     <Table 
-                        gtc={`1fr ${"6rem ".repeat(selectionQuestions.length)}6rem`}
-                        headers={[ "Name", ...selectionQuestions ,"Date"]}
+                        gtc={`1fr ${"6rem ".repeat(selectionTemplates.length || 0)}6rem`}
+                        headers={(selectionTemplates && selectionTemplates[0]) ? [ "Name", ...selectionTemplates.map(s => (s.question)) ,"Date"] : [ "Name", "Date"]}
                     >
-                        {(user && user.updateArr) ? user.updateArr.length ? user.updateArr.map(update => (
+                        {(data && updates) ? updates[0] ? updates.map(update => (
                             <>
                                 <TableItem 
                                     main={true}
@@ -161,16 +145,15 @@ const index = ( props: {userId: string } ) => {
                                 {update.selectionArr && update.selectionArr.map(s => (
                                     <TableItem truncate={true} key={s._id}>{s.selected}</TableItem>
                                 ))}
-                                <TableItem>{`${formatDistance(
+                                <TableItem>{formatDistance(
                                     new Date(update.date),
                                     new Date(),
                                     {
-                                        includeSeconds: true,
-                                    },
-                                    )} ago`}</TableItem> 
-                                <hr className={`col-span-${2 + selectionQuestions.length} my-2`}/>
+                                        addSuffix: true,
+                                    },)}</TableItem> 
+                                <hr className={`col-span-${2 + (selectionTemplates.length || 0)} my-2`}/>
                             </>
-                        )) : <p>No updates</p> : (
+                        )) : <TableItem>No updates</TableItem> : (
                             <>
                                 <Skeleton className="col-span-2"/>
                                 <Skeleton className="col-span-1"/>

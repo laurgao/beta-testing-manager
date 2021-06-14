@@ -89,7 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         user.updateArr.map(update => {
                             project["updates"].push(update);
                         })
-                        project["updates"].sort((a, b) => {return new Date(a.date) - new Date(b.date)});
+                        project["updates"].sort((a, b) => {return new Date(b.date).getTime() - new Date(a.date).getTime()});
                         project["latestUpdate"] = project.updates[0]
                     })
                 })

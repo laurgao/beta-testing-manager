@@ -19,9 +19,9 @@ const InlineButton = ({onClick, children, href, isLoading, isDisabled, className
                     {children}
                 </Link>
             ) : (
-                        <div className="flex items-center">
-                            {children}
-                        </div>
+                    <div className="flex items-center">
+                        {children}
+                    </div>
                 )}
         </button>
     )

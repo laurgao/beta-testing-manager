@@ -9,8 +9,8 @@ export interface ProjectObj {
     accountId: string, // ID
     name: string,
     description?: string,
-    collaborators: string[], // array of IDs
-    featuredQuestions: string[],
+    collaborators?: string[], // array of IDs
+    featuredQuestions?: string[],
     userArr?: DatedObj<UserObj>[],
     updates?: DatedObj<UpdateObj>[],
     latestUpdate?: DatedObj<UpdateObj>,
@@ -26,6 +26,14 @@ export interface UserObj {
     tags: string[],
     updateArr?: DatedObj<UpdateObj>[],
     projectArr?: DatedObj<ProjectObj>[],
+}
+
+export interface UserGraphObj {
+    userData: DatedObj<UserObj>[],
+    updateData: DatedObj<UpdateObj>[],
+    projectData: DatedObj<ProjectObj>,
+    selectionTemplateData: DatedObj<SelectionTemplateObj>[],
+    textTemplateData: DatedObj<TextTemplateObj>[]
 }
 
 export interface UpdateObj {

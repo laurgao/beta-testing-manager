@@ -6,6 +6,7 @@ import { UpdateModel } from "../../models/update";
 import { getCurrUserRequest } from "../../utils/requests";
 import { ProjectModel } from "../../models/project";
 import { UpdateObj } from "../../utils/types";
+import { cleanForJSON } from "../../utils/utils";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -95,7 +96,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },
                     {
                         $sort: {
-                            'date': -1
+                            'updateArr[0].date': -1,
                         },
                     },
                 ]);
@@ -103,6 +104,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
                 if (!thisObject || !thisObject.length) return res.status(404).json({data: []});
 
+                // Get all the updates of all the users
                 let updates = [];
                 thisObject.map((user) => (
                     user.updateArr.map((update) => {
@@ -111,10 +113,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 ))
 
                 // Sort all updates by date
-                updates.sort((a: UpdateObj, b: UpdateObj) => {return new Date(b.date) - new Date(a.date)});
+                updates.sort((a: UpdateObj, b: UpdateObj) => {return new Date(b.date).getTime() - new Date(a.date).getTime()});
+                const thisProject = thisObject[0].projectArr[0]
+                const selectionTemplates = thisProject.selectionTemplateArr
+                const textTemplates = thisProject.textTemplateArr
                 
-                
-                return res.status(200).json({data: thisObject});
+                return res.status(200).json({
+                    userData: cleanForJSON(thisObject), 
+                    updateData: cleanForJSON(updates),
+                    projectData: cleanForJSON(thisProject),
+                    selectionTemplateData: cleanForJSON(selectionTemplates),
+                    textTemplateData: cleanForJSON(textTemplates)
+                });
             } catch (e) {
                 return res.status(500).json({message: e});                        
             }
