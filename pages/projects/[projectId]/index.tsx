@@ -11,8 +11,6 @@ import Skeleton from 'react-loading-skeleton'
 import InlineButton from '../../../components/InlineButton'
 import Badge from '../../../components/Badge'
 import useSWR, { SWRResponse } from 'swr'
-import UpModal from '../../../components/UpModal'
-import axios from 'axios'
 import Table from '../../../components/Table'
 import Tabs from '../../../components/Tabs'
 import UpdateModal from '../../../components/UpdateModal'
@@ -25,7 +23,6 @@ import SmallTitle from '../../../components/H2'
 import MoreMenu from '../../../components/MoreMenu'
 import MoreMenuItem from '../../../components/MoreMenuItem'
 import { FiEdit2, FiTrash } from 'react-icons/fi'
-import router from 'next/router'
 import DeleteModal from '../../../components/DeleteModal'
 import UserModal from '../../../components/UserModal'
 import ProjectModal from '../../../components/ProjectModal'
@@ -94,26 +91,22 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title={projectName || (project && project.name && project.name)}/>
 
-            {editProjectOpen && (
-                <ProjectModal 
-                    isOpen={editProjectOpen} 
-                    setIsOpen={setEditProjectOpen} 
-                    iter={iter}
-                    setIter={setIter}
-                    project={project}
-                />
-            )}
+            <ProjectModal 
+                isOpen={editProjectOpen} 
+                setIsOpen={setEditProjectOpen} 
+                iter={iter}
+                setIter={setIter}
+                project={project}
+            />
 
-            {deleteProjectOpen && (
-                <DeleteModal 
-                    item={project}
-                    itemType="project"
-                    isOpen={deleteProjectOpen}
-                    setIsOpen={setDeleteProjectOpen}
-                    iter={iter}
-                    setIter={setIter}
-                />
-            )}
+            <DeleteModal 
+                item={project}
+                itemType="project"
+                isOpen={deleteProjectOpen}
+                setIsOpen={setDeleteProjectOpen}
+                iter={iter}
+                setIter={setIter}
+            />
 
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>

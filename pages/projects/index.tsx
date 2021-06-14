@@ -9,16 +9,14 @@ import UpSEO from "../../components/up-seo";
 import H1 from "../../components/H1";
 import Skeleton from "react-loading-skeleton";
 import { fetcher, waitForEl, useKey } from '../../utils/utils'
-import UpModal from "../../components/UpModal";
-import { useRouter } from "next/router";
-import axios from "axios";
 import { FaPlus } from "react-icons/fa";
 import ProjectModal from "../../components/ProjectModal";
 
 const projects = () => {
-    const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project`, fetcher);
-    const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
+    const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project?iter=${iter}`, fetcher);
+    const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
+    console.log(projects)
 
     const toggleAddProject = (e) => {
         if (!addProjectOpen) {
@@ -51,10 +49,10 @@ const projects = () => {
                     projects.data.map((project : DatedObj<ProjectObj>) => (
                         <div key={project._id}>
                             <ProjectCard 
-                                projectName={project.name} 
-                                projectId={project._id} 
+                                project={project}
                                 userCount={project.userArr && project.userArr.length}
-                                latestUpdate={project.latestUpdate}
+                                iter={iter}
+                                setIter={iter}
                             />
                         </div>
                     ))
