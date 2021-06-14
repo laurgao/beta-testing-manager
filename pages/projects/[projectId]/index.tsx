@@ -241,7 +241,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                     includeSeconds: true,
                                 },
                             )} ago`}</TableItem> : (
-                                <TableItem truncate={true}>No updates yet</TableItem>
+                                <p></p>
                             )}
                             <TableItem truncate={true}>{`${formatDistance(
                                 new Date(user.date || user.createdAt),
@@ -255,13 +255,13 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                                     <Badge key={index}>{tag}</Badge >
                                 ))}
                             </div>
-                            {user.updateArr ? user.updateArr[user.updateArr.length-1] && user.updateArr[user.updateArr.length-1].selectionArr.length && user.updateArr[user.updateArr.length-1].selectionArr.map(s => ( // updates are auto sorted by createdAt earliest -> latest. 
+                            {user.updateArr[0] ? user.updateArr[user.updateArr.length-1] && user.updateArr[user.updateArr.length-1].selectionArr.length && user.updateArr[user.updateArr.length-1].selectionArr.map(s => ( // updates are auto sorted by createdAt earliest -> latest. 
                                 <TableItem key={s._id} truncate={true}>{s.selected ? s.selected : "None"}</TableItem>
                                 // selectionArr will exist as an empty array if there are no selections.
                             )): (
                                 // If use has no updates, have a "none" for every selection template.
                                 selectionQuestions.map((q, index) => (
-                                    <TableItem key={index}>None</TableItem>
+                                    <p key={index}></p>
                                 )) 
                             )}
                             <TableItem>{user.updateArr.length.toString()}</TableItem>
@@ -278,7 +278,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
                 headers={["User", "Name", ...selectionQuestions ,"Date"]}
                 >
                     {users && users.data ? users.data.map(user => ( // does empty array users pass `users &&` ?
-                        (user.updateArr) && user.updateArr.length && user.updateArr.map(update => (
+                        (user.updateArr && user.updateArr[0]) && user.updateArr.map(update => (
                             <>
                                 <TableItem 
                                     main={true}

@@ -51,8 +51,8 @@ const updateId = ( props: {updateId: string } ) => {
 
             {update && deleteUpdateOpen && (
                 <DeleteModal 
-                    item={user}
-                    itemType="user"
+                    item={update}
+                    itemType="update"
                     isOpen={deleteUpdateOpen}
                     setIsOpen={setDeleteUpdateOpen}
                     iter={iter}
