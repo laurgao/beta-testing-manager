@@ -64,7 +64,7 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                 />
             )}
 
-            {updates && update && (
+            {updates && update && user && (
                 <UpdateModal 
                     isOpen={editUpdateOpen}
                     setIsOpen={setEditUpdateOpen}
@@ -112,7 +112,7 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                     ))}
                 </div>
                 <div className="flex-grow">
-                    {update && update.textArr && update.textArr.map((text, index) => (
+                    {(updates && update) ? update.textArr && update.textArr.map((text, index) => (
                         <div key={text._id} className="transition">
                             <hr className="my-4 btm-gray-200-border"/>
                             <button className="flex focus:outline-none" onClick={(event) => handleTextOnClick(event, index, textIsOpen == index)}>
@@ -125,7 +125,11 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                                 <p className="text-base btm-text-gray-600 mb-6 mt-8">{text.body}</p> 
                             )}
                         </div>
-                    ))}
+                    )) : (
+                        <>
+                            <Skeleton height={70} count={2}/>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

@@ -19,7 +19,6 @@ import { getSession } from 'next-auth/client'
 import { ProjectModel } from '../../../models/project'
 import dbConnect from '../../../utils/dbConnect'
 import { FaPlus } from 'react-icons/fa'
-import SmallTitle from '../../../components/H2'
 import MoreMenu from '../../../components/MoreMenu'
 import MoreMenuItem from '../../../components/MoreMenuItem'
 import { FiEdit2, FiTrash } from 'react-icons/fi'
@@ -85,7 +84,6 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
             waitForEl("project-name-field");
         }
     }
-
 
     return (
         <div className="max-w-4xl mx-auto px-4">
@@ -162,11 +160,11 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
             {tab == "users" && (
                 // get all users assoc with this project id
                 // map into a table
-                <Table 
+                (data && users) ? (<Table 
                     gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionTemplates.length || 0)}6rem`}
                     headers={(selectionTemplates && selectionTemplates[0]) ? ["Name", "Last update", "Added", "Tags", ...selectionTemplates.map(s => (s.question)) ,"Total updates"] : ["Name", "Last update", "Added", "Tags", "Total updates"]}
                 >
-                    {users ? users[0] ? users.map(user => (
+                    {users[0] ? users.map(user => (
                         <>
                             <TableItem 
                                 main={true}
@@ -208,17 +206,22 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
                             <TableItem>{user.updateArr.length.toString()}</TableItem>
                             <hr className={`col-span-${5 + (selectionTemplates.length || 0)} my-2`}/>
                         </>
-                    )) : <TableItem main={true}>No users</TableItem> : <Skeleton className={`col-span-${5}`}/>}
-                </Table>
+                    )) : <TableItem main={true}>No users</TableItem>}
+                </Table> ) : 
+                <div className={`w-full`} >
+                    <Skeleton height={20}/>
+                    <Skeleton height={40} count={5}/>
+                </div>
             )}
 
             {tab=="updates" && (
+                (data && updates) ? 
                 // get all updates with this project id and map into table.
                 <Table 
                 gtc={`1fr 1fr ${"6rem ".repeat((selectionTemplates.length || 0))}6rem`}
                 headers={selectionTemplates && selectionTemplates[0] ? ["User", "Name", ...selectionTemplates.map(s => (s.question)) ,"Date"] : ["User", "Name", "Date"]}
                 >
-                    {(updates) ? updates[0] ? updates.map(update => (
+                    {updates[0] ? updates.map(update => (
                         <>
                             <TableItem 
                                 main={true}
@@ -240,10 +243,13 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
                                 )}</TableItem> 
                             <hr className={`col-span-${3 + (selectionTemplates.length || 0)} my-2`}/>
                         </>
-                    )) : <TableItem>No updates.</TableItem> : <Skeleton/>}
-                </Table>
+                    )) : <TableItem>No updates.</TableItem> }
+                </Table> : 
+                <div className={`w-full`} >
+                    <Skeleton height={20}/>
+                    <Skeleton height={40} count={5}/>
+                </div>
             )}
-
         </div>
     )
 }

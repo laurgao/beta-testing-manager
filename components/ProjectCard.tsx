@@ -19,7 +19,7 @@ const ProjectCard = ({project, userCount, iter, setIter}: {
     const [deleteProjectOpen, setDeleteProjectOpen] = useState<boolean>(false);
 
     return (
-        <div className="md:flex md:flex-col border btm-gray-200-border p-4 h-52 w-108 hover:shadow-md hover:btm-gray-700-border transition">
+        <div className="flex flex-col border btm-gray-200-border p-4 h-52 w-108 hover:shadow-md hover:btm-gray-700-border transition">
             
             <ProjectModal 
                 isOpen={editProjectOpen} 

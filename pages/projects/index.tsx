@@ -16,7 +16,6 @@ const projects = () => {
     const [iter, setIter] = useState<number>(0);
     const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project?iter=${iter}`, fetcher);
     const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
-    console.log(projects)
 
     const toggleAddProject = (e) => {
         if (!addProjectOpen) {
@@ -47,20 +46,18 @@ const projects = () => {
             <div className="md:flex -mx-3 flex-wrap gap-4">
                 {(projects && projects.data) ? projects.data[0] ? (
                     projects.data.map((project : DatedObj<ProjectObj>) => (
-                        <div key={project._id}>
-                            <ProjectCard 
-                                project={project}
-                                userCount={project.userArr && project.userArr.length}
-                                iter={iter}
-                                setIter={iter}
-                            />
-                        </div>
+                        <ProjectCard 
+                            project={project}
+                            userCount={project.userArr && project.userArr.length}
+                            iter={iter}
+                            setIter={iter}
+                            key={project._id}
+                        />
                     ))
                 ) : (
                     <p>You have no projects. Create a new project today!</p> 
-                ) : <Skeleton count={2}/>}
+                ) : (<div className="w-full"><Skeleton height={208}/></div>) }
             </div>
-            
         </div>
     )
 }
