@@ -96,7 +96,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },
                 ]);
 
-                thisObject.sort((a, b) => {return new Date(b.updateArr[0].date).getTime() - new Date(a.updateArr[0].date).getTime()});
+                // Sort users by date of latest update. If user has no update, sort by user joining date.
+                thisObject.sort((a, b) => {return new Date(b.updateArr[0] ? b.updateArr[0].date : b.date).getTime() - new Date(a.updateArr[0] ? a.updateArr[0].date : b.date).getTime()});
 
                 const thisProject = thisObject[0].projectArr[0]
                 const selectionTemplates = thisProject.selectionTemplateArr
@@ -115,8 +116,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 // Sort all updates by date
                 updates.sort((a: UpdateObj, b: UpdateObj) => {return new Date(b.date).getTime() - new Date(a.date).getTime()});
-                
-                
                 
                 return res.status(200).json({
                     userData: cleanForJSON(thisObject), 
