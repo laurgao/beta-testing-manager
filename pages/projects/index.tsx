@@ -13,17 +13,12 @@ import UpModal from "../../components/UpModal";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { FaPlus } from "react-icons/fa";
+import ProjectModal from "../../components/ProjectModal";
 
 const projects = () => {
-    const router = useRouter();
-    const [session, loading] = useSession();
-    const [name, setName] = useState<string>("");
-    const [description, setDescription] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project`, fetcher);
     const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
-    
-    console.log(projects)
+    const [iter, setIter] = useState<number>(0);
 
     const toggleAddProject = (e) => {
         if (!addProjectOpen) {
@@ -34,63 +29,15 @@ const projects = () => {
     }
     useKey("KeyN", toggleAddProject);
 
-    function onSubmit() {
-        setIsLoading(true);
-
-        axios.post("/api/project", {
-            name: name,
-            description: description
-        }).then(res => {
-            if (res.data.error) {
-                setIsLoading(false);
-                console.log(`Error: ${res.data.error}`);
-            } else {
-                router.push(`/projects/${res.data.id[0]}`); // project page
-                console.log(res.data);
-            }
-        }).catch(e => {
-            setIsLoading(false);
-            console.log(e);
-        });
-    }
-
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title="Projects"/>
-
-            {addProjectOpen && (
-                <UpModal isOpen={addProjectOpen} setIsOpen={setAddProjectOpen} wide={true}>
-                    <H1 text="New project"/>
-                    <div className="my-12">
-                        <h3 className="up-ui-title">Name</h3>
-                        <input
-                            type="text"
-                            className="border-b w-full content my-2 py-2"
-                            placeholder="Beta Testing Manager"
-                            value={name}
-                            id="project-name-field"
-                            onChange={e => setName(e.target.value)}
-                        />
-                    </div>
-                    <div className="my-12">
-                        <h3 className="up-ui-title">Description</h3>
-                        <input
-                            type="text"
-                            className="border-b w-full content my-2 py-2"
-                            placeholder="The all in one tool for effortlessly keeping track of beta testers"
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                        />
-                    </div>
-                    <PrimaryButton
-                        onClick={onSubmit}
-                        isLoading={isLoading}
-                        isDisabled={!name}
-                    >
-                        Create
-                    </PrimaryButton>
-                </UpModal>
-            )}
+            <ProjectModal 
+                isOpen={addProjectOpen} 
+                setIsOpen={setAddProjectOpen}
+                iter={iter}
+                setIter={setIter}
+            />
 
             <div className="flex items-center mb-12">
                 <H1 text="All Projects" />

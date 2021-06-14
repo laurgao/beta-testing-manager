@@ -21,7 +21,7 @@ import { FiEdit2, FiTrash } from 'react-icons/fi';
 import UserModal from '../../../../components/UserModal';
 import Truncate from '../../../../components/Truncate';
 
-const index = ( props: {userId: string } ) => {
+const User = ( props: {userId: string } ) => {
     const [userId, setUserId] = useState<string>(props.userId);
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false);
     const [deleteUserOpen, setDeleteUserOpen] = useState<boolean>(false);
@@ -167,7 +167,7 @@ const index = ( props: {userId: string } ) => {
     )
 }
 
-export default index
+export default User
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);

@@ -5,7 +5,9 @@ import UpModal from './UpModal'
 import PrimaryButton from "./PrimaryButton"
 import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from '../utils/types';
 import {format, formatDistance} from "date-fns";
-import SmallTitle from './SmallTitle';
+import SmallTitle from './H2';
+import Input from './Input';
+import H3 from './H3';
 
 const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, textTemplates, users, setIter, iter, update}: {
         isOpen: boolean,
@@ -85,23 +87,18 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
 
     return (users && users.length) ? (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
-            {console.log("1")}
-            <p className="text-sm btm-text-gray-400">{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</p>
+            <SmallTitle>{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</SmallTitle>
             
+            <Input
+                name="Date"
+                type="date"
+                value={date}
+                setValue={setDate}
+            />
             <div className="my-8">
-                <div className="up-ui-title my-4"><span>Date</span></div>
-                <input
-                    type="date"
-                    className="w-full text-xl h-12"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                />
-            </div>
-            
-            <div className="my-12">
                 {users.length > 1 && (
                     <>
-                        <SmallTitle>User</SmallTitle>
+                        <H3>User</H3>
                         <select
                             className={`border-b w-full content my-2 py-2 ${!userId && "opacity-30"}`}
                             value={userId}
@@ -122,38 +119,33 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                 )}
             </div>
 
-            <div className="my-12">
-                <SmallTitle>Name</SmallTitle>
-                <input
-                    type="text"
-                    className="border-b w-full content my-2 py-2"
-                    placeholder="Check in 2"
-                    value={name}
-                    id="update-name-field" 
-                    onChange={e => setName(e.target.value)}
-                />
-            </div>
+            <Input
+                name="Name"
+                placeholder="Check in 2"
+                value={name}
+                id="update-name-field" 
+                setValue={setName}
+            />
             {textTemplates && texts.length && textTemplates.map(textTemplate => (
-                <div className="my-12" key={textTemplate._id}>
-                    <SmallTitle>{textTemplate.question}</SmallTitle>
-                    <textarea
-                        className="border-b w-full content my-2 py-2"
-                        placeholder="Write something awesome..."
-                        value={texts.filter(text => text.templateId == textTemplate._id)[0].body}
-                        onChange={e => setTexts([
-                            ...texts.filter((text) => text.templateId != textTemplate._id), 
-                            {
-                                templateId: textTemplate._id,
-                                body: e.target.value,
-                                required: textTemplate.required
-                            }
-                        ])}
-                    />
-                </div>
+                <Input
+                    type="textarea"
+                    key={textTemplate._id}
+                    name={textTemplate.question}
+                    placeholder="Write something awesome..."
+                    value={texts.filter(text => text.templateId == textTemplate._id)[0].body}
+                    onChange={e => setTexts([
+                        ...texts.filter((text) => text.templateId != textTemplate._id), 
+                        {
+                            templateId: textTemplate._id,
+                            body: e.target.value,
+                            required: textTemplate.required
+                        }
+                    ])}
+                />
             ))}
             {selectionTemplates && selections.length && selectionTemplates.map(selectionTemplate => (
-                <div className="my-12" key={selectionTemplate._id}>
-                    <SmallTitle>{selectionTemplate.question}</SmallTitle>
+                <div className="my-8" key={selectionTemplate._id}>
+                    <H3>{selectionTemplate.question}</H3>
                     <select
                         className={`border-b w-full content my-2 py-2 focus:outline-none ${selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected == "" && "opacity-30"}`}
                         value={selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected}
@@ -178,7 +170,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
             <PrimaryButton
                 onClick={handleAddUpdate}
                 isLoading={isLoading}
-                isDisabled={!(userId && name && filledIn)}
+                isDisabled={!((userId || users.length == 1) && name && filledIn)}
             >
                 {update ? "Save" : "Create"}
             </PrimaryButton>

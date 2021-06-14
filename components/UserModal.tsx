@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import {format, formatDistance} from "date-fns";
 import axios from 'axios';
-import SmallTitle from './SmallTitle';
+import SmallTitle from './H2';
 import UpModal from './UpModal';
 import PrimaryButton from './PrimaryButton';
 import { DatedObj, UserObj } from '../utils/types';
+import Input from './Input';
 
 const UserModal = ({isOpen, setIsOpen, user, iter, setIter, setTab, projectId} : {
     isOpen: boolean,
@@ -50,37 +51,27 @@ const UserModal = ({isOpen, setIsOpen, user, iter, setIter, setTab, projectId} :
     return (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
         <SmallTitle>{user ? "Edit User" : "New User"}</SmallTitle>
-        <div className="my-12">
-            <h3 className="up-ui-title">Name</h3>
-            <input
-                type="text"
-                className="border-b w-full content my-2 py-2"
-                placeholder="Samson Zhang"
-                value={name}
-                id="user-name-field"
-                onChange={e => setName(e.target.value)}
-            />
-        </div>
-        <div className="my-8">
-        <div className="up-ui-title my-4"><span>Date joined</span></div>
-            <input
-                type="date"
-                className="w-full text-xl h-12"
-                value={date}
-                onChange={e => setDate(e.target.value)}
-            />
-        </div>
-
-        <div className="my-12">
-            <h3 className="up-ui-title">Email (optional)</h3>
-            <input
-                type="text"
-                className="border-b w-full content my-2 py-2"
-                placeholder="hello@samsonzhang.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-            />
-        </div>
+        <Input
+            name="Name"
+            type="text"
+            placeholder="Samson Zhang"
+            value={name}
+            id="user-name-field"
+            setValue={setName}
+        />
+        <Input
+            name="Date joined"
+            type="date"
+            value={date}
+            setValue={setDate}
+        />
+        <Input
+            name="Email (optional)"
+            type="text"
+            placeholder="hello@samsonzhang.com"
+            value={email}
+            setValue={setEmail}
+        />
         <PrimaryButton
             onClick={handleAddUser}
             isLoading={isLoading}

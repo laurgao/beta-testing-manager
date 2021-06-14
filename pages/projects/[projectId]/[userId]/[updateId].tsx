@@ -16,7 +16,7 @@ import { FiEdit2, FiTrash } from 'react-icons/fi';
 import DeleteModal from '../../../../components/DeleteModal';
 import UpdateModal from '../../../../components/UpdateModal';
 
-const updateId = ( props: {updateId: string } ) => {
+const Update = ( props: {updateId: string } ) => {
     const [iter, setIter] = useState<number>(0);
     const [updateId, setUpdateId] = useState<string>(props.updateId);
     const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${updateId}&iter=${iter}`, fetcher);
@@ -128,7 +128,7 @@ const updateId = ( props: {updateId: string } ) => {
     )
 }
 
-export default updateId
+export default Update
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const updateId: any = context.params.updateId;

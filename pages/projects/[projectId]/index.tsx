@@ -21,21 +21,21 @@ import { getSession } from 'next-auth/client'
 import { ProjectModel } from '../../../models/project'
 import dbConnect from '../../../utils/dbConnect'
 import { FaPlus } from 'react-icons/fa'
-import SmallTitle from '../../../components/SmallTitle'
+import SmallTitle from '../../../components/H2'
 import MoreMenu from '../../../components/MoreMenu'
 import MoreMenuItem from '../../../components/MoreMenuItem'
 import { FiEdit2, FiTrash } from 'react-icons/fi'
 import router from 'next/router'
 import DeleteModal from '../../../components/DeleteModal'
 import UserModal from '../../../components/UserModal'
+import ProjectModal from '../../../components/ProjectModal'
 
-const index = ( props: { project: DatedObj<ProjectObj> } ) => {
+const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
     const [project, setProject] = useState<DatedObj<ProjectObj>>(props.project);
     const [tab, setTab] = useState<"dashboard"|"users"|"updates">("dashboard");
     const [addUserOpen, setAddUserOpen] = useState<boolean>(false);    
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false); 
     const [updateUserId, setUpdateUserId] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
     const [editProjectOpen, setEditProjectOpen] = useState<boolean>(false);
     const [deleteProjectOpen, setDeleteProjectOpen] = useState<boolean>(false);
@@ -89,66 +89,19 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
         }
     }
 
-    function handleAddProject() {
-        setIsLoading(true);
-
-        axios.post("/api/project", {
-            name: projectName,
-            description: description,
-            id: project._id
-        }).then(res => {
-            if (res.data.error) {
-                setIsLoading(false);
-                console.log(`Error: ${res.data.error}`);
-            } else {
-                setIsLoading(false);
-                setIter(iter + 1); // Fetching project client side so this can work.
-                setEditProjectOpen(false);
-                console.log(res.data);
-            }
-        }).catch(e => {
-            setIsLoading(false);
-            console.log(e);
-        });
-    }
-
 
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title={projectName || (project && project.name && project.name)}/>
 
             {editProjectOpen && (
-                <UpModal isOpen={editProjectOpen} setIsOpen={setEditProjectOpen} wide={true}>
-                    <H1 text="Edit project"/>
-                    <div className="my-12">
-                        <h3 className="up-ui-title">Name</h3>
-                        <input
-                            type="text"
-                            className="border-b w-full content my-2 py-2"
-                            placeholder="Beta Testing Manager"
-                            value={projectName}
-                            id="project-name-field"
-                            onChange={e => setProjectName(e.target.value)}
-                        />
-                    </div>
-                    <div className="my-12">
-                        <h3 className="up-ui-title">Description</h3>
-                        <input
-                            type="text"
-                            className="border-b w-full content my-2 py-2"
-                            placeholder="The all in one tool for effortlessly keeping track of beta testers"
-                            value={description}
-                            onChange={e => setDescription(e.target.value)}
-                        />
-                    </div>
-                    <PrimaryButton
-                        onClick={handleAddProject}
-                        isLoading={isLoading}
-                        isDisabled={!projectName}
-                    >
-                        Save
-                    </PrimaryButton>
-                </UpModal>
+                <ProjectModal 
+                    isOpen={editProjectOpen} 
+                    setIsOpen={setEditProjectOpen} 
+                    iter={iter}
+                    setIter={setIter}
+                    project={project}
+                />
             )}
 
             {deleteProjectOpen && (
@@ -302,7 +255,7 @@ const index = ( props: { project: DatedObj<ProjectObj> } ) => {
     )
 }
 
-export default index
+export default Project
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
