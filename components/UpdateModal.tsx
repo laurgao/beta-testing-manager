@@ -5,7 +5,7 @@ import UpModal from './UpModal'
 import PrimaryButton from "./PrimaryButton"
 import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from '../utils/types';
 import {format, formatDistance} from "date-fns";
-import SmallTitle from './H2';
+import H2 from './H2';
 import Input from './Input';
 import H3 from './H3';
 
@@ -87,7 +87,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
 
     return (users && users.length) ? (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
-            <SmallTitle>{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</SmallTitle>
+            <H2>{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</H2>
             
             <Input
                 name="Date"

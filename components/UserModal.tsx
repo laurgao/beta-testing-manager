@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {format, formatDistance} from "date-fns";
 import axios from 'axios';
-import SmallTitle from './H2';
+import H2 from './H2';
 import UpModal from './UpModal';
 import PrimaryButton from './PrimaryButton';
 import { DatedObj, UserObj } from '../utils/types';
@@ -50,7 +50,7 @@ const UserModal = ({isOpen, setIsOpen, user, iter, setIter, setTab, projectId} :
     }
     return (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
-        <SmallTitle>{user ? "Edit User" : "New User"}</SmallTitle>
+        <H2>{user ? "Edit User" : "New User"}</H2>
         <Input
             name="Name"
             type="text"

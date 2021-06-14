@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { DatedObj, ProjectObj } from '../utils/types';
 import Input from './Input';
 import PrimaryButton from './PrimaryButton';
-import SmallTitle from './H2';
+import H2 from './H2';
 import UpModal from './UpModal';
 
 const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
@@ -46,7 +46,7 @@ const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
 
     return (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
-            <SmallTitle>{project ? "Edit Project" : "New Project"}</SmallTitle>
+            <H2>{project ? "Edit Project" : "New Project"}</H2>
             <Input
                 name="Name"
                 placeholder="Beta Testing Manager"
