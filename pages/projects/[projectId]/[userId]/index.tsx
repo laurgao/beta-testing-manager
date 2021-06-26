@@ -95,9 +95,9 @@ const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } 
                 />
             )}
             <div className="flex items-center mb-12">
-                {userData ? <H1 text={userData.name} /> : <Skeleton width={200} height={40}/>}
-                <div className="ml-auto flex flex-row gap-3">
-                    <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus className="-mt-0.5"/><span className="ml-2">New update (n)</span></PrimaryButton>
+                {userData ? <H1 text={userData.name} className="leading-none"/> : <Skeleton width={200} height={40}/>}
+                <div className="ml-auto flex flex-row gap-3 items-center">
+                    <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus/><span className="ml-2 mt-0.5">New update (n)</span></PrimaryButton>
                     <MoreMenu>
                         <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUserOpen(true)}/>
                         <MoreMenuItem text="Delete" icon={<FiTrash/>} onClick={() => setDeleteUserOpen(true)}/>

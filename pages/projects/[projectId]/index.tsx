@@ -111,10 +111,10 @@ const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
             </div>
             <div className="flex items-center mb-9">
-                <H1 text={projectName || project.name} />
-                <div className="ml-auto flex flex-row gap-3">
-                    <SecondaryButton onClick={toggleAddUser}><FaPlus className="-mt-0.5"/><span className="ml-2">New User (u)</span></SecondaryButton>
-                    <PrimaryButton onClick={toggleAddUpdate}><FaPlus className="-mt-0.5"/><span className="ml-2">New Update (n)</span></PrimaryButton>
+                <H1 text={projectName || project.name} className="leading-none"/>
+                <div className="ml-auto flex flex-row gap-3 items-center">
+                    <SecondaryButton onClick={toggleAddUser}><FaPlus/><span className="ml-2 mt-0.5">New User (u)</span></SecondaryButton>
+                    <PrimaryButton onClick={toggleAddUpdate}><FaPlus/><span className="ml-2 mt-0.5">New Update (n)</span></PrimaryButton>
                     <MoreMenu>
                         <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditProjectOpen(true)}/>
                         <MoreMenuItem text="Delete" icon={<FiTrash/>} onClick={() => setDeleteProjectOpen(true)}/>

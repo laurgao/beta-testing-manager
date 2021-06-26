@@ -85,8 +85,8 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
 
             </div>
             <div className="flex items-center mb-9">
-                <H1 text={update.name} />
-                <div className="ml-auto flex flex-row gap-3">
+                <H1 text={update.name} className="leading-none"/>
+                <div className="ml-auto flex flex-row items-center gap-3">
                     <MoreMenu>
                         <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUpdateOpen(true)}/>
                         <MoreMenuItem text="Delete" icon={<FiTrash/>} onClick={() => setDeleteUpdateOpen(true)}/>

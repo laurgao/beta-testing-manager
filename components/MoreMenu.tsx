@@ -1,5 +1,5 @@
-import React, {ReactNode, useEffect, useRef, useState} from "react";
-import {FiMoreVertical} from "react-icons/fi";
+import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { FiMoreVertical } from "react-icons/fi";
 
 export default function MoreMenu({children, className = "", customButton, openMenuClassName=""}: {children: ReactNode, customButton?: ReactNode, className?: string, openMenuClassName?: string}) {
     const [isOpen, setIsOpen] = useState<boolean>(false);

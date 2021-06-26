@@ -37,11 +37,11 @@ const projects = () => {
             />
 
             <div className="flex items-center mb-12">
-                <H1 text="All Projects" />
+                <H1 text="All Projects" className="leading-none"/>
                 <PrimaryButton 
                     onClick={toggleAddProject} 
                     className="ml-auto"
-                ><FaPlus className="-mt-0.5"/><span className="ml-2">New project (n)</span></PrimaryButton>
+                ><FaPlus/><span className="ml-2 mt-0.5">New project (n)</span></PrimaryButton>
             </div>
             <div className="md:flex -mx-3 flex-wrap gap-4">
                 {(projects && projects.data) ? projects.data[0] ? (
