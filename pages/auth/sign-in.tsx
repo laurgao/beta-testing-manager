@@ -1,5 +1,5 @@
-import {signIn, useSession, getSession} from "next-auth/client"
-import {GetServerSideProps} from "next";
+import { GetServerSideProps } from "next";
+import { getSession, useSession } from "next-auth/client";
 import SignInButton from "../../components/SignInButton";
 
 const SignIn = () => {
@@ -18,10 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
 
     if (session) {
-        console.log(session);
-        context.res.setHeader("location", "/auth/new-account");
-        context.res.statusCode = 302;
-        context.res.end();
+        return {redirect: {permanent: false, destination: "/projects",}};
     }
 
     return {props: {}};

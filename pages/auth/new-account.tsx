@@ -1,12 +1,12 @@
-import React, {useState} from "react";
-import {GetServerSideProps} from "next";
-import {getSession, signIn, useSession} from "next-auth/client";
 import axios from "axios";
-import {useRouter} from "next/router";
+import { GetServerSideProps } from "next";
+import { getSession, useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import Skeleton from "react-loading-skeleton";
-import UpSEO from "../../components/up-seo";
-import { getCurrUserRequest } from "../../utils/requests"
 import PrimaryButton from "../../components/PrimaryButton";
+import UpSEO from "../../components/up-seo";
+import { getCurrUserRequest } from "../../utils/requests";
 
 export default function NewAccount() {
     const router = useRouter();
@@ -81,9 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const user = await getCurrUserRequest(session.user.email);
 
     if (!session || user) {
-        context.res.setHeader("location", !session ? "/auth/sign-in" : "/");
-        context.res.statusCode = 302;
-        context.res.end();
+        return {redirect: {permanent: false, destination: "/projects",}};
     }
 
     return {props: {}};
