@@ -1,12 +1,12 @@
-import {ProjectModel} from "../../models/project";
-import dbConnect from "../../utils/dbConnect";
-import {NextApiRequest, NextApiResponse} from "next";
-import {getSession} from "next-auth/client";
-import { getCurrUserRequest } from "../../utils/requests";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/client";
+import { ProjectModel } from "../../models/project";
 import { SelectionTemplateModel } from "../../models/selectionTemplate";
 import { TextTemplateModel } from "../../models/textTemplate";
-import { UserModel } from "../../models/user";
 import { UpdateModel } from "../../models/update";
+import { UserModel } from "../../models/user";
+import dbConnect from "../../utils/dbConnect";
+import { getCurrUserRequest } from "../../utils/requests";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {    
@@ -140,7 +140,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         projectId: savedProject._id,
 			            question: `How dissatisfied would you be if you could no longer use ${req.body.name}?`,  
                         options: ["Very dissatisfied", "Somewhat dissatisfied", "Not dissatisfied"],
-                        required: true,
+                        required: false,
                     });
                     
                     const savedDefaultSelectionTemplate = await defaultSelectionTemplate.save();
@@ -148,7 +148,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     const defaultTextTemplate = new TextTemplateModel({
                         projectId: savedProject._id,
 			            question: `What's the main benefit you get from using ${req.body.name}?`,
-                        required: true,             
+                        required: false,             
                     });
 
                     const defaultTextTemplate2 = new TextTemplateModel({

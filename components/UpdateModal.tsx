@@ -50,14 +50,6 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
         )))
     }, [textTemplates]);
 
-    // See if all required texts and selections have a value.
-    const [filledIn, setFilledIn] = useState<boolean>(false);
-    useEffect(() => {
-        setFilledIn(true);
-        texts.filter(t => (t.required)).map(t => (!t.body && setFilledIn(false)));
-        selections.filter(s => (s.required)).map(s => (s.selected == "" && setFilledIn(false)));
-    }, [texts, selections])
-
     function handleAddUpdate() {
         setIsLoading(true);
         axios.post("/api/update", {
@@ -169,7 +161,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
             <PrimaryButton
                 onClick={handleAddUpdate}
                 isLoading={isLoading}
-                isDisabled={!((userId || users.length == 1) && name && filledIn)}
+                isDisabled={!((userId || users.length == 1) && name)}
             >
                 {update ? "Save" : "Create"}
             </PrimaryButton>
