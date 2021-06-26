@@ -22,6 +22,7 @@ const Input = ({name, value, setValue, type="text", id="", placeholder="", onCha
             />}
             {type == "textarea" && <textarea
                 className="border-b w-full content my-2 py-2 btm-text-gray-500"
+                rows={7}
                 placeholder={placeholder}
                 value={value}
                 id={id}
