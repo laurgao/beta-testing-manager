@@ -1,6 +1,5 @@
-import {signIn} from "next-auth/client";
-import {FaGoogle} from "react-icons/fa";
-import React from "react";
+import { signIn } from "next-auth/client";
+import { FaGoogle } from "react-icons/fa";
 import PrimaryButton from "./PrimaryButton";
 
 export default function SignInButton() {

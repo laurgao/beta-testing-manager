@@ -1,4 +1,4 @@
-import Button from './Button'
+import Button from "./Button";
 
 const PrimaryButton = ({onClick, children, href, isLoading, isDisabled, className} : {
     onClick?: any,

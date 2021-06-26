@@ -1,9 +1,9 @@
-import "../styles/globals.css";
-import {Provider} from "next-auth/client";
-import Navbar from "../components/Navbar";
-import NProgress from "nprogress";
-import "../styles/nprogress.css";
+import { Provider } from "next-auth/client";
 import Router, { useRouter } from "next/router";
+import NProgress from "nprogress";
+import Navbar from "../components/Navbar";
+import "../styles/globals.css";
+import "../styles/nprogress.css";
 
 Router.events.on("routeChangeStart", (url) => {
   console.log(`Loading: ${url}`)

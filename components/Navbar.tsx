@@ -1,9 +1,9 @@
-import React from 'react'
-import { signOut, useSession } from 'next-auth/client'
+import { signOut, useSession } from "next-auth/client";
 import Link from "next/link";
+import React from "react";
+import InlineButton from "./InlineButton";
+import MoreMenu from "./MoreMenu";
 import MoreMenuItem from "./MoreMenuItem";
-import InlineButton from './InlineButton';
-import MoreMenu from './MoreMenu';
 
 const Navbar = () => {
     const [session, loading] = useSession();

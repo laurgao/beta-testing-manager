@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 const Button = ({onClick, children, href, isDisabled, isLoading, className}: 
     {onClick?: any, 

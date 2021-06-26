@@ -1,6 +1,6 @@
-import {getSession, useSession} from "next-auth/client"
-import {GetServerSideProps} from "next";
-import H1 from '../components/H1';
+import { GetServerSideProps } from "next";
+import { getSession, useSession } from "next-auth/client";
+import H1 from "../components/H1";
 import PrimaryButton from "../components/PrimaryButton";
 
 export default function Home() {

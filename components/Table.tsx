@@ -1,5 +1,5 @@
-import { ReactNode } from 'react'
-import Truncate from './Truncate'
+import { ReactNode } from "react"
+import Truncate from "./Truncate"
 
 // Precondition: gtc length = headers length
 

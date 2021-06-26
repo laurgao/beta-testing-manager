@@ -1,16 +1,16 @@
-import {getSession, useSession} from "next-auth/client";
-import {GetServerSideProps} from "next";
-import PrimaryButton from "../../components/PrimaryButton";
-import useSWR, {SWRResponse} from "swr";
-import { DatedObj, ProjectObj } from "../../utils/types";
-import ProjectCard from "../../components/ProjectCard";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/client";
 import React, { useState } from "react";
-import UpSEO from "../../components/up-seo";
-import H1 from "../../components/H1";
-import Skeleton from "react-loading-skeleton";
-import { fetcher, waitForEl, useKey } from '../../utils/utils'
 import { FaPlus } from "react-icons/fa";
+import Skeleton from "react-loading-skeleton";
+import useSWR, { SWRResponse } from "swr";
+import H1 from "../../components/H1";
+import PrimaryButton from "../../components/PrimaryButton";
+import ProjectCard from "../../components/ProjectCard";
 import ProjectModal from "../../components/ProjectModal";
+import UpSEO from "../../components/up-seo";
+import { DatedObj, ProjectObj } from "../../utils/types";
+import { fetcher, useKey, waitForEl } from "../../utils/utils";
 
 const projects = () => {
     const [iter, setIter] = useState<number>(0);

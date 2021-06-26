@@ -1,25 +1,24 @@
-import { GetServerSideProps } from 'next'
-import {format} from "date-fns";
-import React, { useEffect, useState } from 'react'
-import useSWR, { SWRResponse } from 'swr'
-import Button from '../../../../components/Button'
-import H1 from '../../../../components/H1'
-import InlineButton from '../../../../components/InlineButton'
-import UpSEO from '../../../../components/up-seo'
-import { DatedObj, ProjectObj, UpdateObj, UserObj } from '../../../../utils/types'
-import { cleanForJSON, fetcher } from '../../../../utils/utils'
-import Skeleton from 'react-loading-skeleton';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa';
-import MoreMenu from '../../../../components/MoreMenu';
-import MoreMenuItem from '../../../../components/MoreMenuItem';
-import { FiEdit2, FiTrash } from 'react-icons/fi';
-import DeleteModal from '../../../../components/DeleteModal';
-import UpdateModal from '../../../../components/UpdateModal';
-import { UpdateModel } from '../../../../models/update';
-import dbConnect from '../../../../utils/dbConnect';
-import { ProjectModel } from '../../../../models/project';
-import { getSession } from 'next-auth/client';
-import { UserModel } from '../../../../models/user';
+import { format } from "date-fns";
+import { GetServerSideProps } from "next";
+import { getSession } from "next-auth/client";
+import React, { useEffect, useState } from "react";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa";
+import { FiEdit2, FiTrash } from "react-icons/fi";
+import Skeleton from "react-loading-skeleton";
+import useSWR, { SWRResponse } from "swr";
+import DeleteModal from "../../../../components/DeleteModal";
+import H1 from "../../../../components/H1";
+import InlineButton from "../../../../components/InlineButton";
+import MoreMenu from "../../../../components/MoreMenu";
+import MoreMenuItem from "../../../../components/MoreMenuItem";
+import UpSEO from "../../../../components/up-seo";
+import UpdateModal from "../../../../components/UpdateModal";
+import { ProjectModel } from "../../../../models/project";
+import { UpdateModel } from "../../../../models/update";
+import { UserModel } from "../../../../models/user";
+import dbConnect from "../../../../utils/dbConnect";
+import { DatedObj, ProjectObj, UpdateObj, UserObj } from "../../../../utils/types";
+import { cleanForJSON, fetcher } from "../../../../utils/utils";
 
 const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
     const [update, setUpdate] = useState<DatedObj<UpdateObj>>(props.update);

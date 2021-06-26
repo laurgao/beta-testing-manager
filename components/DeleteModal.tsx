@@ -1,11 +1,10 @@
-import axios from 'axios';
-import router from 'next/router';
-import React, { useState } from 'react'
-import { UpdateObj, UserObj, ProjectObj, DatedObj } from '../utils/types';
-import Input from './Input';
-import PrimaryButton from './PrimaryButton'
-import SecondaryButton from './SecondaryButton';
-import UpModal from './UpModal'
+import axios from "axios";
+import router from "next/router";
+import React, { useState } from "react";
+import Input from "./Input";
+import PrimaryButton from "./PrimaryButton";
+import SecondaryButton from "./SecondaryButton";
+import UpModal from "./UpModal";
 
 const DeleteModal = ({isOpen, setIsOpen, item, itemType, iter, setIter}: {
     isOpen: any,

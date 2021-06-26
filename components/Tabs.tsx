@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Tabs = ({state, setState, displayedTabs, className}: {state: string, setState: any, displayedTabs: string[], className?: string}) => {
     return (
         <>

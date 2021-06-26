@@ -1,11 +1,11 @@
-import axios from 'axios';
-import router from 'next/router';
-import React, { useState } from 'react'
-import { DatedObj, ProjectObj } from '../utils/types';
-import Input from './Input';
-import PrimaryButton from './PrimaryButton';
-import H2 from './H2';
-import UpModal from './UpModal';
+import axios from "axios";
+import router from "next/router";
+import { useState } from "react";
+import { DatedObj, ProjectObj } from "../utils/types";
+import H2 from "./H2";
+import Input from "./Input";
+import PrimaryButton from "./PrimaryButton";
+import UpModal from "./UpModal";
 
 const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
     isOpen: boolean,

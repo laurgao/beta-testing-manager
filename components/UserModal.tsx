@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import {format, formatDistance} from "date-fns";
-import axios from 'axios';
-import H2 from './H2';
-import UpModal from './UpModal';
-import PrimaryButton from './PrimaryButton';
-import { DatedObj, UserObj } from '../utils/types';
-import Input from './Input';
+import axios from "axios";
+import { format } from "date-fns";
+import { useState } from "react";
+import { DatedObj, UserObj } from "../utils/types";
+import H2 from "./H2";
+import Input from "./Input";
+import PrimaryButton from "./PrimaryButton";
+import UpModal from "./UpModal";
 
 const UserModal = ({isOpen, setIsOpen, user, iter, setIter, setTab, projectId} : {
     isOpen: boolean,

@@ -1,4 +1,4 @@
-import H3 from "./H3"
+import H3 from "./H3";
 
 const Input = ({name, value, setValue, type="text", id="", placeholder="", onChange} : {
     name?: string,

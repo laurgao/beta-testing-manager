@@ -1,13 +1,12 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import H1 from './H1'
-import UpModal from './UpModal'
-import PrimaryButton from "./PrimaryButton"
-import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from '../utils/types';
-import {format, formatDistance} from "date-fns";
-import H2 from './H2';
-import Input from './Input';
-import H3 from './H3';
+import axios from "axios";
+import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from "../utils/types";
+import H2 from "./H2";
+import H3 from "./H3";
+import Input from "./Input";
+import PrimaryButton from "./PrimaryButton";
+import UpModal from "./UpModal";
 
 const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, textTemplates, users, setIter, iter, update}: {
         isOpen: boolean,

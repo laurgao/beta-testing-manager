@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import Truncate from './Truncate';
+import Link from "next/link";
+import Truncate from "./Truncate";
 
 const TableItem = ({children, href, truncate, wide, main, className}: {
     children: string,

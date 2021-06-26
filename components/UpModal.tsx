@@ -1,4 +1,4 @@
-import {Dispatch, ReactNode, SetStateAction} from 'react';
+import { Dispatch, ReactNode, SetStateAction } from "react";
 import Modal from "react-modal";
 
 export default function UpModal({isOpen, setIsOpen, children, wide = false}: {

@@ -1,30 +1,30 @@
-import { GetServerSideProps } from 'next'
-import H1 from '../../../components/H1'
-import PrimaryButton from '../../../components/PrimaryButton'
-import SecondaryButton from '../../../components/SecondaryButton'
-import UpSEO from '../../../components/up-seo'
-import { UpdateObj, ProjectObj, SelectionTemplateObj, UserObj, SelectionObj, TextTemplateObj, DatedObj, UserGraphObj } from '../../../utils/types'
-import { cleanForJSON, fetcher, waitForEl, useKey } from '../../../utils/utils'
-import { useState, useEffect } from "react"
-import {format, formatDistance} from "date-fns";
-import Skeleton from 'react-loading-skeleton'
-import InlineButton from '../../../components/InlineButton'
-import Badge from '../../../components/Badge'
-import useSWR, { SWRResponse } from 'swr'
-import Table from '../../../components/Table'
-import Tabs from '../../../components/Tabs'
-import UpdateModal from '../../../components/UpdateModal'
-import TableItem from '../../../components/TableItem'
-import { getSession } from 'next-auth/client'
-import { ProjectModel } from '../../../models/project'
-import dbConnect from '../../../utils/dbConnect'
-import { FaPlus } from 'react-icons/fa'
-import MoreMenu from '../../../components/MoreMenu'
-import MoreMenuItem from '../../../components/MoreMenuItem'
-import { FiEdit2, FiTrash } from 'react-icons/fi'
-import DeleteModal from '../../../components/DeleteModal'
-import UserModal from '../../../components/UserModal'
-import ProjectModal from '../../../components/ProjectModal'
+import { formatDistance } from "date-fns"
+import { GetServerSideProps } from "next"
+import { getSession } from "next-auth/client"
+import { useEffect, useState } from "react"
+import { FaPlus } from "react-icons/fa"
+import { FiEdit2, FiTrash } from "react-icons/fi"
+import Skeleton from "react-loading-skeleton"
+import useSWR, { SWRResponse } from "swr"
+import Badge from "../../../components/Badge"
+import DeleteModal from "../../../components/DeleteModal"
+import H1 from "../../../components/H1"
+import InlineButton from "../../../components/InlineButton"
+import MoreMenu from "../../../components/MoreMenu"
+import MoreMenuItem from "../../../components/MoreMenuItem"
+import PrimaryButton from "../../../components/PrimaryButton"
+import ProjectModal from "../../../components/ProjectModal"
+import SecondaryButton from "../../../components/SecondaryButton"
+import Table from "../../../components/Table"
+import TableItem from "../../../components/TableItem"
+import Tabs from "../../../components/Tabs"
+import UpSEO from "../../../components/up-seo"
+import UpdateModal from "../../../components/UpdateModal"
+import UserModal from "../../../components/UserModal"
+import { ProjectModel } from "../../../models/project"
+import dbConnect from "../../../utils/dbConnect"
+import { DatedObj, ProjectObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserGraphObj, UserObj } from "../../../utils/types"
+import { cleanForJSON, fetcher, useKey, waitForEl } from "../../../utils/utils"
 
 const Project = ( props: { project: DatedObj<ProjectObj> } ) => {
     const [project, setProject] = useState<DatedObj<ProjectObj>>(props.project);

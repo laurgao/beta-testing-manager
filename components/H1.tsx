@@ -1,5 +1,3 @@
-import React from 'react'
-
 const H1 = ({text, children, className} : {
     text?: string,
     children?: string,
