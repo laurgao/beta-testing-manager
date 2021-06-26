@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { FiEdit2, FiTrash } from "react-icons/fi";
 import Skeleton from "react-loading-skeleton";
+import Accordion from "react-robust-accordion";
 import useSWR, { SWRResponse } from "swr";
 import DeleteModal from "../../../../components/DeleteModal";
 import H1 from "../../../../components/H1";
@@ -20,26 +21,23 @@ import dbConnect from "../../../../utils/dbConnect";
 import { DatedObj, ProjectObj, UpdateObj, UserObj } from "../../../../utils/types";
 import { cleanForJSON, fetcher } from "../../../../utils/utils";
 
+
 const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
     const [update, setUpdate] = useState<DatedObj<UpdateObj>>(props.update);
     const [iter, setIter] = useState<number>(0);
     const {data: updates, error: updatesError}: SWRResponse<{data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${update._id}&iter=${iter}`, fetcher);
-    const [user, setUser] = useState<DatedObj<UserObj>>();
-    const [project, setProject] = useState<DatedObj<ProjectObj>>();
+
     useEffect(() => {
         if(updates) setUpdate(updates.data[0]);
     }, [updates])
-    useEffect(() => {
-        if(updates && update) setUser(update.userArr[0]);
-    }, [update])
-    useEffect(() => {
-        if(user) setProject(user.projectArr[0]);
-    }, [user])
+    
+    const user: DatedObj<UserObj> = (updates && update.userArr) ? update.userArr[0] : null;
+    const project: DatedObj<ProjectObj> = (user && user.projectArr) ? user.projectArr[0] : null;
 
     const [editUpdateOpen, setEditUpdateOpen] = useState<boolean>(false);
     const [deleteUpdateOpen, setDeleteUpdateOpen] = useState<boolean>(false);
 
-    const [textIsOpen, setTextIsOpen] = useState<number>(-1);
+    const [textIsOpen, setTextIsOpen] = useState<number>(0);
     const handleTextOnClick = (event: any, index: number, currentIsOpen: boolean) => {
         if (currentIsOpen) {
             setTextIsOpen(-1);
@@ -112,23 +110,29 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                 </div>
                 <div className="flex-grow">
                     {(updates && update) ? update.textArr && update.textArr.map((text, index) => (
-                        <div key={text._id} className="transition">
-                            <hr className="my-4 btm-gray-200-border"/>
-                            <button className="flex focus:outline-none" onClick={(event) => handleTextOnClick(event, index, textIsOpen == index)}>
-                                <p className="text-base btm-text-gray-400 mb-2">{
-                                    project && project.textTemplateArr && project.textTemplateArr.filter(tt => tt._id == text.templateId)[0].question
-                                }</p>
-                                {textIsOpen == index ? <FaAngleUp className="ml-auto btm-text-gray-400"/> : <FaAngleDown className="ml-auto btm-text-gray-400"/>}
-                            </button>
-                            {textIsOpen == index && (
-                                <p className="text-base btm-text-gray-600 mb-6 mt-8">{text.body}</p> 
-                            )}
-                        </div>
+                        <>
+                        <hr className="my-4 btm-text-gray-200" key={text._id} />
+                        <Accordion 
+                            key={text._id} 
+                            className="text-base btm-text-gray-400 mb-2" 
+                            label={
+                                <div className="flex">
+                                    <p>{project && project.textTemplateArr && project.textTemplateArr.filter(tt => tt._id == text.templateId)[0].question}</p>
+                                    {textIsOpen == index ? <FaAngleUp className="ml-auto btm-text-gray-400"/> : <FaAngleDown className="ml-auto btm-text-gray-400"/>}
+                                </div>
+                            } 
+                            open={true}
+                            setOpenState={(event) => handleTextOnClick(event, index, textIsOpen == index)}
+                            openState={textIsOpen == index}
+                        >
+                            <div className="text-base btm-text-gray-600 mb-6 mt-8">{text.body}</div>
+                        </Accordion>
+                        </>
+
                     )) : (
                         <>
                             <Skeleton height={70} count={2}/>
-                        </>
-                    )}
+                        </>)}
                 </div>
             </div>
         </div>

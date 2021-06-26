@@ -23,6 +23,7 @@
     "react-icons": "^4.2.0",
     "react-loading-skeleton": "^2.2.0",
     "react-modal": "^3.14.2",
+    "react-robust-accordion": "^0.5.2",
     "swr": "^0.5.6"
   },
   "devDependencies": {
