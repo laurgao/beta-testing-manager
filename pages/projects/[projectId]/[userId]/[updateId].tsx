@@ -111,7 +111,7 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                 <div className="flex-grow">
                     {(updates && update) ? update.textArr && update.textArr.map((text, index) => (
                         <>
-                        <hr className="my-4 btm-text-gray-200" key={text._id} />
+                        <hr className="mb-4 mt-6 btm-text-gray-200" key={text._id} />
                         <Accordion 
                             key={text._id} 
                             className="text-base btm-text-gray-400 mb-2" 
@@ -125,7 +125,7 @@ const Update = ( props: {update: DatedObj<UpdateObj> } ) => {
                             setOpenState={(event) => handleTextOnClick(event, index, textIsOpen == index)}
                             openState={textIsOpen == index}
                         >
-                            <div className="text-base btm-text-gray-600 mb-6 mt-8">{text.body}</div>
+                            <div className="text-base btm-text-gray-600 mb-6 mt-8"><pre>{text.body}</pre></div>
                         </Accordion>
                         </>
 
