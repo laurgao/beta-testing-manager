@@ -1,12 +1,15 @@
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import H1 from "../../components/H1";
 import SignInButton from "../../components/SignInButton";
 import { AccountModel } from "../../models/account";
 import dbConnect from "../../utils/dbConnect";
 
 const SignIn = () => {
     return (
-        <div>
+        <div className="max-w-2xl mx-auto px-4">
+            <H1 className="mb-4">Get started</H1>
+            <p className="btm-text-gray-700 mb-8">Sign in or create an account with Google</p>
             <SignInButton />
         </div>
     )
