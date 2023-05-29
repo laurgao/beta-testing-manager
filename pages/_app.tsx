@@ -1,4 +1,5 @@
-import { SessionProvider } from "next-auth/react";
+// import { SessionProvider } from "next-auth/client";
+import { Provider } from "next-auth/client";
 import Router from "next/router";
 import NProgress from "nprogress";
 import Navbar from "../components/Navbar";
@@ -14,10 +15,10 @@ Router.events.on("routeChangeError", () => NProgress.done());
 
 function MyApp({ Component, pageProps }) {
   return (
-    <SessionProvider session={pageProps.session}>
+    <Provider session={pageProps.session}>
       <Navbar />
       <Component {...pageProps} />
-    </SessionProvider>
+    </Provider>
   )
 }
 

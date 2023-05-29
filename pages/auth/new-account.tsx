@@ -1,6 +1,6 @@
 import axios from "axios";
 import { GetServerSideProps } from "next";
-import { getSession, useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
@@ -11,7 +11,8 @@ import dbConnect from "../../utils/dbConnect";
 
 export default function NewAccount() {
     const router = useRouter();
-    const { data: session, status } = useSession()
+    // const { data: session, status } = useSession()
+    const [session, loading] = useSession();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>(null);
 
@@ -42,7 +43,7 @@ export default function NewAccount() {
             <h1 className="up-h1">Welcome to Beta Testing Manager</h1>
             <hr className="my-8" />
             <p className="up-ui-title">Creating new account as:</p>
-            {status === "loading" ? (
+            {loading ? (
                 <div className="my-4">
                     <Skeleton count={2} />
                 </div>
@@ -67,7 +68,7 @@ export default function NewAccount() {
             <PrimaryButton
                 onClick={onSubmit}
                 isLoading={isLoading}
-                isDisabled={status === "loading"}
+                isDisabled={loading}
             >
                 Let's get started!
             </PrimaryButton>

@@ -1,5 +1,6 @@
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+// import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
@@ -66,7 +67,9 @@ export default projects
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
+    console.log(session)
     if (!session) return { redirect: { permanent: false, destination: "/auth/sign-in" } };
+    console.log('here')
 
     return { props: {} };
 };

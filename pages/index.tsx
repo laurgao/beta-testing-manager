@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession } from "next-auth/client";
 import H1 from "../components/H1";
 import PrimaryButton from "../components/PrimaryButton";
 
