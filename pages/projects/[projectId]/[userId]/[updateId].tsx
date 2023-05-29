@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/client";
+import { getSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { FiEdit2, FiTrash } from "react-icons/fi";

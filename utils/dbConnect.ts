@@ -21,8 +21,8 @@ async function dbConnect() {
     return mongoose.connect(MONGODB_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        useFindAndModify: false,
-        useCreateIndex: true,
+        // useFindAndModify: false,
+        // useCreateIndex: true,
         maxIdleTimeMS: 10000,
         socketTimeoutMS: 20000,
     });

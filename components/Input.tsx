@@ -1,6 +1,6 @@
 import H3 from "./H3";
 
-const Input = ({name, value, setValue, type="text", id="", placeholder="", onChange} : {
+const Input = ({name, value, setValue, type="text", id="", placeholder="", onChange, onKeyDown} : {
     name?: string,
     value: string,
     setValue?: any,
@@ -8,6 +8,7 @@ const Input = ({name, value, setValue, type="text", id="", placeholder="", onCha
     type?: "text"|"textarea"|"date",
     id?: string,
     placeholder?: string,
+    onKeyDown?: (Event) => void,
 }) => {
     return (
         <div className="my-8">
@@ -19,6 +20,7 @@ const Input = ({name, value, setValue, type="text", id="", placeholder="", onCha
                 value={value}
                 id={id}
                 onChange={onChange ? onChange : e => setValue(e.target.value)}
+                onKeyDown={onKeyDown}
             />}
             {type == "textarea" && <textarea
                 className="border-b w-full content my-2 py-2 btm-text-gray-500"
@@ -27,6 +29,7 @@ const Input = ({name, value, setValue, type="text", id="", placeholder="", onCha
                 value={value}
                 id={id}
                 onChange={onChange ? onChange : e => setValue(e.target.value)}
+                onKeyDown={onKeyDown}
             />}
         </div>
     )

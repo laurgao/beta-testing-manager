@@ -1,11 +1,9 @@
 import { GetServerSideProps } from "next";
-import { getSession, useSession } from "next-auth/client";
+import { getSession, useSession } from "next-auth/react";
 import H1 from "../components/H1";
 import PrimaryButton from "../components/PrimaryButton";
 
 export default function Home() {
-  const [session, loading] = useSession();
-
   return (
     <div className="text-center">
       <H1>Beta Testing Manager</H1>

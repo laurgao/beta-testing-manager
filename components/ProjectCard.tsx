@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { FiEdit2, FiTrash } from "react-icons/fi";
-import { DatedObj, ProjectObj, UpdateObj } from "../utils/types";
+import { DatedObj, ProjectObj } from "../utils/types";
 import DeleteModal from "./DeleteModal";
 import MoreMenu from "./MoreMenu";
 import MoreMenuItem from "./MoreMenuItem";
@@ -39,9 +39,7 @@ const ProjectCard = ({project, userCount, iter, setIter}: {
             
             <div className="flex flex-row">
                 <Link href={`/projects/${project._id}`}>
-                    <a>
-                        <h3 className="btm-text-gray-700 text-2xl font-semibold my-2 content">{project.name}</h3>
-                    </a>
+                    <h3 className="btm-text-gray-700 text-2xl font-semibold my-2 content">{project.name}</h3>
                 </Link>
                 <div className="ml-auto">
                     <MoreMenu>

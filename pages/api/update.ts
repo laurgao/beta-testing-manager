@@ -1,7 +1,7 @@
 import {UpdateModel} from "../../models/update";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
-import {getSession} from "next-auth/client";
+import {getSession} from "next-auth/react";
 import { SelectionModel } from "../../models/selection";
 import { TextModel } from "../../models/text";
 

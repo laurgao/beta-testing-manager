@@ -7,7 +7,7 @@ import Input from "./Input";
 import PrimaryButton from "./PrimaryButton";
 import UpModal from "./UpModal";
 
-const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
+const ProjectModal = ({ isOpen, setIsOpen, project, iter, setIter, setTab }: {
     isOpen: boolean,
     setIsOpen: any,
     project?: DatedObj<ProjectObj>,
@@ -18,8 +18,9 @@ const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>(project ? project.name : "");
     const [description, setDescription] = useState<string>(project ? project.description : "");
-    
+
     function handleAddProject() {
+        if (!name) return console.log("Name is required");
         setIsLoading(true);
 
         axios.post("/api/project", {
@@ -27,17 +28,11 @@ const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
             description: description,
             id: project && project._id
         }).then(res => {
-            if (res.data.error) {
-                setIsLoading(false);
-                console.log(`Error: ${res.data.error}`);
-            } else {
-                setIsLoading(false);
-                setIter(iter + 1);
-                setIsOpen(false);
-                if (setTab) setTab("dashboard");
-                else router.push(`/projects/${res.data.id[0]}`);
-                console.log(res.data);
-            }
+            setIsLoading(false);
+            setIter(iter + 1);
+            setIsOpen(false);
+            if (setTab) setTab("dashboard");
+            else router.push(`/projects/${res.data.id[0]}`);
         }).catch(e => {
             setIsLoading(false);
             console.log(e);
@@ -60,6 +55,11 @@ const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
                 placeholder="The all in one tool for effortlessly keeping track of beta testers"
                 value={description}
                 setValue={setDescription}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" && e.controlKey) {
+                        handleAddProject();
+                    }
+                }}
             />
             <PrimaryButton
                 onClick={handleAddProject}
@@ -69,7 +69,7 @@ const ProjectModal = ({isOpen, setIsOpen, project, iter, setIter, setTab} : {
                 {project ? "Save" : "Create"}
             </PrimaryButton>
         </UpModal>
-    )   
+    )
 }
 
 export default ProjectModal

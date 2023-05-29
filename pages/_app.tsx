@@ -1,5 +1,5 @@
-import { Provider } from "next-auth/client";
-import Router, { useRouter } from "next/router";
+import { SessionProvider } from "next-auth/react";
+import Router from "next/router";
 import NProgress from "nprogress";
 import Navbar from "../components/Navbar";
 import "../styles/globals.css";
@@ -13,13 +13,11 @@ Router.events.on("routeChangeComplete", () => NProgress.done());
 Router.events.on("routeChangeError", () => NProgress.done());
 
 function MyApp({ Component, pageProps }) {
-  const router = useRouter();
-
   return (
-    <Provider session={pageProps.session}>
+    <SessionProvider session={pageProps.session}>
       <Navbar />
       <Component {...pageProps} />
-    </Provider>
+    </SessionProvider>
   )
 }
 

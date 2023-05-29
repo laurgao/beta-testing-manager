@@ -1,7 +1,7 @@
 import {UserModel} from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import {NextApiRequest, NextApiResponse} from "next";
-import {getSession} from "next-auth/client";
+import {getSession} from "next-auth/react";
 import { UpdateModel } from "../../models/update";
 import { getCurrUserRequest } from "../../utils/requests";
 import { ProjectModel } from "../../models/project";
