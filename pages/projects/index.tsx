@@ -1,5 +1,4 @@
 import { GetServerSideProps } from "next";
-// import { getSession } from "next-auth/client";
 import { getSession } from "next-auth/client";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
@@ -33,7 +32,6 @@ const projects = () => {
             <ProjectModal
                 isOpen={addProjectOpen}
                 setIsOpen={setAddProjectOpen}
-                iter={iter}
                 setIter={setIter}
             />
 
@@ -50,8 +48,7 @@ const projects = () => {
                         <ProjectCard
                             project={project}
                             userCount={project.userArr && project.userArr.length}
-                            iter={iter}
-                            setIter={iter}
+                            setIter={setIter}
                             key={project._id}
                         />
                     ))}
