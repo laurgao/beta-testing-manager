@@ -67,9 +67,7 @@ export default projects
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    console.log(session)
     if (!session) return { redirect: { permanent: false, destination: "/auth/sign-in" } };
-    console.log('here')
 
     return { props: {} };
 };

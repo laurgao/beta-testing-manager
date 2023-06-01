@@ -101,17 +101,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         case "POST": {
-            // const session = await getSession({ req });
-            // console.log(req.headers.cookie)
-
-            // const session = await getServerSession(req, res, authOptions);
-            // console.log(req)
-            // create a copy of req without .body
-            // const { body, ...reqWithoutBody } = req;
-            // get rid of .headers.cookie if it exists
-            // if (reqWithoutBody.headers && reqWithoutBody.headers.cookie) delete reqWithoutBody.headers.cookie;
-            // const { headers: { cookie, ...headers }, ...reqWithoutCookie } = reqWithoutBody;
-
             const session = await getSession({ req });
 
             if (!session) return res.status(403).json({ error: "You must be signed in to do that." });
