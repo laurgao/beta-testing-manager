@@ -25,10 +25,10 @@ export interface UserObj {
     projectId: string, // ID
     tags: string[],
     updateArr?: DatedObj<UpdateObj>[],
-    project?: DatedObj<ProjectObj>, // temp thing bc not all endpoints have been unwind-ed
-    projectArr?: DatedObj<ProjectObj>[],
+    project?: DatedObj<ProjectObj>,
 }
 
+// TODO: this is disgusting, get rid of this someday
 export interface UserGraphObj {
     userData: DatedObj<UserObj>[],
     updateData: DatedObj<UpdateObj>[],
