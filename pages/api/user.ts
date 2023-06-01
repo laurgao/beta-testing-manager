@@ -11,6 +11,7 @@ import { cleanForJSON } from "../../utils/utils";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     switch (req.method) {
         case "GET": {
+            // TODO: someday, refactor this. /project/[projectId] should query project? not lookup a project for every user?
             const session = await getSession({ req });
             if (!session) return res.status(403);
             if (!(req.query.id || req.query.projectId)) {
