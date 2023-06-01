@@ -18,7 +18,6 @@ const DeleteModal = ({ isOpen, setIsOpen, item, itemType, setIter }: {
     const [name, setName] = useState<string>("");
 
     function onSubmit() {
-        console.log("deleting");
         setIsLoading(true);
         axios.delete(`/api/${itemType}`, {
             data: {
@@ -34,7 +33,6 @@ const DeleteModal = ({ isOpen, setIsOpen, item, itemType, setIter }: {
                 if (itemType == "project") router.push(`/projects`);
                 else if (itemType == "user") router.push(`/projects/${item.projectId}`); // project page
                 else if (itemType == "update") router.push(`/projects/${item.userArr[0].projectId}/${item.userId}`); // user page
-                console.log(res.data);
             }
         }).catch(e => {
             setIsLoading(false);

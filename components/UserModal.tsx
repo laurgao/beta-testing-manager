@@ -39,8 +39,6 @@ const UserModal = ({ isOpen, setIsOpen, user, setIter, setTab, projectId }: {
                 setIter(iter => iter + 1);
                 setIsOpen(false);
                 if (setTab) setTab("users");
-                // router.push(`/projects/${projectId}/${res.data.id[0]}`); // user page
-                console.log(res.data);
             }
         }).catch(e => {
             setIsLoading(false);

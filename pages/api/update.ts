@@ -9,9 +9,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     switch (req.method) {
         case "GET": {
             const session = await getSession({ req });
-            if (!session) return res.status(403);
+            if (!session) return res.status(403).json({ error: "You must be signed in to view this page." });
             if (!(req.query.id || req.query.userId || req.query.projectId)) {
-                return res.status(406);
+                return res.status(406).json({ error: "You must provide an update id, userId, or projectId." });
             }
 
             try {

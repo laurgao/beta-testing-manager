@@ -21,7 +21,6 @@ const UpdateModal = ({ isOpen, setIsOpen, selectionTemplates, textTemplates, use
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>(update ? update.name : "");
     const [date, setDate] = useState<string>(format((update ? new Date(update.date) : new Date()), "yyyy-MM-dd"));
-    console.log(userId);
 
     // create a state variable for the value of every selection template
     const [selections, setSelections] = useState<{ templateId: string, selected: string, required: boolean }[]>([])
@@ -65,7 +64,6 @@ const UpdateModal = ({ isOpen, setIsOpen, selectionTemplates, textTemplates, use
                 setIsLoading(false);
                 setIter(prevIter => prevIter + 1);
                 setName("");
-                console.log(res.data);
             }
         }).catch(e => {
             setIsLoading(false);
