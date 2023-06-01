@@ -5,7 +5,7 @@ import { UpdateModel } from "../../models/update";
 import { UserModel } from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import { getCurrUserRequest } from "../../utils/requests";
-import { UpdateObj } from "../../utils/types";
+import { UpdateObj, UserObj } from "../../utils/types";
 import { cleanForJSON } from "../../utils/utils";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -22,27 +22,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 const mongoose = require('mongoose');
 
-                try {
-                    if (req.query.id) {
-                        const id = new mongoose.Types.ObjectId(`${req.query.id}`);
-                        conditions["_id"] = id;
+                if (req.query.id) {
+                    const id = new mongoose.Types.ObjectId(`${req.query.id}`);
+                    conditions["_id"] = id;
+                }
+                if (req.query.projectId) {
+                    if (mongoose.Types.ObjectId.isValid(req.query.projectId)) {
+                        var objectId = new mongoose.Types.ObjectId(`${req.query.projectId}`)
+                        conditions["projectId"] = objectId;
+                    } else {
+                        return res.status(406).json({ error: "Invalid project ID" })
                     }
-                    if (req.query.projectId) {
-                        // console.log(req.query.projectId)
-                        if (mongoose.Types.ObjectId.isValid(req.query.projectId)) {
-                            var objectId = new mongoose.Types.ObjectId(`${req.query.projectId}`)
-                            conditions["projectId"] = objectId;
-                            // conditions["projectId"] = req.query.projectId;
-                        } else {
-                            return res.status(406).json({ error: "Invalid project ID" })
-                        }
-                        // const pId = mongoose.Types.ObjectId(`${req.query.projectId}`);
-                        // conditions["projectId"] = pId;
-                        // conditions["projectId"] = req.query.projectId;
-                    }
-                } catch (err) {
-                    console.log(err)
-                    // return res.status(200)
                 }
 
                 await dbConnect();
@@ -105,37 +95,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                     }
                                 },
                             ],
-                            as: "projectArr",
+                            as: "project",
                         },
                     },
-                    // { $unwind: "$project" },
+                    { $unwind: "$project" },
                 ]);
+
                 // Sort users by date of latest update. If user has no update, sort by user joining date.
                 thisObject.sort((a, b) => { return new Date(b.updateArr[0] ? b.updateArr[0].date : b.date).getTime() - new Date(a.updateArr[0] ? a.updateArr[0].date : b.date).getTime() });
 
-
-                // return res.status(200).json({ message: "valid" }) // this works
-                const thisProject = thisObject.length > 0 ? thisObject[0].projectArr[0] : await ProjectModel.findById(req.query.projectId);
+                const thisProject = thisObject.length > 0 ? thisObject[0].project : await ProjectModel.findById(req.query.projectId);
                 const selectionTemplates = thisProject.selectionTemplateArr
                 const textTemplates = thisProject.textTemplateArr
 
                 // Get all the updates of all the users
-                let updates = [];
-                thisObject.map((user) => (
-                    user.updateArr.map((update) => {
-                        updates.push(update);
-                    })
-                ))
-                // let updates;
-                // try {
-                //     updates = thisObject.reduce((accumulator, userObject: UserGraphObj) => {
-                //         let userUpdates = Object.values(userObject)[0].updateArr;
-                //         return accumulator.concat(userUpdates);
-                //     }, []);
-                // } catch (e) {
-                //     console.log(e);
-                //     updates = [];
-                // }
+                let updates;
+                updates = thisObject.reduce((accumulator, currentUser: UserObj) => {
+                    return accumulator.concat(currentUser.updateArr);
+                }, []);
 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
                 if (!thisObject || !thisObject.length) return res.status(404).json({ userData: [], updateData: [], projectData: [], selectionTemplateData: [], textTemplateData: [] });
@@ -151,7 +128,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     textTemplateData: cleanForJSON(textTemplates)
                 });
             } catch (e) {
-                Error.stackTraceLimit = 20; // or whatever number you want
                 console.error(e)
                 return res.status(500).json({ error: e });
             }
