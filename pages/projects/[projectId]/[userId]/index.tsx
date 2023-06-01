@@ -155,7 +155,7 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
                                     {
                                         addSuffix: true,
                                     },)}</TableItem>
-                                <hr className={`col-span-${2 + (selectionTemplates.length || 0)} my-2`} />
+                                <hr className={`col-span-full my-2`} />
                             </>
                         )) : <TableItem>No updates</TableItem> : (
                             <>

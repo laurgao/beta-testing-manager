@@ -5,7 +5,7 @@ import { UpdateModel } from "../../models/update";
 import { UserModel } from "../../models/user";
 import dbConnect from "../../utils/dbConnect";
 import { getCurrUserRequest } from "../../utils/requests";
-import { UpdateObj, UserGraphObj } from "../../utils/types";
+import { UpdateObj } from "../../utils/types";
 import { cleanForJSON } from "../../utils/utils";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,9 +30,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     if (req.query.projectId) {
                         // console.log(req.query.projectId)
                         if (mongoose.Types.ObjectId.isValid(req.query.projectId)) {
-                            console.log("valid", req.query.projectId)
-                            var objectId = mongoose.Types.ObjectId(req.query.projectId)
+                            var objectId = new mongoose.Types.ObjectId(`${req.query.projectId}`)
                             conditions["projectId"] = objectId;
+                            // conditions["projectId"] = req.query.projectId;
                         } else {
                             return res.status(406).json({ error: "Invalid project ID" })
                         }
@@ -108,12 +108,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             as: "projectArr",
                         },
                     },
-                    { $unwind: "$project" },
+                    // { $unwind: "$project" },
                 ]);
                 // Sort users by date of latest update. If user has no update, sort by user joining date.
                 thisObject.sort((a, b) => { return new Date(b.updateArr[0] ? b.updateArr[0].date : b.date).getTime() - new Date(a.updateArr[0] ? a.updateArr[0].date : b.date).getTime() });
 
-                console.log(thisObject, conditions);
 
                 // return res.status(200).json({ message: "valid" }) // this works
                 const thisProject = thisObject.length > 0 ? thisObject[0].projectArr[0] : await ProjectModel.findById(req.query.projectId);
@@ -121,25 +120,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const textTemplates = thisProject.textTemplateArr
 
                 // Get all the updates of all the users
-                // let updates = [];
-                // thisObject.map((user) => (
-                //     user.updateArr.map((update) => {
-                //         updates.push(update);
-                //     })
-                // ))
-                let updates;
-                try {
-                    updates = thisObject.reduce((accumulator, userObject: UserGraphObj) => {
-                        let userUpdates = Object.values(userObject)[0].updateArr;
-                        return accumulator.concat(userUpdates);
-                    }, []);
-                } catch (e) {
-                    console.log(e);
-                    updates = [];
-                }
+                let updates = [];
+                thisObject.map((user) => (
+                    user.updateArr.map((update) => {
+                        updates.push(update);
+                    })
+                ))
+                // let updates;
+                // try {
+                //     updates = thisObject.reduce((accumulator, userObject: UserGraphObj) => {
+                //         let userUpdates = Object.values(userObject)[0].updateArr;
+                //         return accumulator.concat(userUpdates);
+                //     }, []);
+                // } catch (e) {
+                //     console.log(e);
+                //     updates = [];
+                // }
 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 
-                if (!thisObject || !thisObject.length) return res.status(404).json({ data: [] });
+                if (!thisObject || !thisObject.length) return res.status(404).json({ userData: [], updateData: [], projectData: [], selectionTemplateData: [], textTemplateData: [] });
 
                 // Sort all updates by date
                 updates.sort((a: UpdateObj, b: UpdateObj) => { return new Date(b.date).getTime() - new Date(a.date).getTime() });

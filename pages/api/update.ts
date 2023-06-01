@@ -19,15 +19,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const mongoose = require('mongoose');
 
                 if (req.query.id) {
-                    const id = mongoose.Types.ObjectId(`${req.query.id}`);
+                    const id = new mongoose.Types.ObjectId(`${req.query.id}`);
                     conditions["_id"] = id;
                 }
                 if (req.query.userId) {
-                    const uId = mongoose.Types.ObjectId(`${req.query.userId}`);
+                    const uId = new mongoose.Types.ObjectId(`${req.query.userId}`);
                     conditions["userId"] = uId;
                 }
                 if (req.query.projectId) {
-                    const pId = mongoose.Types.ObjectId(`${req.query.projectId}`);
+                    const pId = new mongoose.Types.ObjectId(`${req.query.projectId}`);
                     conditions["projectId"] = pId;
                 }
 
@@ -80,13 +80,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                                                 }
                                             },
                                         ],
-                                        as: "projectArr",
+                                        as: "project",
                                     }
-                                }
+                                },
+                                { $unwind: "$project" }
                             ],
-                            as: "userArr",
-                        }
-                    }
+                            as: "user",
+                        },
+                    },
+                    { $unwind: "$user" },
                 ]);
 
                 // If there are no users, users.data.length is 0 and "No updates" will be displayed. 

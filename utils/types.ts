@@ -19,12 +19,13 @@ export interface ProjectObj {
 }
 
 export interface UserObj {
-    email?: string, 
+    email?: string,
     name: string,
     date: string, // Date string
     projectId: string, // ID
     tags: string[],
     updateArr?: DatedObj<UpdateObj>[],
+    project?: DatedObj<ProjectObj>, // temp thing bc not all endpoints have been unwind-ed
     projectArr?: DatedObj<ProjectObj>[],
 }
 
@@ -45,7 +46,7 @@ export interface UpdateObj {
     texts: string[],
     selectionArr?: DatedObj<SelectionObj>[],
     textArr?: DatedObj<TextObj>[],
-    userArr?: DatedObj<UserObj>[],
+    user?: DatedObj<UserObj>,
 }
 
 export interface SelectionTemplateObj {

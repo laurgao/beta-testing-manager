@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa";
 import { FiEdit2, FiTrash } from "react-icons/fi";
 import Skeleton from "react-loading-skeleton";
@@ -22,17 +22,20 @@ import { DatedObj, ProjectObj, UpdateObj, UserObj } from "../../../../utils/type
 import { cleanForJSON, fetcher } from "../../../../utils/utils";
 
 
-const Update = (props: { update: DatedObj<UpdateObj> }) => {
+const Update = (props: { update: DatedObj<UpdateObj>, user: DatedObj<UserObj>, project: DatedObj<ProjectObj> }) => {
     const [update, setUpdate] = useState<DatedObj<UpdateObj>>(props.update);
     const [iter, setIter] = useState<number>(0);
     const { data: updates, error: updatesError }: SWRResponse<{ data: DatedObj<UpdateObj>[] }, any> = useSWR(`/api/update?id=${update._id}&iter=${iter}`, fetcher);
 
     useEffect(() => {
-        if (updates) setUpdate(updates.data[0]);
+        if (updates?.data?.length > 0) setUpdate(updates.data[0]);
     }, [updates])
 
-    const user: DatedObj<UserObj> = (updates && update.userArr) ? update.userArr[0] : null;
-    const project: DatedObj<ProjectObj> = (user && user.projectArr) ? user.projectArr[0] : null;
+    // const user = props.user;
+    // const project = props.project;
+
+    const user: DatedObj<UserObj> = (updates) ? update.user : null;
+    const project: DatedObj<ProjectObj> = (user) ? user.project : null;
 
     const [editUpdateOpen, setEditUpdateOpen] = useState<boolean>(false);
     const [deleteUpdateOpen, setDeleteUpdateOpen] = useState<boolean>(false);
@@ -70,8 +73,8 @@ const Update = (props: { update: DatedObj<UpdateObj> }) => {
                     setIter={setIter}
                     userId={user._id}
                     users={[user]}
-                    selectionTemplates={user && user.projectArr[0].selectionTemplateArr}
-                    textTemplates={user && user.projectArr[0].textTemplateArr}
+                    selectionTemplates={user && user.project.selectionTemplateArr}
+                    textTemplates={user && user.project.textTemplateArr}
 
                 />
             )}
@@ -110,10 +113,9 @@ const Update = (props: { update: DatedObj<UpdateObj> }) => {
                 </div>
                 <div className="flex-grow">
                     {(updates && update) ? update.textArr && update.textArr.map((text, index) => (
-                        <>
-                            <hr className="mb-4 mt-6 btm-text-gray-200" key={text._id} />
+                        <React.Fragment key={text._id}>
+                            <hr className="mb-4 mt-6 btm-text-gray-200" />
                             <Accordion
-                                key={text._id}
                                 className="text-base btm-text-gray-400 mb-2"
                                 label={
                                     <div className="flex">
@@ -127,7 +129,7 @@ const Update = (props: { update: DatedObj<UpdateObj> }) => {
                             >
                                 <div className="text-base btm-text-gray-600 mb-6 mt-8"><pre>{text.body}</pre></div>
                             </Accordion>
-                        </>
+                        </React.Fragment>
 
                     )) : (
                         <>

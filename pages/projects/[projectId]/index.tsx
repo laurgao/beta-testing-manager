@@ -37,11 +37,10 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
     const [deleteProjectOpen, setDeleteProjectOpen] = useState<boolean>(false);
 
     const { data: data, error: error }: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?projectId=${project._id}&iter=${iter}`, fetcher);
-
-    const users: DatedObj<UserObj>[] = data ? data.userData : [];
-    const updates: DatedObj<UpdateObj>[] = data ? data.updateData : [];
-    const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData : [];
-    const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData : [];
+    const users: DatedObj<UserObj>[] = data ? data.userData || [] : [];
+    const updates: DatedObj<UpdateObj>[] = data ? data.updateData || [] : [];
+    const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData || [] : [];
+    const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData || [] : [];
     const projectData: DatedObj<ProjectObj> = data ? data.projectData : { name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: "" };
     const [projectName, setProjectName] = useState<string>();
     const [description, setDescription] = useState<string>();
@@ -84,7 +83,7 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
             waitForEl("project-name-field");
         }
     }
-
+    console.log(updates)
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title={projectName || (project && project.name && project.name)} />
@@ -123,7 +122,7 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
             </div>
 
             <div className="mb-12">
-                <Tabs state={tab} setState={setTab} displayedTabs={["Dashboard", "Users", "Updates"]} />
+                <Tabs state={tab} setState={setTab} displayedTabs={["Dashboard", `Users (${users.length})`, `Updates (${updates.length})`]} />
             </div>
 
             {addUserOpen && (
@@ -151,20 +150,20 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                 />
             )}
 
-            {tab == "dashboard" && (
+            {tab === "dashboard" && (
                 <div>
                     <p>{description || (project && project.description && project.description)}</p>
                 </div>
             )}
 
-            {tab == "users" && (
+            {tab.includes("users") && (
                 // get all users assoc with this project id
                 // map into a table
-                (data && users) ? (<Table
+                (data?.userData?.length > 0) ? (<Table
                     gtc={`1fr 6rem 6rem 6rem ${"6rem ".repeat(selectionTemplates.length || 0)}6rem`}
                     headers={(selectionTemplates && selectionTemplates[0]) ? ["Name", "Last update", "Added", "Tags", ...selectionTemplates.map(s => (s.question)), "Total updates"] : ["Name", "Last update", "Added", "Tags", "Total updates"]}
                 >
-                    {users[0] ? users.map(user => (
+                    {users.map(user => (
                         <>
                             <TableItem
                                 main={true}
@@ -204,24 +203,26 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                                 ))
                             )}
                             <TableItem>{user.updateArr.length.toString()}</TableItem>
-                            <hr className={`col-span-${5 + (selectionTemplates.length || 0)} my-2`} />
+                            <hr className={`col-span-full my-2`} />
+                            {/* <hr className={`col-span-${5 + (selectionTemplates.length || 0)} my-2`} /> */}
                         </>
-                    )) : <TableItem main={true}>No users</TableItem>}
-                </Table>) :
+                    ))}
+                </Table>) : data?.userData?.length == 0 ? <p className="btm-text-gray-500">No users. Create one by hitting "u".</p> : (
                     <div className={`w-full`} >
                         <Skeleton height={20} />
                         <Skeleton height={40} count={5} />
                     </div>
+                )
             )}
 
-            {tab == "updates" && (
-                (data && updates) ?
+            {tab.includes("updates") && (
+                (data?.updateData?.length > 0) ?
                     // get all updates with this project id and map into table.
                     <Table
                         gtc={`1fr 1fr ${"6rem ".repeat((selectionTemplates.length || 0))}6rem`}
                         headers={selectionTemplates && selectionTemplates[0] ? ["User", "Name", ...selectionTemplates.map(s => (s.question)), "Date"] : ["User", "Name", "Date"]}
                     >
-                        {updates[0] ? updates.map(update => (
+                        {updates.map(update => (
                             <>
                                 <TableItem
                                     main={true}
@@ -241,15 +242,15 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                                         addSuffix: true,
                                     },
                                 )}</TableItem>
-                                <hr className={`col-span-${3 + (selectionTemplates.length || 0)} my-2`} />
+                                <hr className={`col-span-full my-2`} />
                             </>
-                        )) : <TableItem>No updates.</TableItem>}
-                    </Table> :
-                    <div className={`w-full`} >
-                        <Skeleton height={20} />
-                        <Skeleton height={40} count={5} />
-                    </div>
-            )}
+                        ))}
+                    </Table> : data?.updateData?.length == 0 ? <p className="btm-text-gray-500">No updates. Create one by hitting "n".</p> : (
+                        <div className={`w-full`} >
+                            <Skeleton height={20} />
+                            <Skeleton height={40} count={5} />
+                        </div>
+                    ))}
         </div>
     )
 }
