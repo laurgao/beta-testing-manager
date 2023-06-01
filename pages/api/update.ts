@@ -118,16 +118,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     thisObject.date = req.body.date;
 
                     await thisObject.save();
-                    let conditions = { noteId: req.body.id };
-                    const texts = TextModel.find({ noteId: req.body.id });
-
-                    // texts.map(t => (
-                    //     t.body = req.body.texts.filter(text => text.templateId == t.templateId)[0].body // can you use map to modify properties like this
-                    // ))
-                    // TextModel.insertMany(texts)
-                    // await texts.map(newText => (TextModel.insertMany([newText])))
-
-                    // const savedTexts = await texts.map(newText => (newText.save()))
 
                     const newTexts = req.body.texts && req.body.texts.map(s => (
                         new TextModel({
@@ -154,13 +144,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(200).json({ message: "Update successfully updated" });
 
 
-                    const selections = SelectionModel.find({ noteId: req.body.id });
-                    selections.map(s => (
-                        s.selected = req.body.selections.filter(selection => selection.templateId == s.templateId)[0].selected // can you use map to modify properties like this
-                    ))
-                    await selections.map(s => (
-                        s.save()
-                    ))
+                    // const selections = SelectionModel.find({ noteId: req.body.id });
+                    // selections.map(s => (
+                    //     s.selected = req.body.selections.filter(selection => selection.templateId == s.templateId)[0].selected // can you use map to modify properties like this
+                    // ))
+                    // await selections.map(s => (
+                    //     s.save()
+                    // ))
 
                 } else {
                     if (!(req.body.userId && req.body.name && req.body.date && req.body.selections)) {

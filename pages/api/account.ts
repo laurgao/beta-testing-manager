@@ -24,7 +24,6 @@ export default async function account(req: NextApiRequest, res: NextApiResponse)
         // return res.status(200).json({message: update.title}); // works
 
 
-        console.log(session);
         const emailUser = await AccountModel.findOne({ "email": session.user.email });
         if (emailUser) {
             return res.status(200).json({ message: "Account already exists." });

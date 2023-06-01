@@ -59,7 +59,6 @@ const Update = (props: { update: DatedObj<UpdateObj>, user: DatedObj<UserObj>, p
                     itemType="update"
                     isOpen={deleteUpdateOpen}
                     setIsOpen={setDeleteUpdateOpen}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}
@@ -69,13 +68,10 @@ const Update = (props: { update: DatedObj<UpdateObj>, user: DatedObj<UserObj>, p
                     isOpen={editUpdateOpen}
                     setIsOpen={setEditUpdateOpen}
                     update={update}
-                    iter={iter}
                     setIter={setIter}
-                    userId={user._id}
                     users={[user]}
                     selectionTemplates={user && user.project.selectionTemplateArr}
                     textTemplates={user && user.project.textTemplateArr}
-
                 />
             )}
 
@@ -105,7 +101,7 @@ const Update = (props: { update: DatedObj<UpdateObj>, user: DatedObj<UserObj>, p
                     {update && update.selectionArr && update.selectionArr.map(selection => (
                         <div className="mt-9" key={selection._id}>
                             <p className="text-sm btm-text-gray-400 mb-2">{
-                                project && project.selectionTemplateArr && project.selectionTemplateArr.filter(st => st._id = selection.templateId)[0].question
+                                project?.selectionTemplateArr?.find(st => st._id = selection.templateId)?.question
                             }</p>
                             <p className="text-xl btm-text-gray-500">{selection.selected}</p>
                         </div>
@@ -119,7 +115,7 @@ const Update = (props: { update: DatedObj<UpdateObj>, user: DatedObj<UserObj>, p
                                 className="text-base btm-text-gray-400 mb-2"
                                 label={
                                     <div className="flex">
-                                        <p>{project && project.textTemplateArr && project.textTemplateArr.filter(tt => tt._id == text.templateId)[0].question}</p>
+                                        <p>{project?.textTemplateArr?.find(tt => tt._id == text.templateId)?.question}</p>
                                         {textIsOpen == index ? <FaAngleUp className="ml-auto btm-text-gray-400" /> : <FaAngleDown className="ml-auto btm-text-gray-400" />}
                                     </div>
                                 }

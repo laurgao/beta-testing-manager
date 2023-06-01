@@ -54,7 +54,7 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
 
     return (
         <div className="max-w-4xl mx-auto px-4">
-            <UpSEO title={(userData && userData.name) ? userData.name : user.name} projectName={(projectData && projectData.name) ? projectData.name : project.name} />
+            <UpSEO title={userData?.name || user.name} projectName={projectData?.name || project.name} />
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
@@ -66,7 +66,6 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
                     itemType="user"
                     isOpen={deleteUserOpen}
                     setIsOpen={setDeleteUserOpen}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}
@@ -76,7 +75,6 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
                     isOpen={editUserOpen}
                     setIsOpen={setEditUserOpen}
                     user={userData}
-                    iter={iter}
                     setIter={setIter}
                     projectId={user.projectId}
                 />
@@ -86,11 +84,9 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
                 <UpdateModal
                     isOpen={addUpdateOpen}
                     setIsOpen={setAddUpdateOpen}
-                    userId={user._id}
                     users={[user]}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}
@@ -122,9 +118,9 @@ const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> })
                         <div>
                             <Truncate className="text-sm btm-text-gray-400 mb-2">{st.question}</Truncate>
                             <p className="text-xl btm-text-gray-500">{
-                                (updates && updates[updates.length - 1]) ? updates[updates.length - 1].selectionArr.filter(s => (
+                                (updates && updates[updates.length - 1]?.selectionArr?.length > 0) ? updates[updates.length - 1].selectionArr.find(s => (
                                     s.templateId == st._id
-                                ))[0].selected : "No updates yet"
+                                ))?.selected : "No updates yet"
                             }</p>
                         </div>
                     ))}

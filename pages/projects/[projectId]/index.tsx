@@ -31,7 +31,6 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
     const [tab, setTab] = useState<"dashboard" | "users" | "updates">("dashboard");
     const [addUserOpen, setAddUserOpen] = useState<boolean>(false);
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false);
-    const [updateUserId, setUpdateUserId] = useState<string>("");
     const [iter, setIter] = useState<number>(0);
     const [editProjectOpen, setEditProjectOpen] = useState<boolean>(false);
     const [deleteProjectOpen, setDeleteProjectOpen] = useState<boolean>(false);
@@ -76,14 +75,13 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
     useKey("KeyU", toggleAddUser);
 
     const toggleEditProject = (e) => {
-        console.log(editProjectOpen)
         if (!isModalOpen) {
             setEditProjectOpen(true);
             e.preventDefault();
             waitForEl("project-name-field");
         }
     }
-    console.log(updates)
+
     return (
         <div className="max-w-4xl mx-auto px-4">
             <UpSEO title={projectName || (project && project.name && project.name)} />
@@ -91,7 +89,6 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
             <ProjectModal
                 isOpen={editProjectOpen}
                 setIsOpen={setEditProjectOpen}
-                iter={iter}
                 setIter={setIter}
                 project={project}
             />
@@ -101,7 +98,6 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                 itemType="project"
                 isOpen={deleteProjectOpen}
                 setIsOpen={setDeleteProjectOpen}
-                iter={iter}
                 setIter={setIter}
             />
 
@@ -129,7 +125,6 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                 <UserModal
                     isOpen={addUserOpen}
                     setIsOpen={setAddUserOpen}
-                    iter={iter}
                     setIter={setIter}
                     projectId={project._id}
                     setTab={setTab}
@@ -140,12 +135,9 @@ const Project = (props: { project: DatedObj<ProjectObj> }) => {
                 <UpdateModal
                     isOpen={addUpdateOpen}
                     setIsOpen={setAddUpdateOpen}
-                    userId={updateUserId}
-                    setUserId={setUpdateUserId}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
                     users={users}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}

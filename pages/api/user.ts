@@ -24,7 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 try {
                     if (req.query.id) {
-                        const id = mongoose.Types.ObjectId(`${req.query.id}`);
+                        const id = new mongoose.Types.ObjectId(`${req.query.id}`);
                         conditions["_id"] = id;
                     }
                     if (req.query.projectId) {
@@ -209,11 +209,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
                 await dbConnect();
 
-                const thisObject = await UserModel.findById(req.body.id);
-
                 const mongoose = require('mongoose');
                 let conditions = {};
-                const id = mongoose.Types.ObjectId(`${req.body.id}`);
+                const id = new mongoose.Types.ObjectId(`${req.body.id}`);
                 conditions["_id"] = id;
 
                 const thisUser = await UserModel.aggregate([

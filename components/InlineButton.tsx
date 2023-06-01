@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const InlineButton = ({onClick, children, href, isLoading, isDisabled, className} : {
+const InlineButton = ({ onClick, children, href, isLoading, isDisabled, className }: {
     onClick?: any,
     children: string,
     href?: string,
@@ -11,7 +11,7 @@ const InlineButton = ({onClick, children, href, isLoading, isDisabled, className
     return (
         <button
             disabled={isLoading || isDisabled}
-            className={`btm-text-gray-500 rounded px-1 py-0.5 text-sm transition font-bold hover:bg-black hover:bg-opacity-10 focus:outline-none disabled:cursor-not-allowed ${className && className}`}
+            className={`btm-text-gray-500 rounded px-1 py-0.5 text-sm transition font-bold hover:bg-gray-50 focus:outline-none disabled:cursor-not-allowed ${className && className}`}
             onClick={onClick}
         >
             {href ? (
@@ -19,10 +19,10 @@ const InlineButton = ({onClick, children, href, isLoading, isDisabled, className
                     {children}
                 </Link>
             ) : (
-                    <div className="flex items-center">
-                        {children}
-                    </div>
-                )}
+                <div className="flex items-center">
+                    {children}
+                </div>
+            )}
         </button>
     )
 }

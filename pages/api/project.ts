@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const mongoose = require('mongoose');
 
                 if (req.query.id) {
-                    const id = mongoose.Types.ObjectId(req.query.id);
+                    const id = new mongoose.Types.ObjectId(req.query.id);
                     conditions["_id"] = id; // Get all projects with this id
                 } else {
                     // const id = mongoose.Types.ObjectId(`${userData._id}`);
@@ -114,9 +114,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const session = await getSession({ req });
 
-
-
-            console.log("session", session)
             if (!session) return res.status(403).json({ error: "You must be signed in to do that." });
             try {
                 await dbConnect();
