@@ -1,6 +1,6 @@
 import axios from "axios";
 import { format } from "date-fns";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DatedObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserObj } from "../utils/types";
 import H2 from "./H2";
 import H3 from "./H3";
@@ -8,43 +8,39 @@ import Input from "./Input";
 import PrimaryButton from "./PrimaryButton";
 import UpModal from "./UpModal";
 
-const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, textTemplates, users, setIter, iter, update}: {
-        isOpen: boolean,
-        setIsOpen: any,
-        userId: string,
-        setUserId?: any,
-        selectionTemplates: DatedObj<SelectionTemplateObj>[],
-        textTemplates: DatedObj<TextTemplateObj>[],
-        users: DatedObj<UserObj>[],
-        setIter?: any,
-        iter: number,
-        update?: DatedObj<UpdateObj>,
-    }) => {
-
+const UpdateModal = ({ isOpen, setIsOpen, selectionTemplates, textTemplates, users, setIter, update }: {
+    isOpen: boolean,
+    setIsOpen: Dispatch<SetStateAction<boolean>>,
+    selectionTemplates: DatedObj<SelectionTemplateObj>[],
+    textTemplates: DatedObj<TextTemplateObj>[],
+    users: DatedObj<UserObj>[],
+    setIter?: Dispatch<SetStateAction<number>>,
+    update?: DatedObj<UpdateObj>,
+}) => {
+    const [userId, setUserId] = useState<string>(users.length == 1 ? users[0]._id : "");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [name, setName] = useState<string>(update ? update.name : "");
     const [date, setDate] = useState<string>(format((update ? new Date(update.date) : new Date()), "yyyy-MM-dd"));
-    
-    
+
     // create a state variable for the value of every selection template
-    const [selections, setSelections] = useState<{templateId: string, selected: string, required: boolean}[]>([])
-    const [texts, setTexts] = useState<{templateId: string, body: string, required: boolean}[]>([])
+    const [selections, setSelections] = useState<{ templateId: string, selected: string, required: boolean }[]>([])
+    const [texts, setTexts] = useState<{ templateId: string, body: string, required: boolean }[]>([])
 
     useEffect(() => {
         selectionTemplates && setSelections(selectionTemplates.map(st => (
             {
                 templateId: st._id,
-                selected: (update && update.selectionArr.filter(s => (s.templateId == st._id))[0]) ? update.selectionArr.filter(s => (s.templateId == st._id))[0].selected : "",
+                selected: (update?.selectionArr.filter(s => (s.templateId == st._id))[0]) ? update.selectionArr.find(s => (s.templateId == st._id)).selected : "",
                 required: st.required,
             }
         )))
-    }, [selectionTemplates]); 
+    }, [selectionTemplates]);
 
     useEffect(() => {
         textTemplates && setTexts(textTemplates.map(tt => (
             {
                 templateId: tt._id,
-                body: (update && update.textArr.filter(t => (t.templateId == tt._id))[0]) ? update.textArr.filter(t => (t.templateId == tt._id))[0].body : "",
+                body: (update?.textArr.find(t => (t.templateId == tt._id))) ? update.textArr.find(t => (t.templateId == tt._id)).body : "",
                 required: tt.required
             }
         )))
@@ -66,9 +62,8 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
             } else {
                 setIsOpen(false);
                 setIsLoading(false);
-                setIter(iter + 1); 
+                setIter(prevIter => prevIter + 1);
                 setName("");
-                console.log(res.data);
             }
         }).catch(e => {
             setIsLoading(false);
@@ -79,7 +74,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
     return (users && users.length) ? (
         <UpModal isOpen={isOpen} setIsOpen={setIsOpen} wide={true}>
             <H2>{update ? "Edit update" : users.length == 1 ? `New update for ${users[0].name}` : "New update"}</H2>
-            
+
             <Input
                 name="Date"
                 type="date"
@@ -98,7 +93,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                         >
                             <option value="">Choose a user</option>
                             {users.length ? users.map(u => (
-                                <option 
+                                <option
                                     key={u._id}
                                     value={u._id}
                                 >{u.name}</option>
@@ -114,7 +109,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                 name="Name"
                 placeholder="Check in 2"
                 value={name}
-                id="update-name-field" 
+                id="update-name-field"
                 setValue={setName}
             />
             {textTemplates && texts.length && textTemplates.map(textTemplate => (
@@ -125,7 +120,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                     placeholder="Write something awesome..."
                     value={texts.filter(text => text.templateId == textTemplate._id)[0].body}
                     onChange={e => setTexts([
-                        ...texts.filter((text) => text.templateId != textTemplate._id), 
+                        ...texts.filter((text) => text.templateId != textTemplate._id),
                         {
                             templateId: textTemplate._id,
                             body: e.target.value,
@@ -141,7 +136,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                         className={`border-b w-full content my-2 py-2 focus:outline-none ${selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected == "" && "opacity-30"}`}
                         value={selections.filter((s) => s.templateId == selectionTemplate._id)[0].selected}
                         onChange={e => setSelections([
-                            ...selections.filter((s) => s.templateId != selectionTemplate._id), 
+                            ...selections.filter((s) => s.templateId != selectionTemplate._id),
                             {
                                 templateId: selectionTemplate._id,
                                 selected: e.target.value,
@@ -152,6 +147,7 @@ const UpdateModal = ({isOpen, setIsOpen, userId, setUserId, selectionTemplates, 
                         <option value="">Choose a value</option>
                         {selectionTemplate.options.map(o => (
                             <option
+                                key={o}
                                 value={o}
                             >{o}</option>
                         ))}

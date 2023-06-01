@@ -8,30 +8,30 @@
     "start": "next start"
   },
   "dependencies": {
-    "@types/mongodb": "^3.6.17",
+    "@types/mongodb": "^4.0.7",
     "@types/mongoose": "^5.10.5",
     "@types/next-auth": "^3.15.0",
-    "axios": "^0.21.1",
+    "axios": "^1.4.0",
     "date-fns": "^2.22.1",
-    "mongoose": "^5.12.12",
-    "next": "10.2.3",
+    "mongoose": "^7.2.1",
+    "next": "13.4.4",
     "next-auth": "^3.24.0",
-    "next-seo": "^4.24.0",
+    "next-seo": "^6.0.0",
     "nprogress": "^0.2.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "react-icons": "^4.2.0",
-    "react-loading-skeleton": "^2.2.0",
+    "react-loading-skeleton": "^3.3.1",
     "react-modal": "^3.14.2",
-    "react-robust-accordion": "^0.5.2",
-    "swr": "^0.5.6"
+    "react-robust-accordion": "^0.6.0",
+    "swr": "^2.1.5"
   },
   "devDependencies": {
-    "@types/node": "^15.6.1",
-    "@types/react": "^17.0.8",
+    "@types/node": "^20.2.5",
+    "@types/react": "^18.2.7",
     "autoprefixer": "^10.2.6",
     "postcss": "^8.3.0",
-    "tailwindcss": "^2.1.2",
-    "typescript": "^4.3.2"
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.0.4"
   }
 }

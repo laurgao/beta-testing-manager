@@ -2,19 +2,19 @@ import axios from "axios";
 import { GetServerSideProps } from "next";
 import { getSession, useSession } from "next-auth/client";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import PrimaryButton from "../../components/PrimaryButton";
 import UpSEO from "../../components/up-seo";
-import { getCurrUserRequest } from "../../utils/requests";
+import { AccountModel } from "../../models/account";
+import dbConnect from "../../utils/dbConnect";
 
 export default function NewAccount() {
     const router = useRouter();
+    // const { data: session, status } = useSession()
     const [session, loading] = useSession();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>(null);
-
-    console.log(session);
 
     function onSubmit() {
         setIsLoading(true);
@@ -39,20 +39,20 @@ export default function NewAccount() {
 
     return (
         <div className="max-w-sm mx-auto px-4">
-            <UpSEO title="New account"/>
+            <UpSEO title="New account" />
             <h1 className="up-h1">Welcome to Beta Testing Manager</h1>
-            <hr className="my-8"/>
+            <hr className="my-8" />
             <p className="up-ui-title">Creating new account as:</p>
             {loading ? (
                 <div className="my-4">
-                    <Skeleton count={2}/>
+                    <Skeleton count={2} />
                 </div>
             ) : (
                 <div className="flex items-center my-4">
                     <img
                         src={session.user.image}
                         alt={`Profile picture of ${session.user.name}`}
-                        className="rounded-full h-12 h-12 mr-4"
+                        className="rounded-full h-12 mr-4"
                     />
                     <div>
                         <p className="up-ui-title">{session.user.name}</p>
@@ -60,11 +60,11 @@ export default function NewAccount() {
                     </div>
                 </div>
             )}
-           
+
             {error && (
                 <p className="text-red-500">{error}</p>
             )}
-            <hr className="my-8"/>
+            <hr className="my-8" />
             <PrimaryButton
                 onClick={onSubmit}
                 isLoading={isLoading}
@@ -78,11 +78,11 @@ export default function NewAccount() {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    const user = await getCurrUserRequest(session.user.email);
-
+    await dbConnect();
+    const user = await AccountModel.findOne({ email: session?.user.email });
     if (!session || user) {
-        return {redirect: {permanent: false, destination: "/projects",}};
+        return { redirect: { permanent: false, destination: "/projects", } };
     }
 
-    return {props: {}};
+    return { props: {} };
 };

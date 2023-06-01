@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import useSWR, { SWRResponse } from "swr";
@@ -14,7 +14,7 @@ import { fetcher, useKey, waitForEl } from "../../utils/utils";
 
 const projects = () => {
     const [iter, setIter] = useState<number>(0);
-    const {data: projects, error: projectsError}: SWRResponse<{data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project?iter=${iter}`, fetcher);
+    const { data: projects, error: projectsError }: SWRResponse<{ data: DatedObj<ProjectObj>[] }, any> = useSWR(`/api/project?iter=${iter}`, fetcher);
     const [addProjectOpen, setAddProjectOpen] = useState<boolean>(false);
 
     const toggleAddProject = (e) => {
@@ -28,37 +28,35 @@ const projects = () => {
 
     return (
         <div className="max-w-4xl mx-auto px-4">
-            <UpSEO title="Projects"/>
-            <ProjectModal 
-                isOpen={addProjectOpen} 
+            <UpSEO title="Projects" />
+            <ProjectModal
+                isOpen={addProjectOpen}
                 setIsOpen={setAddProjectOpen}
-                iter={iter}
                 setIter={setIter}
             />
 
             <div className="flex items-center mb-12">
-                <H1 text="All Projects" className="leading-none"/>
-                <PrimaryButton 
-                    onClick={toggleAddProject} 
+                <H1 text="All Projects" className="leading-none" />
+                <PrimaryButton
+                    onClick={toggleAddProject}
                     className="ml-auto"
-                ><FaPlus/><span className="ml-2 mt-0.5">New project (n)</span></PrimaryButton>
+                ><FaPlus /><span className="ml-2 mt-0.5">New project (n)</span></PrimaryButton>
             </div>
-            <div className="md:flex -mx-3 flex-wrap gap-4">
-                {(projects && projects.data) ? projects.data[0] ? (
-                    projects.data.map((project : DatedObj<ProjectObj>) => (
-                        <ProjectCard 
+            {(projects && projects.data) ? projects.data[0] ? (
+                <div className="md:flex -mx-3 flex-wrap gap-4">
+                    {projects.data.map((project: DatedObj<ProjectObj>) => (
+                        <ProjectCard
                             project={project}
                             userCount={project.userArr && project.userArr.length}
-                            iter={iter}
-                            setIter={iter}
+                            setIter={setIter}
                             key={project._id}
                         />
-                    ))
-                ) : (
-                    <p>You have no projects. Create a new project today!</p> 
-                ) : (<div className="w-full"><Skeleton height={208}/></div>) }
-            </div>
-        </div>
+                    ))}
+                </div>
+            ) : (
+                <p>You have no projects. Create a new project today!</p>
+            ) : (<div className="w-full"><Skeleton height={208} /></div>)}
+        </div >
     )
 }
 
@@ -66,7 +64,7 @@ export default projects
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    if (!session) return {redirect: {permanent: false, destination: "/auth/sign-in"}};
-    
+    if (!session) return { redirect: { permanent: false, destination: "/auth/sign-in" } };
+
     return { props: {} };
-  };
+};

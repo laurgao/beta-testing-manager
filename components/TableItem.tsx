@@ -12,10 +12,8 @@ const TableItem = ({children, href, truncate, wide, main, className}: {
     const tl = wide ? 30 : 7; // truncate length
     const classes = main ? `text-base btm-text-gray-500 font-semibold text-left py-2 ${className && className}` : `text-base btm-text-gray-500 ${className && className}`
     return href ? (
-        <Link href={href}>
-            <a className={classes}>
-                {truncate ? <Truncate length={tl}>{children}</Truncate> : `${children}`}
-            </a>
+        <Link href={href} className={classes}>
+            {truncate ? <Truncate length={tl}>{children}</Truncate> : `${children}`}
         </Link>
     ) : (
         <p className={classes}>

@@ -15,29 +15,29 @@ import PrimaryButton from "../../../../components/PrimaryButton";
 import Table from "../../../../components/Table";
 import TableItem from "../../../../components/TableItem";
 import Truncate from "../../../../components/Truncate";
-import UpSEO from "../../../../components/up-seo";
 import UpdateModal from "../../../../components/UpdateModal";
 import UserModal from "../../../../components/UserModal";
+import UpSEO from "../../../../components/up-seo";
 import { ProjectModel } from "../../../../models/project";
 import { UserModel } from "../../../../models/user";
 import dbConnect from "../../../../utils/dbConnect";
 import { DatedObj, ProjectObj, SelectionTemplateObj, TextTemplateObj, UpdateObj, UserGraphObj, UserObj } from "../../../../utils/types";
 import { cleanForJSON, fetcher, useKey, waitForEl } from "../../../../utils/utils";
 
-const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } ) => {
+const User = (props: { user: DatedObj<UserObj>, project: DatedObj<ProjectObj> }) => {
     const [user, setUser] = useState<DatedObj<UserObj>>(props.user);
     const [project, setProject] = useState<DatedObj<ProjectObj>>(props.project);
     const [addUpdateOpen, setAddUpdateOpen] = useState<boolean>(false);
     const [deleteUserOpen, setDeleteUserOpen] = useState<boolean>(false);
     const [editUserOpen, setEditUserOpen] = useState<boolean>(false);
     const [iter, setIter] = useState<number>(0);
-    const {data: data, error: error}: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?id=${user._id}&iter=${iter}`, fetcher);
-    const userData: DatedObj<UserObj> = data ? data.userData[0] : {name: "",  _id: "", createdAt: "", updatedAt: "", projectId: "", date: "", tags: []};
+    const { data: data, error: error }: SWRResponse<DatedObj<UserGraphObj>, any> = useSWR(`/api/user?id=${user._id}&iter=${iter}`, fetcher);
+    const userData: DatedObj<UserObj> = data ? data.userData[0] : { name: "", _id: "", createdAt: "", updatedAt: "", projectId: "", date: "", tags: [] };
     const updates: DatedObj<UpdateObj>[] = data ? data.updateData : [];
     const selectionTemplates: DatedObj<SelectionTemplateObj>[] = data ? data.selectionTemplateData : [];
     const textTemplates: DatedObj<TextTemplateObj>[] = data ? data.textTemplateData : [];
-    const projectData: DatedObj<ProjectObj> = data ? data.projectData : {name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: ""};
-    
+    const projectData: DatedObj<ProjectObj> = data ? data.projectData : { name: "", description: "", _id: "", createdAt: "", updatedAt: "", accountId: "" };
+
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     useEffect(() => {
         setIsModalOpen(addUpdateOpen || deleteUserOpen || editUserOpen);
@@ -49,58 +49,54 @@ const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } 
             e.preventDefault();
             waitForEl("update-name-field");
         }
-    }    
+    }
     useKey("KeyN", toggleAddUpdate);
-    
+
     return (
         <div className="max-w-4xl mx-auto px-4">
-            <UpSEO title={(userData && userData.name) ? userData.name : user.name} projectName={(projectData && projectData.name) ? projectData.name : project.name}/>
+            <UpSEO title={userData?.name || user.name} projectName={projectData?.name || project.name} />
             <div className="mb-4">
                 <InlineButton href="/projects/">Projects</InlineButton>
                 <span className="mx-1 btm-text-gray-500 font-bold">/</span>
-                {projectData.name ? <InlineButton href={`/projects/${user.projectId}`}>{projectData.name}</InlineButton> : <Skeleton width={100}/>}
+                {projectData.name ? <InlineButton href={`/projects/${user.projectId}`}>{projectData.name}</InlineButton> : <Skeleton width={100} />}
             </div>
             {data && userData && (
-                <DeleteModal 
+                <DeleteModal
                     item={userData}
                     itemType="user"
                     isOpen={deleteUserOpen}
                     setIsOpen={setDeleteUserOpen}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}
 
             {data && userData && (
-                <UserModal 
+                <UserModal
                     isOpen={editUserOpen}
                     setIsOpen={setEditUserOpen}
                     user={userData}
-                    iter={iter}
                     setIter={setIter}
                     projectId={user.projectId}
                 />
             )}
 
             {addUpdateOpen && (
-                <UpdateModal 
+                <UpdateModal
                     isOpen={addUpdateOpen}
                     setIsOpen={setAddUpdateOpen}
-                    userId={user._id}
                     users={[user]}
                     selectionTemplates={selectionTemplates}
                     textTemplates={textTemplates}
-                    iter={iter}
                     setIter={setIter}
                 />
             )}
             <div className="flex items-center mb-12">
-                {userData ? <H1 text={userData.name} className="leading-none"/> : <Skeleton width={200} height={40}/>}
+                {userData ? <H1 text={userData.name} className="leading-none" /> : <Skeleton width={200} height={40} />}
                 <div className="ml-auto flex flex-row gap-3 items-center">
-                    <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus/><span className="ml-2 mt-0.5">New update (n)</span></PrimaryButton>
+                    <PrimaryButton onClick={toggleAddUpdate} className="ml-auto"><FaPlus /><span className="ml-2 mt-0.5">New update (n)</span></PrimaryButton>
                     <MoreMenu>
-                        <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUserOpen(true)}/>
-                        <MoreMenuItem text="Delete" icon={<FiTrash/>} onClick={() => setDeleteUserOpen(true)}/>
+                        <MoreMenuItem text="Edit" icon={<FiEdit2 />} onClick={() => setEditUserOpen(true)} />
+                        <MoreMenuItem text="Delete" icon={<FiTrash />} onClick={() => setDeleteUserOpen(true)} />
                     </MoreMenu>
                 </div>
             </div>
@@ -108,39 +104,39 @@ const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } 
                 <div className="flex flex-col gap-9">
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Email</p>
-                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.email ? userData.email : "N/A"}</p> : <Skeleton width={100}/>}
+                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.email ? userData.email : "N/A"}</p> : <Skeleton width={100} />}
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Tags</p>
-                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.tags.length ? userData.tags : "No tags" /* badge map */ }</p> : <Skeleton width={100}/>}
+                        {data && userData ? <p className="text-xl btm-text-gray-500">{userData.tags.length ? userData.tags : "No tags" /* badge map */}</p> : <Skeleton width={100} />}
                     </div>
                     <div>
                         <p className="text-sm btm-text-gray-400 mb-2">Joined</p>
-                        {userData && userData.date ? <p className="text-xl btm-text-gray-500">{format(new Date(userData.date), "MMM d, yyyy")}</p> : <Skeleton width={100}/>}
+                        {userData && userData.date ? <p className="text-xl btm-text-gray-500">{format(new Date(userData.date), "MMM d, yyyy")}</p> : <Skeleton width={100} />}
                     </div>
                     {selectionTemplates && selectionTemplates[0] && selectionTemplates.map(st => (
                         <div>
                             <Truncate className="text-sm btm-text-gray-400 mb-2">{st.question}</Truncate>
                             <p className="text-xl btm-text-gray-500">{
-                                (updates && updates[updates.length-1]) ? updates[updates.length-1].selectionArr.filter(s => (
+                                (updates && updates[updates.length - 1]?.selectionArr?.length > 0) ? updates[updates.length - 1].selectionArr.find(s => (
                                     s.templateId == st._id
-                                ))[0].selected : "No updates yet"
-                            }</p> 
+                                ))?.selected : "No updates yet"
+                            }</p>
                         </div>
                     ))}
-                    
+
                 </div>
 
                 <div className="flex-grow">
-                    <Table 
+                    <Table
                         gtc={`1fr ${"6rem ".repeat(selectionTemplates.length || 0)}6rem`}
-                        headers={(selectionTemplates && selectionTemplates[0]) ? [ "Name", ...selectionTemplates.map(s => (s.question)) ,"Date"] : [ "Name", "Date"]}
+                        headers={(selectionTemplates && selectionTemplates[0]) ? ["Name", ...selectionTemplates.map(s => (s.question)), "Date"] : ["Name", "Date"]}
                     >
                         {(data && updates) ? updates[0] ? updates.map(update => (
                             <>
-                                <TableItem 
+                                <TableItem
                                     main={true}
-                                    href={`/projects/${user.projectId}/${user._id}/${update._id}`} 
+                                    href={`/projects/${user.projectId}/${user._id}/${update._id}`}
                                     className="text-base"
                                     truncate={true}
                                     wide={true}
@@ -154,19 +150,19 @@ const User = ( props: {user: DatedObj<UserObj>, project: DatedObj<ProjectObj> } 
                                     new Date(),
                                     {
                                         addSuffix: true,
-                                    },)}</TableItem> 
-                                <hr className={`col-span-${2 + (selectionTemplates.length || 0)} my-2`}/>
+                                    },)}</TableItem>
+                                <hr className={`col-span-full my-2`} />
                             </>
                         )) : <TableItem>No updates</TableItem> : (
                             <>
-                                <Skeleton className="col-span-2"/>
-                                <Skeleton className="col-span-1"/>
+                                <Skeleton className="col-span-2" />
+                                <Skeleton className="col-span-1" />
                             </>
                         )}
                     </Table>
                 </div>
             </div>
-            
+
         </div>
     )
 }
@@ -175,7 +171,7 @@ export default User
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const session = await getSession(context);
-    if (!session) return {redirect: {permanent: false, destination: "/auth/sign-in"}};
+    if (!session) return { redirect: { permanent: false, destination: "/auth/sign-in" } };
     const userId: any = context.params.userId;
     const projectId: any = context.params.projectId;
 
@@ -185,10 +181,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         const thisUser = await UserModel.findOne({ _id: userId });
         const thisProject = await ProjectModel.findOne({ _id: projectId });
 
-        if (!thisProject || !thisUser) return {notFound: true};
+        if (!thisProject || !thisUser) return { notFound: true };
 
-        return {props: {project: cleanForJSON(thisProject), user: cleanForJSON(thisUser)}};
+        return { props: { project: cleanForJSON(thisProject), user: cleanForJSON(thisUser) } };
     } catch (e) {
-        return {notFound: true};
+        return { notFound: true };
     }
 };

@@ -19,15 +19,16 @@ export interface ProjectObj {
 }
 
 export interface UserObj {
-    email?: string, 
+    email?: string,
     name: string,
     date: string, // Date string
     projectId: string, // ID
     tags: string[],
     updateArr?: DatedObj<UpdateObj>[],
-    projectArr?: DatedObj<ProjectObj>[],
+    project?: DatedObj<ProjectObj>,
 }
 
+// TODO: this is disgusting, get rid of this someday
 export interface UserGraphObj {
     userData: DatedObj<UserObj>[],
     updateData: DatedObj<UpdateObj>[],
@@ -45,7 +46,7 @@ export interface UpdateObj {
     texts: string[],
     selectionArr?: DatedObj<SelectionObj>[],
     textArr?: DatedObj<TextObj>[],
-    userArr?: DatedObj<UserObj>[],
+    user?: DatedObj<UserObj>,
 }
 
 export interface SelectionTemplateObj {
